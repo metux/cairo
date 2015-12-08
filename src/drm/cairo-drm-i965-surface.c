@@ -1409,9 +1409,9 @@ i965_surface_fill (void			*abstract_dst,
     cairo_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
-							op, source, path,
+							&(dst->intel.drm.base),
+							op,
+							source,
 							clip);
     if (unlikely (status))
 	return status;
