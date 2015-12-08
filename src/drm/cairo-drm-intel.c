@@ -939,8 +939,11 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     scaled_glyph->surface_private = node;
 
     glyph_private= (intel_glyph_t *) node;
-    glyph_private->node.owner = &scaled_glyph->surface_private;
     glyph_private->cache = cache;
+    glyph_private->glyph = scaled_glyph;
+
+    scaled_glyph->dev_private = glyph_private;
+    scaled_glyph->dev_private_key = cache;
 
     /* compute tex coords: bottom-right, bottom-left, top-left */
     sf_x = 1. / cache->buffer.width;
@@ -969,7 +972,6 @@ intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
     intel_glyph_t *priv = scaled_glyph->surface_private;
 
     /* XXX thread-safety? Probably ok due to the frozen scaled-font. */
-    priv->node.owner = NULL;
     if (! priv->node.pinned)
 	_cairo_rtree_node_remove (&priv->cache->rtree, &priv->node);
 }
