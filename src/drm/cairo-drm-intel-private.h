@@ -404,6 +404,9 @@ intel_dump_batchbuffer (const void *batch,
 			uint32_t length,
 			int devid);
 
+cairo_private void
+_cairo_drm_intel_node_destroy (cairo_rtree_node_t *node);
+
 static inline uint32_t cairo_const
 MS3_tiling (uint32_t tiling)
 {
