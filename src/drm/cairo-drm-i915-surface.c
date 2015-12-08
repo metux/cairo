@@ -911,7 +911,7 @@ i915_fixup_unbounded_boxes (i915_surface_t *dst,
 
 	_cairo_boxes_init (&tmp);
 
-	status = _cairo_boxes_add (&tmp, &box);
+	status = _cairo_boxes_add (&tmp, CAIRO_ANTIALIAS_DEFAULT, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	tmp.chunks.next = &boxes->chunks;
@@ -928,12 +928,12 @@ i915_fixup_unbounded_boxes (i915_surface_t *dst,
 	pbox = pixman_region32_rectangles (&clip_region->rgn, &i);
 	_cairo_boxes_limit (&clear, (cairo_box_t *) pbox, i);
 
-	status = _cairo_boxes_add (&clear, &box);
+	status = _cairo_boxes_add (&clear, CAIRO_ANTIALIAS_DEFAULT, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		status = _cairo_boxes_add (&clear, &chunk->base[i]);
+		status = _cairo_boxes_add (&clear, CAIRO_ANTIALIAS_DEFAULT, &chunk->base[i]);
 		if (unlikely (status)) {
 		    _cairo_boxes_fini (&clear);
 		    return status;
@@ -1932,6 +1932,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
 	cairo_status_t stat = _cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
+							      CAIRO_ANTIALIAS_DEFAULT,
 							      &boxes);
 	if (likely (stat == CAIRO_STATUS_SUCCESS)) {
 	    stat = _clip_and_composite_boxes (dst, op, source,
@@ -2274,6 +2275,7 @@ i915_surface_stroke (void			*abstract_dst,
 	cairo_status_t stat = _cairo_path_fixed_stroke_rectilinear_to_boxes (path,
 								stroke_style,
 								ctm,
+								CAIRO_ANTIALIAS_DEFAULT,
 								&boxes);
 	if (likely (stat == CAIRO_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
