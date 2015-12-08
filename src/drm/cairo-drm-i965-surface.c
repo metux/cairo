@@ -1118,14 +1118,14 @@ i965_surface_paint (void			*abstract_dst,
 	clip = NULL;
 
     if (clip != NULL) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
+	clip = _cairo_clip_copy (&local_clip);
 	have_clip = TRUE;
     }
 
     status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
     if (unlikely (status)) {
 	if (have_clip)
-	    _cairo_clip_fini (&local_clip);
+	    _cairo_clip_reset (&local_clip);
 
 	return status;
     }
@@ -1138,7 +1138,7 @@ i965_surface_paint (void			*abstract_dst,
 	free (clip_boxes);
 
     if (have_clip)
-	_cairo_clip_fini (&local_clip);
+	_cairo_clip_reset (&local_clip);
 
     return status;
 }
@@ -1171,10 +1171,10 @@ i965_surface_mask (void				*abstract_dst,
 	clip = NULL;
 
     if (clip != NULL && extents.is_bounded) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
+	clip = _cairo_clip_copy (&local_clip);
 	status = _cairo_clip_rectangle (clip, &extents.bounded);
 	if (unlikely (status)) {
-	    _cairo_clip_fini (&local_clip);
+	    _cairo_clip_reset (&local_clip);
 	    return status;
 	}
 
@@ -1243,7 +1243,7 @@ i965_surface_mask (void				*abstract_dst,
   err_shader:
     i965_shader_fini (&shader);
     if (have_clip)
-	_cairo_clip_fini (&local_clip);
+	_cairo_clip_reset (&local_clip);
 
     return status;
 }
@@ -1314,14 +1314,14 @@ i965_surface_stroke (void			*abstract_dst,
 	clip = NULL;
 
     if (clip != NULL) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
+	clip = _cairo_clip_copy (&local_clip);
 	have_clip = TRUE;
     }
 
     status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
     if (unlikely (status)) {
 	if (have_clip)
-	    _cairo_clip_fini (&local_clip);
+	    _cairo_clip_reset (&local_clip);
 
 	return status;
     }
@@ -1384,7 +1384,7 @@ CLEANUP_BOXES:
 	free (clip_boxes);
 
     if (have_clip)
-	_cairo_clip_fini (&local_clip);
+	_cairo_clip_reset (&local_clip);
 
     return status;
 }
@@ -1420,14 +1420,14 @@ i965_surface_fill (void			*abstract_dst,
 	clip = NULL;
 
     if (clip != NULL) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
+	clip = _cairo_clip_copy (&local_clip);
 	have_clip = TRUE;
     }
 
     status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
     if (unlikely (status)) {
 	if (have_clip)
-	    _cairo_clip_fini (&local_clip);
+	    _cairo_clip_reset (&local_clip);
 
 	return status;
     }
@@ -1487,7 +1487,7 @@ CLEANUP_BOXES:
 	free (clip_boxes);
 
     if (have_clip)
-	_cairo_clip_fini (&local_clip);
+	_cairo_clip_reset (&local_clip);
 
     return status;
 }
