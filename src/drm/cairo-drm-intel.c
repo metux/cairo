@@ -693,6 +693,7 @@ intel_bo_put_image (intel_device_t *device,
 				       width, height,
 				       dst_x, dst_y);
     default:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_INVALID:
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
     }

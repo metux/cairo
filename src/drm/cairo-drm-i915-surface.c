@@ -2629,6 +2629,7 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
 	bpp = 1;
 	break;
     case CAIRO_FORMAT_INVALID:
+    case CAIRO_FORMAT_RGB30:
     default:
 	ASSERT_NOT_REACHED;
 	status = _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
