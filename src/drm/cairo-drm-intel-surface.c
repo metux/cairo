@@ -251,38 +251,20 @@ intel_surface_glyphs (void			*abstract_surface,
 }
 
 static const cairo_surface_backend_t intel_surface_backend = {
-    CAIRO_SURFACE_TYPE_DRM,
-    _cairo_default_context_create,
-
-    intel_surface_create_similar,
-    intel_surface_finish,
-
-    NULL,
-    intel_surface_acquire_source_image,
-    intel_surface_release_source_image,
-
-    NULL, NULL, NULL,
-    NULL, /* composite */
-    NULL, /* fill */
-    NULL, /* trapezoids */
-    NULL, /* span */
-    NULL, /* check-span */
-
-    NULL, /* copy_page */
-    NULL, /* show_page */
-    _cairo_drm_surface_get_extents,
-    NULL, /* old-glyphs */
-    _cairo_drm_surface_get_font_options,
-
-    intel_surface_flush,
-    NULL, /* mark dirty */
-    NULL, NULL, /* font/glyph fini */
-
-    intel_surface_paint,
-    intel_surface_mask,
-    intel_surface_stroke,
-    intel_surface_fill,
-    intel_surface_glyphs,
+    .type			= CAIRO_SURFACE_TYPE_DRM,
+    .create_context		= _cairo_default_context_create,
+    .create_similar		= intel_surface_create_similar,
+    .finish			= intel_surface_finish,
+    .acquire_source_image	= intel_surface_acquire_source_image,
+    .release_source_image	= intel_surface_release_source_image,
+    .get_extents		= _cairo_drm_surface_get_extents,
+    .get_font_options		= _cairo_drm_surface_get_font_options,
+    .flush			= intel_surface_flush,
+    .paint			= intel_surface_paint,
+    .mask			= intel_surface_mask,
+    .stroke			= intel_surface_stroke,
+    .fill			= intel_surface_fill,
+    .show_glyphs		= intel_surface_glyphs,
 };
 
 void
