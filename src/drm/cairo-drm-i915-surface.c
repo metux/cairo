@@ -784,14 +784,8 @@ i915_fixup_unbounded (i915_surface_t *dst,
     cairo_status_t status;
 
     if (clip != NULL) {
-	cairo_region_t *clip_region = NULL;
-
-	status = _cairo_clip_get_region (clip, &clip_region);
-	assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
+	cairo_region_t *clip_region = _cairo_clip_get_region (clip);
 	assert (clip_region == NULL);
-
-	if (status != CAIRO_INT_STATUS_UNSUPPORTED)
-	    clip = NULL;
     } else {
 	if (extents->bounded.width == extents->unbounded.width &&
 	    extents->bounded.height == extents->unbounded.height)
@@ -899,12 +893,8 @@ i915_fixup_unbounded_boxes (i915_surface_t *dst,
     box.p2.x = _cairo_fixed_from_int (extents->unbounded.x);
     box.p2.y = _cairo_fixed_from_int (extents->unbounded.y + extents->unbounded.height);
 
-    if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
-	assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
-	if (status != CAIRO_INT_STATUS_UNSUPPORTED)
-	    clip = NULL;
-    }
+    if (clip != NULL)
+	clip_region = _cairo_clip_get_region (clip);
 
     if (clip_region == NULL) {
 	cairo_boxes_t tmp;
@@ -1615,9 +1605,8 @@ _composite_boxes (i915_surface_t *dst,
 	return status;
 
     if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
-	assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
-	need_clip_surface = status == CAIRO_INT_STATUS_UNSUPPORTED;
+	clip_region = _cairo_clip_get_region (clip);
+	need_clip_surface = (clip_region == NULL);
 	if (need_clip_surface)
 	    i915_shader_set_clip (&shader, clip);
     }
@@ -2140,9 +2129,8 @@ i915_surface_mask (void				*abstract_dst,
 	goto err_shader;
 
     if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
-	if (unlikely (_cairo_status_is_error (status) ||
-		      status == CAIRO_INT_STATUS_NOTHING_TO_DO))
+	clip_region = _cairo_clip_get_region (clip);
+	if (unlikely (clip_region == NULL))
 	{
 	    goto err_shader;
 	}
