@@ -1062,6 +1062,7 @@ i915_blt (i915_surface_t *src,
     default:
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
 	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_A8:
 	break;
@@ -1142,6 +1143,7 @@ i915_clear_boxes (i915_surface_t *dst,
     default:
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
 	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_A8:
 	break;
@@ -1339,6 +1341,7 @@ i915_blt_boxes (i915_surface_t *dst,
     default:
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
 	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_A8:
 	break;
@@ -1681,6 +1684,7 @@ i915_surface_clear (i915_surface_t *dst)
 	default:
 	case CAIRO_FORMAT_INVALID:
 	case CAIRO_FORMAT_A1:
+	case CAIRO_FORMAT_RGB30:
 	    ASSERT_NOT_REACHED;
 	case CAIRO_FORMAT_A8:
 	    break;
@@ -2325,6 +2329,7 @@ i915_surface_init (i915_surface_t *surface,
     default:
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
 	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_ARGB32:
 	surface->map0 = MAPSURF_32BIT | MT_32BIT_ARGB8888;
@@ -2440,6 +2445,7 @@ i915_surface_create (cairo_drm_device_t *base_dev,
     case CAIRO_FORMAT_A8:
 	break;
     case CAIRO_FORMAT_INVALID:
+    case CAIRO_FORMAT_RGB30:
     default:
     case CAIRO_FORMAT_A1:
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
@@ -2469,6 +2475,7 @@ i915_surface_create_for_name (cairo_drm_device_t *base_dev,
     default:
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB16_565:
@@ -2519,6 +2526,7 @@ i915_buffer_cache_init (intel_buffer_cache_t *cache,
     switch (format) {
     case CAIRO_FORMAT_INVALID:
     case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_RGB16_565:
 	ASSERT_NOT_REACHED;

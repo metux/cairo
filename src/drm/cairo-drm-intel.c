@@ -933,6 +933,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     default:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_INVALID:
 	ASSERT_NOT_REACHED;
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
@@ -1030,6 +1031,7 @@ intel_get_glyph_cache (intel_device_t *device,
     default:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_INVALID:
 	ASSERT_NOT_REACHED;
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
@@ -1149,6 +1151,7 @@ intel_buffer_cache_init (intel_buffer_cache_t *cache,
     case CAIRO_FORMAT_A1:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_INVALID:
 	ASSERT_NOT_REACHED;
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
