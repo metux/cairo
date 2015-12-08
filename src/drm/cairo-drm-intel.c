@@ -1015,6 +1015,24 @@ intel_scaled_font_fini (cairo_scaled_font_t *scaled_font)
     cairo_list_del (&scaled_font->link);
 }
 
+void
+_cairo_drm_intel_node_destroy (cairo_rtree_node_t *node)
+{
+    intel_glyph_t *priv = cairo_container_of (node, intel_glyph_t, node);
+    cairo_scaled_glyph_t *glyph;
+
+    glyph = priv->glyph;
+    if (glyph == NULL)
+	return;
+
+    if (glyph->dev_private_key == priv->cache) {
+	glyph->dev_private = NULL;
+	glyph->dev_private_key = NULL;
+    }
+    cairo_list_del (&priv->base.link);
+    priv->glyph = NULL;
+}
+
 static cairo_status_t
 intel_get_glyph_cache (intel_device_t *device,
 		       cairo_format_t format,
