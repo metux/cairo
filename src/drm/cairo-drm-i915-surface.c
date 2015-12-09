@@ -2245,10 +2245,12 @@ i915_surface_stroke (void			*abstract_dst,
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_stroke (&extents,
-							  dst->intel.drm.width,
-							  dst->intel.drm.height,
-							  op, source,
-							  path, stroke_style, ctm,
+							  &(dst->intel.drm.base),
+							  op,
+							  source,
+							  path,
+							  stroke_style,
+							  ctm,
 							  clip);
     if (unlikely (status))
 	return status;
