@@ -279,7 +279,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		     cairo_glyph_t		*glyphs,
 		     int			 num_glyphs,
 		     cairo_scaled_font_t	*scaled_font,
-		     cairo_clip_t		*clip,
+		     const cairo_clip_t		*clip,
 		     int *num_remaining)
 {
     i915_surface_t *surface = abstract_surface;
