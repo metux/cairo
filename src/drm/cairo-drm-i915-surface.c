@@ -2101,9 +2101,11 @@ i915_surface_mask (void				*abstract_dst,
     }
 
     status = _cairo_composite_rectangles_init_for_mask (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
-							op, source, mask, clip);
+							&(dst->intel.drm.base),
+							op,
+							source,
+							mask,
+							clip);
     if (unlikely (status))
 	return status;
 
