@@ -1850,7 +1850,8 @@ _composite_polygon_spans (void                          *closure,
 
     _cairo_botor_scan_converter_init (&converter, &box, info->fill_rule);
 
-    status = converter.base.add_polygon (&converter.base, &info->polygon);
+    status = _cairo_botor_scan_converter_add_polygon(&converter, &info->polygon);
+
     if (likely (status == CAIRO_STATUS_SUCCESS))
 	status = converter.base.generate (&converter.base, renderer);
 
