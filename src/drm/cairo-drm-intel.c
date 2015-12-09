@@ -672,6 +672,7 @@ intel_bo_put_image (intel_device_t *device,
     switch (src->format) {
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
 	offset += 4 * dst_x;
 	data   += 4 * src_x;
 	size    = 4 * width;
