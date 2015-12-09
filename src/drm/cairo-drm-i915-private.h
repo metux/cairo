@@ -703,7 +703,10 @@ struct i915_device {
     uint32_t last_source_fragment;
     uint32_t clear_alpha;
 
-    cairo_list_t image_caches[2];
+    struct {
+	cairo_list_t argb32;
+	cairo_list_t a8;
+    } image_caches;
 
     uint32_t batch_header[13];
     uint32_t batch_base[I915_BATCH_SIZE / sizeof (uint32_t)];

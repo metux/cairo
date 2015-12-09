@@ -2648,13 +2648,13 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_RGB16_565:
-	caches = &device->image_caches[0];
+	caches = &(device->image_caches.argb32);
 	format = CAIRO_FORMAT_ARGB32;
 	bpp = 4;
 	break;
     case CAIRO_FORMAT_A8:
     case CAIRO_FORMAT_A1:
-	caches = &device->image_caches[1];
+	caches = &(device->image_caches.a8);
 	format = CAIRO_FORMAT_A8;
 	bpp = 1;
 	break;
@@ -2893,8 +2893,8 @@ _cairo_drm_i915_device_create (int fd, dev_t dev_id, int vendor_id, int chip_id)
     device->vertex_count = 0;
     device->last_vbo = NULL;
 
-    for (n = 0; n < ARRAY_LENGTH (device->image_caches); n++)
-	cairo_list_init (&device->image_caches[n]);
+    cairo_list_init (&device->image_caches.argb32);
+    cairo_list_init (&device->image_caches.a8);
 
     device->intel.base.surface.create = i915_surface_create;
     device->intel.base.surface.create_for_name = i915_surface_create_for_name;
