@@ -2648,6 +2648,7 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_RGB16_565:
+    case CAIRO_FORMAT_RGB30:
 	caches = &(device->image_caches.argb32);
 	format = CAIRO_FORMAT_ARGB32;
 	bpp = 4;
