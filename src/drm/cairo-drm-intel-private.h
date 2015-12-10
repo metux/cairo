@@ -159,6 +159,7 @@ typedef struct _intel_buffer_cache {
 
 typedef struct _intel_glyph {
     cairo_rtree_node_t node;
+    cairo_scaled_glyph_private_t base;
     cairo_scaled_glyph_t *glyph;
     intel_buffer_cache_t *cache;
     void **owner;
