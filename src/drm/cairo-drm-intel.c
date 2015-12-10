@@ -948,15 +948,16 @@ intel_get_glyph_cache (intel_device_t *device,
 
     if (unlikely (cache->buffer.bo == NULL)) {
 	status = intel_buffer_cache_init (cache, device, format,
-					 INTEL_GLYPH_CACHE_WIDTH,
-					 INTEL_GLYPH_CACHE_HEIGHT);
+					 GLYPH_CACHE_WIDTH,
+					 GLYPH_CACHE_HEIGHT);
 	if (unlikely (status))
 	    return status;
 
 	_cairo_rtree_init (&cache->rtree,
-			   INTEL_GLYPH_CACHE_WIDTH,
-			   INTEL_GLYPH_CACHE_HEIGHT,
-			   0, sizeof (intel_glyph_t));
+			   GLYPH_CACHE_WIDTH,
+			   GLYPH_CACHE_HEIGHT,
+			   GLYPH_CACHE_MIN_SIZE,
+			   sizeof (intel_glyph_t));
     }
 
     *out = cache;
