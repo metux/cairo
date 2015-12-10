@@ -902,15 +902,12 @@ void
 intel_scaled_glyph_fini (cairo_scaled_glyph_t *scaled_glyph,
 			 cairo_scaled_font_t  *scaled_font)
 {
-    intel_glyph_t *glyph;
+    intel_glyph_t *priv = scaled_glyph->surface_private;
 
-    glyph = scaled_glyph->surface_private;
-    if (glyph != NULL) {
-	/* XXX thread-safety? Probably ok due to the frozen scaled-font. */
-	glyph->node.owner = NULL;
-	if (! glyph->node.pinned)
-	    _cairo_rtree_node_remove (&glyph->cache->rtree, &glyph->node);
-    }
+    /* XXX thread-safety? Probably ok due to the frozen scaled-font. */
+    priv->node.owner = NULL;
+    if (! priv->node.pinned)
+	_cairo_rtree_node_remove (&priv->cache->rtree, &priv->node);
 }
 
 void
