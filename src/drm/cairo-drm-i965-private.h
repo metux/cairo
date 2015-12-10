@@ -695,8 +695,7 @@ i965_surface_glyphs (void			*abstract_surface,
 		     cairo_glyph_t		*glyphs,
 		     int			 num_glyphs,
 		     cairo_scaled_font_t	*scaled_font,
-		     const cairo_clip_t		*clip,
-		     int *num_remaining);
+		     const cairo_clip_t		*clip);
 
 cairo_private void
 i965_shader_init (i965_shader_t *shader,
