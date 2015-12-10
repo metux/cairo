@@ -969,6 +969,24 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     return CAIRO_INT_STATUS_SUCCESS;
 }
 
+static void
+_cairo_drm_intel_node_destroy (cairo_rtree_node_t *node)
+{
+    intel_glyph_t *priv = cairo_container_of (node, intel_glyph_t, node);
+    cairo_scaled_glyph_t *glyph;
+
+    glyph = priv->glyph;
+    if (glyph == NULL)
+	return;
+
+    if (glyph->dev_private_key == priv->cache) {
+	glyph->dev_private = NULL;
+	glyph->dev_private_key = NULL;
+    }
+    cairo_list_del (&priv->base.link);
+    priv->glyph = NULL;
+}
+
 void
 intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
 			 cairo_scaled_glyph_t         *scaled_glyph,
@@ -977,6 +995,8 @@ intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
     intel_glyph_t *priv = cairo_container_of(scaled_glyph_private,
 					     intel_glyph_t,
 					     base);
+
+    _cairo_drm_intel_node_destroy (&priv->node);
 
     /* XXX thread-safety? Probably ok due to the frozen scaled-font. */
     if (! priv->node.pinned)
@@ -1027,7 +1047,8 @@ intel_get_glyph_cache (intel_device_t *device,
 			   GLYPH_CACHE_WIDTH,
 			   GLYPH_CACHE_HEIGHT,
 			   GLYPH_CACHE_MIN_SIZE,
-			   sizeof (intel_glyph_t));
+			   sizeof (intel_glyph_t),
+			   _cairo_drm_intel_node_destroy);
     }
 
     *out = cache;
