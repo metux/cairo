@@ -2561,6 +2561,11 @@ i915_buffer_cache_init (intel_buffer_cache_t *cache,
     return CAIRO_STATUS_SUCCESS;
 }
 
+static void i915_buffer_cache_node_destroy(cairo_rtree_node_t *node)
+{
+    // FIXME
+}
+
 i915_surface_t *
 i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
 						   cairo_image_surface_t *image)
@@ -2659,7 +2664,8 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
 			   IMAGE_CACHE_WIDTH,
 			   IMAGE_CACHE_HEIGHT,
 			   4,
-			   sizeof (i915_image_private_t));
+			   sizeof (i915_image_private_t),
+			   i915_buffer_cache_node_destroy);
 
 	status = _cairo_rtree_insert (&cache->rtree, width, height, &node);
 	assert (status == CAIRO_STATUS_SUCCESS);
