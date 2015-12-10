@@ -33,6 +33,7 @@
 #include "cairo-drm-radeon-private.h"
 
 #include "cairo-error-private.h"
+#include "cairo-image-surface-private.h"
 
 #include <sys/ioctl.h>
 #include <sys/mman.h>
