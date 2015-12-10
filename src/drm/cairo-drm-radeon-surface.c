@@ -337,6 +337,7 @@ radeon_surface_create (cairo_drm_device_t *device,
     case CAIRO_FORMAT_RGB16_565:
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_A8:
 	break;
@@ -361,6 +362,7 @@ radeon_surface_create_for_name (cairo_drm_device_t *device,
     case CAIRO_FORMAT_RGB16_565:
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_A8:
 	break;
