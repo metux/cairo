@@ -841,7 +841,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 			     cairo_scaled_glyph_t  *scaled_glyph)
 {
     cairo_image_surface_t *glyph_surface = scaled_glyph->surface;
-    intel_glyph_t *glyph;
+    intel_glyph_t *glyph_private;
     cairo_rtree_node_t *node = NULL;
     double sf_x, sf_y;
     cairo_int_status_t status;
@@ -936,25 +936,25 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 
     scaled_glyph->surface_private = node;
 
-    glyph= (intel_glyph_t *) node;
-    glyph->node.owner = &scaled_glyph->surface_private;
-    glyph->cache = cache;
+    glyph_private= (intel_glyph_t *) node;
+    glyph_private->node.owner = &scaled_glyph->surface_private;
+    glyph_private->cache = cache;
 
     /* compute tex coords: bottom-right, bottom-left, top-left */
     sf_x = 1. / cache->buffer.width;
     sf_y = 1. / cache->buffer.height;
-    glyph->texcoord[0] =
+    glyph_private->texcoord[0] =
 	texcoord_2d_16 (sf_x * (node->x + glyph_surface->width),
 		        sf_y * (node->y + glyph_surface->height));
-    glyph->texcoord[1] =
+    glyph_private->texcoord[1] =
 	texcoord_2d_16 (sf_x * node->x,
 		        sf_y * (node->y + glyph_surface->height));
-    glyph->texcoord[2] =
+    glyph_private->texcoord[2] =
 	texcoord_2d_16 (sf_x * node->x,
 	                sf_y * node->y);
 
-    glyph->width  = glyph_surface->width;
-    glyph->height = glyph_surface->height;
+    glyph_private->width  = glyph_surface->width;
+    glyph_private->height = glyph_surface->height;
 
     return CAIRO_INT_STATUS_SUCCESS;
 }
