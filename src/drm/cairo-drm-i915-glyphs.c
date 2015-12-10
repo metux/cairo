@@ -224,12 +224,12 @@ i915_surface_mask_internal (i915_surface_t *dst,
     shader.mask.base.map[1] = mask->map1;
 
     if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
+	clip_region = _cairo_clip_get_region (clip);
 
 	if (clip_region != NULL && cairo_region_num_rectangles (clip_region) == 1)
 	    clip_region = NULL;
 
-	if (status == CAIRO_INT_STATUS_UNSUPPORTED)
+	if (clip_region == NULL)
 	    i915_shader_set_clip (&shader, clip);
     }
 
@@ -337,13 +337,12 @@ i915_surface_glyphs (void			*abstract_surface,
     }
 
     if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
-	if (unlikely (_cairo_int_status_is_error (status) ||
-		      status == CAIRO_INT_STATUS_NOTHING_TO_DO))
+	clip_region = _cairo_clip_get_region (clip);
+	if (unlikely (clip_region == NULL))
 	{
 	    if (have_clip)
 		_cairo_clip_fini (&local_clip);
-	    return status;
+	    return CAIRO_INT_STATUS_NOTHING_TO_DO;
 	}
     }
 
@@ -396,12 +395,12 @@ i915_surface_glyphs (void			*abstract_surface,
 	    return status;
 
 	if (clip != NULL) {
-	    status = _cairo_clip_get_region (clip, &clip_region);
+	    clip_region = _cairo_clip_get_region (clip);
 
 	    if (clip_region != NULL && cairo_region_num_rectangles (clip_region) == 1)
 		clip_region = NULL;
 
-	    if (status == CAIRO_INT_STATUS_UNSUPPORTED)
+	    if (clip_region == NULL)
 		i915_shader_set_clip (&shader, clip);
 	}
     }
