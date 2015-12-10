@@ -1893,10 +1893,12 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
-							op, source, path,
+							&(dst->intel.drm.base),
+							op,
+							source,
+							path,
 							clip);
+
     if (unlikely (status))
 	return status;
 
@@ -2009,9 +2011,9 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
     cairo_status_t status;
 
     status = _cairo_composite_rectangles_init_for_paint (&extents,
-							 dst->intel.drm.width,
-							 dst->intel.drm.height,
-							 op, source,
+							 &(dst->intel.drm.base),
+							 op,
+							 source,
 							 clip);
     if (unlikely (status))
 	return status;
@@ -2105,9 +2107,11 @@ i915_surface_mask (void				*abstract_dst,
     }
 
     status = _cairo_composite_rectangles_init_for_mask (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
-							op, source, mask, clip);
+							&(dst->intel.drm.base),
+							op,
+							source,
+							mask,
+							clip);
     if (unlikely (status))
 	return status;
 
@@ -2247,10 +2251,12 @@ i915_surface_stroke (void			*abstract_dst,
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_stroke (&extents,
-							  dst->intel.drm.width,
-							  dst->intel.drm.height,
-							  op, source,
-							  path, stroke_style, ctm,
+							  &(dst->intel.drm.base),
+							  op,
+							  source,
+							  path,
+							  stroke_style,
+							  ctm,
 							  clip);
     if (unlikely (status))
 	return status;
