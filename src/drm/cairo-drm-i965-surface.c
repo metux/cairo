@@ -1107,8 +1107,7 @@ i965_surface_paint (void			*abstract_dst,
     /* XXX unsupported operators? use pixel shader blending, eventually */
 
     status = _cairo_composite_rectangles_init_for_paint (&extents,
-							 dst->intel.drm.width,
-							 dst->intel.drm.height,
+							 &dst->intel.drm.base,
 							 op, source,
 							 clip);
     if (unlikely (status))
@@ -1161,8 +1160,7 @@ i965_surface_mask (void				*abstract_dst,
     cairo_status_t status;
 
     status = _cairo_composite_rectangles_init_for_mask (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
+							&dst->intel.drm.base,
 							op, source, mask, clip);
     if (unlikely (status))
 	return status;
@@ -1302,8 +1300,7 @@ i965_surface_stroke (void			*abstract_dst,
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_stroke (&extents,
-							  dst->intel.drm.width,
-							  dst->intel.drm.height,
+							  &dst->intel.drm.base,
 							  op, source,
 							  path, stroke_style, ctm,
 							  clip);
@@ -1410,9 +1407,10 @@ i965_surface_fill (void			*abstract_dst,
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
-							dst->intel.drm.width,
-							dst->intel.drm.height,
-							op, source, path,
+							&dst->intel.drm.base,
+							op,
+							source,
+							path,
 							clip);
     if (unlikely (status))
 	return status;
