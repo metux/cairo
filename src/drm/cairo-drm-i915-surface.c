@@ -111,6 +111,7 @@
 #include "cairo-region-private.h"
 #include "cairo-surface-offset-private.h"
 #include "cairo-image-surface-private.h"
+#include "cairo-box-inline.h"
 
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -1199,7 +1200,7 @@ RELEASE:
 static cairo_status_t
 i915_surface_extract_X_from_Y (i915_device_t *device,
 			       i915_surface_t *src,
-			       const cairo_rectangle_int_t *extents,
+			       const cairo_box_t box,
 			       i915_surface_t **clone_out)
 {
     i915_surface_t *clone;
@@ -1215,8 +1216,8 @@ i915_surface_extract_X_from_Y (i915_device_t *device,
     clone = (i915_surface_t *)
 	i915_surface_create_internal (&device->intel.base,
 				      src->intel.drm.format,
-				      extents->width,
-				      extents->height,
+				      _CAIRO_BOX_WIDTH(box),
+				      _CAIRO_BOX_HEIGHT(box),
 				      I915_TILING_X, TRUE);
     if (unlikely (clone->intel.drm.base.status))
 	return clone->intel.drm.base.status;
@@ -1225,11 +1226,11 @@ i915_surface_extract_X_from_Y (i915_device_t *device,
 
     _cairo_pattern_init_for_surface (&pattern, &src->intel.drm.base);
     pattern.base.filter = CAIRO_FILTER_NEAREST;
-    cairo_matrix_init_translate (&pattern.base.matrix, extents->x, extents->y);
+    cairo_matrix_init_translate (&pattern.base.matrix, box.p1.x, box.p1.y);
 
     rect.x = rect.y = 0;
-    rect.width = extents->width;
-    rect.height = extents->height;
+    rect.width = _CAIRO_BOX_WIDTH(box);
+    rect.height = _CAIRO_BOX_HEIGHT(box);
     status = i915_shader_acquire_pattern (&shader, &shader.source, &pattern.base, &rect);
     _cairo_pattern_fini (&pattern.base);
 
@@ -1244,7 +1245,7 @@ i915_surface_extract_X_from_Y (i915_device_t *device,
     if (unlikely (status))
 	goto err_device;
 
-    shader.add_rectangle (&shader, 0, 0, extents->width, extents->height);
+    shader.add_rectangle (&shader, 0, 0, _CAIRO_BOX_WIDTH(box), _CAIRO_BOX_HEIGHT(box));
 
     cairo_device_release (&device->intel.base.base);
     i915_shader_fini (&shader);
@@ -1303,19 +1304,19 @@ i915_blt_boxes (i915_surface_t *dst,
 
     device = i915_device (dst);
     if (to_intel_bo (src->intel.drm.bo)->tiling == I915_TILING_Y) {
-	cairo_rectangle_int_t extents;
+	cairo_box_t b;
 
-	_cairo_boxes_extents (boxes, &extents);
-	extents.x += tx;
-	extents.y += ty;
+	_cairo_boxes_extents (boxes, &b);
+	b.p1.x += tx;
+	b.p1.y += ty;
 
-	status = i915_surface_extract_X_from_Y (device, src, &extents, &src);
+	status = i915_surface_extract_X_from_Y (device, src, b, &src);
 	if (unlikely (status))
 	    return status;
 
 	free_me = &src->intel.drm.base;
-	tx = -extents.x;
-	ty = -extents.y;
+	tx = -b.p1.x;
+	ty = -b.p1.y;
     }
 
     bo_array[0] = to_intel_bo (dst->intel.drm.bo);
