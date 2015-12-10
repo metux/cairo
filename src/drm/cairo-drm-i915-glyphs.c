@@ -189,7 +189,7 @@ i915_surface_mask_internal (i915_surface_t *dst,
     i915_device_t *device;
     i915_shader_t shader;
     cairo_region_t *clip_region = NULL;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     i915_shader_init (&shader, dst, op, 1.);
 
@@ -295,7 +295,7 @@ i915_surface_glyphs (void			*abstract_surface,
     intel_bo_t *last_bo = NULL;
     i915_emit_glyph_rectangle_func_t emit_func;
     cairo_scaled_glyph_t *glyph_cache[64];
-    cairo_status_t status;
+    cairo_int_status_t status;
     int mask_x = 0, mask_y = 0;
     int i = 0;
 
@@ -325,7 +325,7 @@ i915_surface_glyphs (void			*abstract_surface,
 
     if (clip != NULL) {
 	status = _cairo_clip_get_region (clip, &clip_region);
-	if (unlikely (_cairo_status_is_error (status) ||
+	if (unlikely (_cairo_int_status_is_error (status) ||
 		      status == CAIRO_INT_STATUS_NOTHING_TO_DO))
 	{
 	    if (have_clip)
@@ -480,7 +480,7 @@ i915_surface_glyphs (void			*abstract_surface,
 	if (scaled_glyph->surface_private == NULL) {
 	    status = intel_get_glyph (&device->intel, scaled_font, scaled_glyph);
 	    if (unlikely (status == CAIRO_INT_STATUS_NOTHING_TO_DO)) {
-		status = CAIRO_STATUS_SUCCESS;
+		status = CAIRO_INT_STATUS_SUCCESS;
 		continue;
 	    }
 	    if (unlikely (status))
@@ -516,7 +516,7 @@ i915_surface_glyphs (void			*abstract_surface,
 	emit_func (device, &shader, x1, y1, x2, y2, glyph);
     }
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = CAIRO_INT_STATUS_SUCCESS;
   FINISH:
     _cairo_scaled_font_thaw_cache (scaled_font);
     cairo_device_release (surface->intel.drm.base.device);
@@ -535,7 +535,7 @@ i915_surface_glyphs (void			*abstract_surface,
 					 _cairo_fixed_from_int (mask_x),
 					 _cairo_fixed_from_int (mask_y));
 	}
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = surface->intel.drm.base.backend->fill (shader.target,
 							    shader.op,
 							    mask != NULL ? &_cairo_pattern_white.base : source,
@@ -549,7 +549,7 @@ i915_surface_glyphs (void			*abstract_surface,
     }
 
     if (mask != NULL) {
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = i915_surface_mask_internal (surface, op, source, mask,
 					         clip, &extents);
 	}
