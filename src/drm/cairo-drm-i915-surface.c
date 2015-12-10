@@ -777,7 +777,7 @@ CLEANUP:
 cairo_status_t
 i915_fixup_unbounded (i915_surface_t *dst,
 		      const cairo_composite_rectangles_t *extents,
-		      cairo_clip_t *clip)
+		      const cairo_clip_t *clip)
 {
     i915_shader_t shader;
     i915_device_t *device;
@@ -879,7 +879,7 @@ i915_fixup_unbounded (i915_surface_t *dst,
 static cairo_status_t
 i915_fixup_unbounded_boxes (i915_surface_t *dst,
 			    const cairo_composite_rectangles_t *extents,
-			    cairo_clip_t *clip,
+			    const cairo_clip_t *clip,
 			    cairo_boxes_t *boxes)
 {
     cairo_boxes_t clear;
@@ -1570,7 +1570,7 @@ _composite_boxes (i915_surface_t *dst,
 		  const cairo_pattern_t *pattern,
 		  cairo_boxes_t *boxes,
 		  cairo_antialias_t antialias,
-		  cairo_clip_t *clip,
+		  const cairo_clip_t *clip,
 		  double opacity,
 		  const cairo_composite_rectangles_t *extents)
 {
@@ -1769,7 +1769,7 @@ _clip_and_composite_boxes (i915_surface_t *dst,
 			   cairo_boxes_t *boxes,
 			   cairo_antialias_t antialias,
 			   const cairo_composite_rectangles_t *extents,
-			   cairo_clip_t *clip,
+			   const cairo_clip_t *clip,
 			   double opacity)
 {
     cairo_int_status_t status;
@@ -1817,7 +1817,7 @@ _clip_and_composite_boxes (i915_surface_t *dst,
 }
 
 static cairo_clip_path_t *
-_clip_get_solitary_path (cairo_clip_t *clip)
+_clip_get_solitary_path (const cairo_clip_t *clip)
 {
     cairo_clip_path_t *iter = clip->path;
     cairo_clip_path_t *path = NULL;
@@ -1871,11 +1871,11 @@ static cairo_int_status_t
 i915_surface_fill_with_alpha (void			*abstract_dst,
 			      cairo_operator_t		 op,
 			      const cairo_pattern_t	*source,
-			      cairo_path_fixed_t	*path,
+			      const cairo_path_fixed_t	*path,
 			      cairo_fill_rule_t		 fill_rule,
 			      double			 tolerance,
 			      cairo_antialias_t		 antialias,
-			      cairo_clip_t		*clip,
+			      const cairo_clip_t	*clip,
 			      double			 opacity)
 {
     i915_surface_t *dst = abstract_dst;
@@ -1988,7 +1988,7 @@ static cairo_int_status_t
 i915_surface_paint_with_alpha (void			*abstract_dst,
 			       cairo_operator_t		 op,
 			       const cairo_pattern_t	*source,
-			       cairo_clip_t		*clip,
+			       const cairo_clip_t	*clip,
 			       double			 opacity)
 {
     i915_surface_t *dst = abstract_dst;
@@ -2061,7 +2061,7 @@ static cairo_int_status_t
 i915_surface_paint (void			*abstract_dst,
 		    cairo_operator_t		 op,
 		    const cairo_pattern_t	*source,
-		    cairo_clip_t		*clip)
+		    const cairo_clip_t		*clip)
 {
     i915_surface_t *dst = abstract_dst;
 
@@ -2080,7 +2080,7 @@ i915_surface_mask (void				*abstract_dst,
 		   cairo_operator_t		 op,
 		   const cairo_pattern_t	*source,
 		   const cairo_pattern_t	*mask,
-		   cairo_clip_t			*clip)
+		   const cairo_clip_t		*clip)
 {
     i915_surface_t *dst = abstract_dst;
     i915_device_t *device;
@@ -2222,13 +2222,13 @@ static cairo_int_status_t
 i915_surface_stroke (void			*abstract_dst,
 		     cairo_operator_t		 op,
 		     const cairo_pattern_t	*source,
-		     cairo_path_fixed_t		*path,
+		     const cairo_path_fixed_t	*path,
 		     const cairo_stroke_style_t	*stroke_style,
 		     const cairo_matrix_t	*ctm,
 		     const cairo_matrix_t	*ctm_inverse,
 		     double			 tolerance,
 		     cairo_antialias_t		 antialias,
-		     cairo_clip_t		*clip)
+		     const cairo_clip_t		*clip)
 {
     i915_surface_t *dst = abstract_dst;
     cairo_composite_rectangles_t extents;
@@ -2333,11 +2333,11 @@ static cairo_int_status_t
 i915_surface_fill (void			*abstract_dst,
 		   cairo_operator_t	 op,
 		   const cairo_pattern_t*source,
-		   cairo_path_fixed_t	*path,
+		   const cairo_path_fixed_t	*path,
 		   cairo_fill_rule_t	 fill_rule,
 		   double		 tolerance,
 		   cairo_antialias_t	 antialias,
-		   cairo_clip_t		*clip)
+		   const cairo_clip_t	*clip)
 {
     return i915_surface_fill_with_alpha (abstract_dst, op, source, path, fill_rule, tolerance, antialias, clip, 1.);
 }

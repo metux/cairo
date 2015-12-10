@@ -757,7 +757,7 @@ _composite_boxes_spans (void				*closure,
 cairo_status_t
 i965_fixup_unbounded (i965_surface_t *dst,
 		      const cairo_composite_rectangles_t *extents,
-		      cairo_clip_t *clip)
+		      const cairo_clip_t *clip)
 {
     i965_shader_t shader;
     i965_device_t *device;
@@ -873,7 +873,7 @@ i965_fixup_unbounded (i965_surface_t *dst,
 static cairo_status_t
 i965_fixup_unbounded_boxes (i965_surface_t *dst,
 			    const cairo_composite_rectangles_t *extents,
-			    cairo_clip_t *clip,
+			    const cairo_clip_t *clip,
 			    cairo_boxes_t *boxes)
 {
     cairo_boxes_t clear;
@@ -991,7 +991,7 @@ _composite_boxes (i965_surface_t *dst,
 		  const cairo_pattern_t *pattern,
 		  cairo_boxes_t *boxes,
 		  cairo_antialias_t antialias,
-		  cairo_clip_t *clip,
+		  const cairo_clip_t *clip,
 		  const cairo_composite_rectangles_t *extents)
 {
     cairo_bool_t need_clip_surface = FALSE;
@@ -1065,7 +1065,7 @@ _clip_and_composite_boxes (i965_surface_t *dst,
 			   cairo_boxes_t *boxes,
 			   cairo_antialias_t antialias,
 			   const cairo_composite_rectangles_t *extents,
-			   cairo_clip_t *clip)
+			   const cairo_clip_t *clip)
 {
     cairo_int_status_t status;
 
@@ -1093,7 +1093,7 @@ static cairo_int_status_t
 i965_surface_paint (void			*abstract_dst,
 		    cairo_operator_t		 op,
 		    const cairo_pattern_t	*source,
-		    cairo_clip_t		*clip)
+		    const cairo_clip_t		*clip)
 {
     i965_surface_t *dst = cairo_abstract_surface_cast_i965(abstract_dst);
     cairo_composite_rectangles_t extents;
@@ -1148,7 +1148,7 @@ i965_surface_mask (void				*abstract_dst,
 		   cairo_operator_t		 op,
 		   const cairo_pattern_t	*source,
 		   const cairo_pattern_t	*mask,
-		   cairo_clip_t			*clip)
+		   const cairo_clip_t		*clip)
 {
     i965_surface_t *dst = abstract_dst;
     cairo_composite_rectangles_t extents;
@@ -1284,13 +1284,13 @@ static cairo_int_status_t
 i965_surface_stroke (void			*abstract_dst,
 		     cairo_operator_t		 op,
 		     const cairo_pattern_t	*source,
-		     cairo_path_fixed_t		*path,
+		     const cairo_path_fixed_t	*path,
 		     const cairo_stroke_style_t	*stroke_style,
 		     const cairo_matrix_t	*ctm,
 		     const cairo_matrix_t	*ctm_inverse,
 		     double			 tolerance,
 		     cairo_antialias_t		 antialias,
-		     cairo_clip_t		*clip)
+		     const cairo_clip_t		*clip)
 {
     i965_surface_t *dst = abstract_dst;
     cairo_composite_rectangles_t extents;
@@ -1393,13 +1393,13 @@ static cairo_int_status_t
 i965_surface_fill (void			*abstract_dst,
 		   cairo_operator_t	 op,
 		   const cairo_pattern_t*source,
-		   cairo_path_fixed_t	*path,
+		   const cairo_path_fixed_t	*path,
 		   cairo_fill_rule_t	 fill_rule,
 		   double		 tolerance,
 		   cairo_antialias_t	 antialias,
-		   cairo_clip_t		*clip)
+		   const cairo_clip_t		*clip)
 {
-    i965_surface_t *dst = abstract_dst;
+    i965_surface_t *dst = cairo_abstract_surface_cast_i965(abstract_dst);
     cairo_composite_rectangles_t extents;
     composite_polygon_info_t info;
     cairo_box_t boxes_stack[32], *clip_boxes = boxes_stack;

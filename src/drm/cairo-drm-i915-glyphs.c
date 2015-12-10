@@ -183,7 +183,7 @@ i915_surface_mask_internal (i915_surface_t *dst,
 			    cairo_operator_t		 op,
 			    const cairo_pattern_t	*source,
 			    i915_surface_t *mask,
-			    cairo_clip_t		*clip,
+			    const cairo_clip_t		*clip,
 			    const cairo_composite_rectangles_t *extents)
 {
     i915_device_t *device;
@@ -280,7 +280,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		     cairo_glyph_t		*glyphs,
 		     int			 num_glyphs,
 		     cairo_scaled_font_t	*scaled_font,
-		     cairo_clip_t		*clip,
+		     const cairo_clip_t		*clip,
 		     int *num_remaining)
 {
     i915_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
