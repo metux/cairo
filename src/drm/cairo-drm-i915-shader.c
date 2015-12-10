@@ -2501,7 +2501,7 @@ i915_shader_fini (i915_shader_t *shader)
 
 void
 i915_shader_set_clip (i915_shader_t *shader,
-		      cairo_clip_t *clip)
+		      const cairo_clip_t *clip)
 {
     cairo_surface_t *clip_surface;
     int clip_x, clip_y;
