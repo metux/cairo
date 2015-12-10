@@ -118,4 +118,7 @@ _cairo_box_is_pixel_aligned (const cairo_box_t *box)
 #endif
 }
 
+#define _CAIRO_BOX_WIDTH(box)	(abs((box).p2.x-(box).p1.x))
+#define _CAIRO_BOX_HEIGHT(box)	(abs((box).p2.y-(box).p1.y))
+
 #endif /* CAIRO_BOX_H */
