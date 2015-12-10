@@ -1827,7 +1827,7 @@ _clip_get_solitary_path (const cairo_clip_t *clip)
     cairo_clip_path_t *path = NULL;
 
     do {
-	if ((iter->flags & CAIRO_CLIP_PATH_IS_BOX) == 0) {
+	if (! _cairo_path_fixed_is_box (&iter->path, NULL)) {
 	    if (path != NULL)
 		return FALSE;
 
