@@ -242,8 +242,7 @@ i965_surface_glyphs (void			*abstract_surface,
 
     *num_remaining = 0;
     status = _cairo_composite_rectangles_init_for_glyphs (&extents,
-							  surface->intel.drm.width,
-							  surface->intel.drm.height,
+							  &(surface->intel.drm.base),
 							  op, source,
 							  scaled_font,
 							  g, num_glyphs,
