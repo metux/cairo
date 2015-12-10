@@ -1001,11 +1001,15 @@ intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
 					     intel_glyph_t,
 					     base);
 
+    assert (priv->glyph);
+
     _cairo_drm_intel_node_destroy (&priv->node);
 
     /* XXX thread-safety? Probably ok due to the frozen scaled-font. */
     if (! priv->node.pinned)
 	_cairo_rtree_node_remove (&priv->cache->rtree, &priv->node);
+
+    assert (priv->glyph == NULL);
 }
 
 void
