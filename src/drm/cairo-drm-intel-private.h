@@ -47,11 +47,6 @@
 
 #define INTEL_BO_CACHE_BUCKETS 12 /* cache surfaces up to 16 MiB */
 
-#define INTEL_GLYPH_CACHE_WIDTH 1024
-#define INTEL_GLYPH_CACHE_HEIGHT 1024
-#define INTEL_GLYPH_CACHE_MIN_SIZE 1
-#define INTEL_GLYPH_CACHE_MAX_SIZE 128
-
 typedef struct _intel_bo {
     cairo_drm_bo_t base;
 
