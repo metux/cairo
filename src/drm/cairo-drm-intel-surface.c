@@ -35,6 +35,8 @@
 #include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 
+#include "cairo-image-surface-private.h"
+
 /* Basic generic/stub surface for intel chipsets */
 
 #define MAX_SIZE 2048
