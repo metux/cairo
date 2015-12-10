@@ -303,8 +303,7 @@ i915_surface_glyphs (void			*abstract_surface,
     i915_device_t *device;
     i915_shader_t shader;
     cairo_composite_rectangles_t extents;
-    cairo_clip_t local_clip;
-    cairo_bool_t have_clip = FALSE;
+    cairo_clip_t *local_clip = NULL;
     cairo_bool_t overlap;
     cairo_region_t *clip_region = NULL;
     intel_bo_t *last_bo = NULL;
@@ -327,21 +326,14 @@ i915_surface_glyphs (void			*abstract_surface,
     if (_cairo_clip_contains_rectangle (clip, &extents.mask))
 	clip = NULL;
 
-    if (clip != NULL && extents.is_bounded) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
-	status = _cairo_clip_rectangle (clip, &extents.bounded);
-	if (unlikely (status))
-	    return status;
-
-	have_clip = TRUE;
-    }
+    if (clip != NULL && extents.is_bounded)
+	clip = local_clip = _cairo_clip_copy_intersect_rectangle (clip, &extents.bounded);
 
     if (clip != NULL) {
 	clip_region = _cairo_clip_get_region (clip);
 	if (unlikely (clip_region == NULL))
 	{
-	    if (have_clip)
-		_cairo_clip_fini (&local_clip);
+	    _cairo_clip_destroy (local_clip);
 	    return CAIRO_INT_STATUS_NOTHING_TO_DO;
 	}
     }
@@ -578,8 +570,7 @@ i915_surface_glyphs (void			*abstract_surface,
 	cairo_surface_destroy (&mask->intel.drm.base);
     }
 
-    if (have_clip)
-	_cairo_clip_fini (&local_clip);
+    _cairo_clip_destroy (local_clip);
 
     return status;
 }

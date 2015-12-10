@@ -39,6 +39,7 @@
 #include "cairo-drm-i965-private.h"
 #include "cairo-error-private.h"
 #include "cairo-rtree-private.h"
+#include "cairo-clip-inline.h"
 
 typedef struct _i965_glyphs i965_glyphs_t;
 
@@ -245,8 +246,7 @@ i965_surface_glyphs (void			*abstract_surface,
     i965_device_t *device;
     i965_glyphs_t glyphs;
     cairo_composite_rectangles_t extents;
-    cairo_clip_t local_clip;
-    cairo_bool_t have_clip = FALSE;
+    cairo_clip_t *local_clip;
     cairo_bool_t overlap;
     cairo_region_t *clip_region = NULL;
     intel_bo_t *last_bo = NULL;
@@ -268,14 +268,8 @@ i965_surface_glyphs (void			*abstract_surface,
     if (clip != NULL && _cairo_clip_contains_rectangle (clip, &extents.mask))
 	clip = NULL;
 
-    if (clip != NULL && extents.is_bounded) {
-	clip = _cairo_clip_init_copy (&local_clip, clip);
-	status = _cairo_clip_rectangle (clip, &extents.bounded);
-	if (unlikely (status))
-	    return status;
-
-	have_clip = TRUE;
-    }
+    if (clip != NULL && extents.is_bounded)
+	clip = local_clip = _cairo_clip_copy_intersect_rectangle (clip, &extents.bounded);
 
     if (overlap || ! extents.is_bounded) {
 	cairo_format_t format;
@@ -518,8 +512,7 @@ i965_surface_glyphs (void			*abstract_surface,
 	cairo_surface_destroy (&mask->intel.drm.base);
     }
 
-    if (have_clip)
-	_cairo_clip_fini (&local_clip);
+    _cairo_clip_destroy (local_clip);
 
     return status;
 }
