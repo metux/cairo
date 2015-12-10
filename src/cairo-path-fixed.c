@@ -1203,6 +1203,9 @@ _canonical_box (cairo_box_t *box,
 		const cairo_point_t *p1,
 		const cairo_point_t *p2)
 {
+    if (box == NULL)
+	return;
+
     if (p1->x <= p2->x) {
 	box->p1.x = p1->x;
 	box->p2.x = p2->x;
