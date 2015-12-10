@@ -960,8 +960,9 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 }
 
 void
-intel_scaled_glyph_fini (cairo_scaled_glyph_t *scaled_glyph,
-			 cairo_scaled_font_t  *scaled_font)
+intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
+			 cairo_scaled_glyph_t         *scaled_glyph,
+			 cairo_scaled_font_t          *scaled_font)
 {
     intel_glyph_t *priv = scaled_glyph->surface_private;
 
