@@ -934,11 +934,14 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
     }
 
-    scaled_glyph->surface_private = node;
-
     glyph_private= (intel_glyph_t *) node;
     glyph_private->cache = cache;
     glyph_private->glyph = scaled_glyph;
+
+    _cairo_scaled_glyph_attach_private (scaled_glyph,
+					&glyph_private->base,
+					cache,
+					intel_scaled_glyph_fini);
 
     scaled_glyph->dev_private = glyph_private;
     scaled_glyph->dev_private_key = cache;
@@ -967,7 +970,9 @@ intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
 			 cairo_scaled_glyph_t         *scaled_glyph,
 			 cairo_scaled_font_t          *scaled_font)
 {
-    intel_glyph_t *priv = scaled_glyph->surface_private;
+    intel_glyph_t *priv = cairo_container_of(scaled_glyph_private,
+					     intel_glyph_t,
+					     base);
 
     /* XXX thread-safety? Probably ok due to the frozen scaled-font. */
     if (! priv->node.pinned)
