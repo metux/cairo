@@ -628,6 +628,7 @@ intel_bo_put_image (intel_device_t *device,
     switch (src->format) {
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
 	offset += 4 * dst_x;
 	data   += 4 * src_x;
 	size    = 4 * width;
@@ -876,6 +877,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 	break;
 
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	dst  += 4*node->x;
 	width = 4*glyph_surface->width;
 	while (height--) {
@@ -948,6 +950,7 @@ intel_get_glyph_cache (intel_device_t *device,
 
     switch (format) {
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	cache = &device->glyph_cache[0];
 	format = CAIRO_FORMAT_ARGB32;
 	break;
@@ -1080,6 +1083,7 @@ intel_buffer_cache_init (intel_buffer_cache_t *cache,
 	ASSERT_NOT_REACHED;
 	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	cache->buffer.map0 = MAPSURF_32BIT | MT_32BIT_ARGB8888;
 	stride = width * 4;
 	break;
