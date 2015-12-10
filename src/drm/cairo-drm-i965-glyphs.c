@@ -165,13 +165,12 @@ i965_surface_mask_internal (i965_surface_t *dst,
     shader.mask.base.stride = mask->intel.drm.stride;
 
     if (clip != NULL) {
-	status = _cairo_clip_get_region (clip, &clip_region);
-	assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
+	clip_region = _cairo_clip_get_region (clip);
 
 	if (clip_region != NULL && cairo_region_num_rectangles (clip_region) == 1)
 	    clip_region = NULL;
 
-	if (status == CAIRO_INT_STATUS_UNSUPPORTED)
+	if (clip_region == NULL)
 	    i965_shader_set_clip (&shader, clip);
     }
 
@@ -318,10 +317,9 @@ i965_surface_glyphs (void			*abstract_surface,
 	    return status;
 
 	if (clip != NULL) {
-	    status = _cairo_clip_get_region (clip, &clip_region);
-	    assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
+	    clip_region = _cairo_clip_get_region (clip);
 
-	    if (status == CAIRO_INT_STATUS_UNSUPPORTED)
+	    if (clip_region == NULL)
 		i965_shader_set_clip (&glyphs.shader, clip);
 	}
     }
