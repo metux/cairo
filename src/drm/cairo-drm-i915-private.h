@@ -884,7 +884,7 @@ i915_clip_and_composite_spans (i915_surface_t		*dst,
 			       i915_spans_func_t	 draw_func,
 			       void			*draw_closure,
 			       const cairo_composite_rectangles_t*extents,
-			       cairo_clip_t		*clip,
+			       const cairo_clip_t	*clip,
 			       double			 opacity);
 
 cairo_private cairo_surface_t *
@@ -908,7 +908,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		     cairo_glyph_t		*glyphs,
 		     int			 num_glyphs,
 		     cairo_scaled_font_t	*scaled_font,
-		     cairo_clip_t		*clip,
+		     const cairo_clip_t		*clip,
 		     int *num_remaining);
 
 static inline int cairo_const
@@ -1212,7 +1212,7 @@ i915_shader_acquire_pattern (i915_shader_t *shader,
 
 cairo_private void
 i915_shader_set_clip (i915_shader_t *shader,
-		      cairo_clip_t *clip);
+		      const cairo_clip_t *clip);
 
 cairo_private int
 i915_shader_num_texcoords (const i915_shader_t *shader);
@@ -1234,7 +1234,7 @@ i915_shader_fini (i915_shader_t *shader);
 cairo_private cairo_status_t
 i915_fixup_unbounded (i915_surface_t *dst,
 		      const cairo_composite_rectangles_t *extents,
-		      cairo_clip_t *clip);
+		      const cairo_clip_t *clip);
 
 static inline cairo_bool_t
 i915_surface_needs_tiling (i915_surface_t *dst)
