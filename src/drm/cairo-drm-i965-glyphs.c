@@ -129,7 +129,7 @@ i965_surface_mask_internal (i965_surface_t *dst,
 			    cairo_operator_t		 op,
 			    const cairo_pattern_t	*source,
 			    i965_surface_t *mask,
-			    cairo_clip_t		*clip,
+			    const cairo_clip_t		*clip,
 			    const cairo_composite_rectangles_t *extents)
 {
     i965_device_t *device;
@@ -222,10 +222,10 @@ i965_surface_glyphs (void			*abstract_surface,
 		     cairo_glyph_t		*g,
 		     int			 num_glyphs,
 		     cairo_scaled_font_t	*scaled_font,
-		     cairo_clip_t		*clip,
+		     const cairo_clip_t		*clip,
 		     int *num_remaining)
 {
-    i965_surface_t *surface = abstract_surface;
+    i965_surface_t *surface = cairo_abstract_surface_cast_i965(abstract_surface);
     i965_surface_t *mask = NULL;
     i965_device_t *device;
     i965_glyphs_t glyphs;
