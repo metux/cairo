@@ -838,7 +838,7 @@ intel_glyph_cache_unpin (intel_device_t *device)
 	_cairo_rtree_unpin (&device->glyph_cache[n].rtree);
 }
 
-static cairo_status_t
+static cairo_int_status_t
 intel_glyph_cache_add_glyph (intel_device_t *device,
 	                     intel_buffer_cache_t *cache,
 			     cairo_scaled_glyph_t  *scaled_glyph)
@@ -847,7 +847,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     intel_glyph_t *glyph;
     cairo_rtree_node_t *node = NULL;
     double sf_x, sf_y;
-    cairo_status_t status;
+    cairo_int_status_t status;
     uint8_t *dst, *src;
     int width, height;
 
@@ -863,7 +863,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     /* search for an unpinned slot */
     if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
 	status = _cairo_rtree_evict_random (&cache->rtree, width, height, &node);
-	if (status == CAIRO_STATUS_SUCCESS)
+	if (status == CAIRO_INT_STATUS_SUCCESS)
 	    status = _cairo_rtree_node_insert (&cache->rtree, node, width, height, &node);
     }
     if (unlikely (status))
@@ -958,7 +958,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
     glyph->width  = glyph_surface->width;
     glyph->height = glyph_surface->height;
 
-    return CAIRO_STATUS_SUCCESS;
+    return CAIRO_INT_STATUS_SUCCESS;
 }
 
 void
@@ -1032,7 +1032,7 @@ intel_get_glyph (intel_device_t *device,
 {
     cairo_bool_t own_surface = FALSE;
     intel_buffer_cache_t *cache;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     if (scaled_glyph->surface == NULL) {
 	status =
@@ -1067,7 +1067,7 @@ intel_get_glyph (intel_device_t *device,
 	return status;
 
     status = intel_glyph_cache_add_glyph (device, cache, scaled_glyph);
-    if (unlikely (_cairo_status_is_error (status)))
+    if (unlikely (_cairo_int_status_is_error (status)))
 	return status;
 
     if (unlikely (status == CAIRO_INT_STATUS_UNSUPPORTED)) {

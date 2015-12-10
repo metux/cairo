@@ -1576,7 +1576,7 @@ _composite_boxes (i915_surface_t *dst,
     cairo_bool_t need_clip_surface = FALSE;
     cairo_region_t *clip_region = NULL;
     const struct _cairo_boxes_chunk *chunk;
-    cairo_status_t status;
+    cairo_int_status_t status;
     i915_shader_t shader;
     i915_device_t *device;
     int i;
@@ -1771,7 +1771,7 @@ _clip_and_composite_boxes (i915_surface_t *dst,
 			   cairo_clip_t *clip,
 			   double opacity)
 {
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     if (boxes->num_boxes == 0) {
 	if (extents->is_bounded)
@@ -1884,7 +1884,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
     cairo_clip_t local_clip;
     cairo_bool_t have_clip = FALSE;
     int num_boxes = ARRAY_LENGTH (boxes_stack);
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
 							dst->intel.drm.width,
@@ -1927,10 +1927,10 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 
 	_cairo_boxes_init (&boxes);
 	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
-	status = _cairo_path_fixed_fill_rectilinear_to_boxes (path,
+	status = (cairo_int_status_t)_cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
 							      &boxes);
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
 						&boxes, antialias,
 						&extents, clip,
@@ -2089,7 +2089,7 @@ i915_surface_mask (void				*abstract_dst,
     cairo_region_t *clip_region = NULL;
     cairo_bool_t need_clip_surface = FALSE;
     cairo_bool_t have_clip = FALSE;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     if (mask->type == CAIRO_PATTERN_TYPE_SOLID) {
 	const cairo_solid_pattern_t *solid = (cairo_solid_pattern_t *) mask;
@@ -2236,7 +2236,7 @@ i915_surface_stroke (void			*abstract_dst,
     int num_boxes = ARRAY_LENGTH (boxes_stack);
     cairo_clip_t local_clip;
     cairo_bool_t have_clip = FALSE;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_stroke (&extents,
 							  dst->intel.drm.width,
@@ -2268,11 +2268,11 @@ i915_surface_stroke (void			*abstract_dst,
 
 	_cairo_boxes_init (&boxes);
 	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
-	status = _cairo_path_fixed_stroke_rectilinear_to_boxes (path,
+	status = (cairo_int_status_t)_cairo_path_fixed_stroke_rectilinear_to_boxes (path,
 								stroke_style,
 								ctm,
 								&boxes);
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
 						&boxes, antialias,
 						&extents, clip, 1.);

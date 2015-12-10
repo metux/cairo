@@ -760,7 +760,7 @@ i965_fixup_unbounded (i965_surface_t *dst,
 {
     i965_shader_t shader;
     i965_device_t *device;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     i965_shader_init (&shader, dst, CAIRO_OPERATOR_CLEAR);
 
@@ -996,7 +996,7 @@ _composite_boxes (i965_surface_t *dst,
     cairo_bool_t need_clip_surface = FALSE;
     cairo_region_t *clip_region = NULL;
     const struct _cairo_boxes_chunk *chunk;
-    cairo_status_t status;
+    cairo_int_status_t status;
     i965_shader_t shader;
     i965_device_t *device;
     int i;
@@ -1066,7 +1066,7 @@ _clip_and_composite_boxes (i965_surface_t *dst,
 			   const cairo_composite_rectangles_t *extents,
 			   cairo_clip_t *clip)
 {
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     if (boxes->num_boxes == 0) {
 	if (extents->is_bounded)
@@ -1298,7 +1298,7 @@ i965_surface_stroke (void			*abstract_dst,
     int num_boxes = ARRAY_LENGTH (boxes_stack);
     cairo_clip_t local_clip;
     cairo_bool_t have_clip = FALSE;
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_stroke (&extents,
 							  dst->intel.drm.width,
@@ -1334,7 +1334,7 @@ i965_surface_stroke (void			*abstract_dst,
 								stroke_style,
 								ctm,
 								&boxes);
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
 						&boxes, antialias,
 						&extents, clip);
@@ -1405,7 +1405,7 @@ i965_surface_fill (void			*abstract_dst,
     cairo_clip_t local_clip;
     cairo_bool_t have_clip = FALSE;
     int num_boxes = ARRAY_LENGTH (boxes_stack);
-    cairo_status_t status;
+    cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
 							dst->intel.drm.width,
@@ -1441,7 +1441,7 @@ i965_surface_fill (void			*abstract_dst,
 	status = _cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
 							      &boxes);
-	if (likely (status == CAIRO_STATUS_SUCCESS)) {
+	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
 						&boxes, antialias,
 						&extents, clip);
