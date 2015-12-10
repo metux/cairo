@@ -1077,6 +1077,7 @@ i915_blt (i915_surface_t *src,
 	break;
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	br13 |= BR13_8888;
 	cmd |= XY_BLT_WRITE_ALPHA | XY_BLT_WRITE_RGB;
 	break;
@@ -1158,6 +1159,7 @@ i915_clear_boxes (i915_surface_t *dst,
     case CAIRO_FORMAT_RGB24:
 	clear = 0xff000000;
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	br13 |= BR13_8888;
 	cmd |= XY_BLT_WRITE_ALPHA | XY_BLT_WRITE_RGB;
 	break;
@@ -1354,6 +1356,7 @@ i915_blt_boxes (i915_surface_t *dst,
 	break;
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	br13 |= BR13_8888;
 	cmd |= XY_BLT_WRITE_ALPHA | XY_BLT_WRITE_RGB;
 	break;
@@ -1698,6 +1701,7 @@ i915_surface_clear (i915_surface_t *dst)
 	case CAIRO_FORMAT_RGB24:
 	    clear = 0xff000000;
 	case CAIRO_FORMAT_ARGB32:
+	case CAIRO_FORMAT_RGB30:
 	    br13 |= BR13_8888;
 	    cmd |= XY_BLT_WRITE_ALPHA | XY_BLT_WRITE_RGB;
 	    break;
@@ -2393,6 +2397,7 @@ i915_surface_init (i915_surface_t *surface,
     case CAIRO_FORMAT_A1:
 	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_ARGB32:
+    case CAIRO_FORMAT_RGB30:
 	surface->map0 = MAPSURF_32BIT | MT_32BIT_ARGB8888;
 	surface->colorbuf = COLR_BUF_ARGB8888 | DEPTH_FRMT_24_FIXED_8_OTHER;
 	break;
@@ -2504,6 +2509,7 @@ i915_surface_create (cairo_drm_device_t *base_dev,
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_A8:
+    case CAIRO_FORMAT_RGB30:
 	break;
     case CAIRO_FORMAT_INVALID:
     default:
@@ -2539,6 +2545,7 @@ i915_surface_create_for_name (cairo_drm_device_t *base_dev,
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_A8:
 	break;
     }
@@ -2588,6 +2595,7 @@ i915_buffer_cache_init (intel_buffer_cache_t *cache,
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_RGB16_565:
 	ASSERT_NOT_REACHED;
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_ARGB32:
 	cache->buffer.map0 = MAPSURF_32BIT | MT_32BIT_ARGB8888;
 	stride = width * 4;
@@ -2670,6 +2678,7 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB24:
     case CAIRO_FORMAT_RGB16_565:
+    case CAIRO_FORMAT_RGB30:
 	caches = &device->image_caches[0];
 	format = CAIRO_FORMAT_ARGB32;
 	bpp = 4;
