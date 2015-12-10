@@ -1494,39 +1494,20 @@ CLEANUP_BOXES:
 }
 
 static const cairo_surface_backend_t i965_surface_backend = {
-    CAIRO_SURFACE_TYPE_DRM,
-    _cairo_default_context_create,
-
-    i965_surface_create_similar,
-    i965_surface_finish,
-
-    NULL,
-    intel_surface_acquire_source_image,
-    intel_surface_release_source_image,
-
-    NULL, NULL, NULL,
-    NULL, /* composite */
-    NULL, /* fill */
-    NULL, /* trapezoids */
-    NULL, /* span */
-    NULL, /* check-span */
-
-    NULL, /* copy_page */
-    NULL, /* show_page */
-    _cairo_drm_surface_get_extents,
-    NULL, /* old-glyphs */
-    _cairo_drm_surface_get_font_options,
-
-    i965_surface_flush,
-    NULL, /* mark_dirty */
-    intel_scaled_font_fini,
-    intel_scaled_glyph_fini,
-
-    i965_surface_paint,
-    i965_surface_mask,
-    i965_surface_stroke,
-    i965_surface_fill,
-    i965_surface_glyphs,
+    .type			= CAIRO_SURFACE_TYPE_DRM,
+    .create_context		= _cairo_default_context_create,
+    .create_similar		= i965_surface_create_similar,
+    .finish			= i965_surface_finish,
+    .acquire_source_image	= intel_surface_acquire_source_image,
+    .release_source_image	= intel_surface_release_source_image,
+    .get_extents		= _cairo_drm_surface_get_extents,
+    .get_font_options		= _cairo_drm_surface_get_font_options,
+    .flush			= i965_surface_flush,
+    .paint			= i965_surface_paint,
+    .mask			= i965_surface_mask,
+    .stroke			= i965_surface_stroke,
+    .fill			= i965_surface_fill,
+    .show_glyphs		= i965_surface_glyphs
 };
 
 static void
