@@ -355,6 +355,7 @@ intel_surface_create_for_name (cairo_drm_device_t *device,
     case CAIRO_FORMAT_ARGB32:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_A8:
 	break;
     }
