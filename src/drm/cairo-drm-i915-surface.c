@@ -101,6 +101,7 @@
 
 #include "cairo-boxes-private.h"
 #include "cairo-cache-private.h"
+#include "cairo-clip-inline.h"
 #include "cairo-composite-rectangles-private.h"
 #include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
@@ -1875,9 +1876,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
     i915_surface_t *dst = _cairo_abstract_surface_cast_i915 (abstract_dst);
     cairo_composite_rectangles_t extents;
     composite_polygon_info_t info;
-    cairo_box_t boxes_stack[32], *clip_boxes = boxes_stack;
     cairo_clip_t *local_clip = NULL;
-    int num_boxes = ARRAY_LENGTH (boxes_stack);
     cairo_int_status_t status;
 
     status = _cairo_composite_rectangles_init_for_fill (&extents,
@@ -1906,20 +1905,13 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
     if (clip != NULL)
 	clip = local_clip = _cairo_clip_copy (clip);
 
-    status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
-    if (unlikely (status)) {
-	_cairo_clip_destroy (local_clip);
-
-	return status;
-    }
-
     assert (! _cairo_path_fixed_fill_is_empty (path));
 
     if (_cairo_path_fixed_fill_is_rectilinear (path)) {
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
-	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
+	_cairo_boxes_limit (&boxes, extents.clip->boxes, extents.clip->num_boxes);
 	status = (cairo_int_status_t)_cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
 							      antialias,
@@ -1937,7 +1929,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, extents.clip->boxes, extents.clip->num_boxes);
 
     status = _cairo_path_fixed_fill_to_polygon (path, tolerance, &info.polygon);
     if (unlikely (status))
@@ -1968,9 +1960,6 @@ CLEANUP_POLYGON:
     _cairo_polygon_fini (&info.polygon);
 
 CLEANUP_BOXES:
-    if (clip_boxes != boxes_stack)
-	free (clip_boxes);
-
     _cairo_clip_destroy (local_clip);
 
     return status;
@@ -1988,9 +1977,6 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
     cairo_composite_rectangles_t extents;
     cairo_clip_t *local_clip = NULL;
     cairo_clip_path_t *clip_path;
-    cairo_boxes_t boxes;
-    int num_boxes = ARRAY_LENGTH (boxes.boxes_embedded);
-    cairo_box_t *clip_boxes = boxes.boxes_embedded;
     cairo_status_t status;
 
     status = _cairo_composite_rectangles_init_for_paint (&extents,
@@ -2006,13 +1992,6 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
 
     if (clip != NULL)
 	clip = local_clip = _cairo_clip_copy (clip);
-
-    status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
-    if (unlikely (status)) {
-	_cairo_clip_destroy (local_clip);
-
-	return status;
-    }
 
     /* If the clip cannot be reduced to a set of boxes, we will need to
      * use a clipmask. Paint is special as it is the only operation that
@@ -2032,13 +2011,12 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
     }
     else
     {
-	_cairo_boxes_init_for_array (&boxes, clip_boxes, num_boxes);
+	cairo_boxes_t boxes;
+	_cairo_boxes_init_for_array (&boxes, extents.clip->boxes, extents.clip->num_boxes);
 	status = _clip_and_composite_boxes (dst, op, source,
 					    &boxes, antialias,
 					    &extents, clip, opacity);
     }
-    if (clip_boxes != boxes.boxes_embedded)
-	free (clip_boxes);
 
     _cairo_clip_destroy (local_clip);
 
@@ -2212,8 +2190,6 @@ i915_surface_stroke (void			*abstract_dst,
     i915_surface_t *dst = abstract_dst;
     cairo_composite_rectangles_t extents;
     composite_polygon_info_t info;
-    cairo_box_t boxes_stack[32], *clip_boxes = boxes_stack;
-    int num_boxes = ARRAY_LENGTH (boxes_stack);
     cairo_clip_t *local_clip = NULL;
     cairo_int_status_t status;
 
@@ -2234,7 +2210,6 @@ i915_surface_stroke (void			*abstract_dst,
     if (clip != NULL)
 	clip = local_clip = _cairo_clip_copy (clip);
 
-    status = _cairo_clip_to_boxes (&clip, &extents, &clip_boxes, &num_boxes);
     if (unlikely (status)) {
 	_cairo_clip_destroy (local_clip);
 
@@ -2245,7 +2220,7 @@ i915_surface_stroke (void			*abstract_dst,
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
-	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
+	_cairo_boxes_limit (&boxes, extents.clip->boxes, extents.clip->num_boxes);
 	status = (cairo_int_status_t)_cairo_path_fixed_stroke_rectilinear_to_boxes (path,
 								stroke_style,
 								ctm,
@@ -2263,7 +2238,7 @@ i915_surface_stroke (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, extents.clip->boxes, extents.clip->num_boxes);
 
     status = _cairo_path_fixed_stroke_to_polygon (path,
 						  stroke_style,
@@ -2298,9 +2273,6 @@ CLEANUP_POLYGON:
     _cairo_polygon_fini (&info.polygon);
 
 CLEANUP_BOXES:
-    if (clip_boxes != boxes_stack)
-	free (clip_boxes);
-
     _cairo_clip_destroy (local_clip);
 
     return status;
