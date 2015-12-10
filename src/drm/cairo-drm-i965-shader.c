@@ -729,7 +729,7 @@ i965_shader_fini (i965_shader_t *shader)
 
 void
 i965_shader_set_clip (i965_shader_t *shader,
-		      cairo_clip_t *clip)
+		      const cairo_clip_t *clip)
 {
     cairo_surface_t *clip_surface;
     int clip_x, clip_y;
