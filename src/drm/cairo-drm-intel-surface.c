@@ -187,7 +187,7 @@ static cairo_int_status_t
 intel_surface_paint (void *abstract_surface,
 		     cairo_operator_t		 op,
 		     const cairo_pattern_t	*source,
-		     cairo_clip_t		*clip)
+		     const cairo_clip_t		*clip)
 {
     return _cairo_surface_paint (intel_surface_map_to_image (abstract_surface),
 				 op, source, clip);
@@ -198,7 +198,7 @@ intel_surface_mask (void			*abstract_surface,
 		    cairo_operator_t		 op,
 		    const cairo_pattern_t	*source,
 		    const cairo_pattern_t	*mask,
-		    cairo_clip_t		*clip)
+		    const cairo_clip_t		*clip)
 {
     return _cairo_surface_mask (intel_surface_map_to_image (abstract_surface),
 				op, source, mask, clip);
@@ -208,13 +208,13 @@ static cairo_int_status_t
 intel_surface_stroke (void			*abstract_surface,
 		      cairo_operator_t		 op,
 		      const cairo_pattern_t	*source,
-		      cairo_path_fixed_t	*path,
+		      const cairo_path_fixed_t		*path,
 		      const cairo_stroke_style_t	*stroke_style,
 		      const cairo_matrix_t		*ctm,
 		      const cairo_matrix_t		*ctm_inverse,
 		      double			 tolerance,
 		      cairo_antialias_t		 antialias,
-		      cairo_clip_t		*clip)
+		      const cairo_clip_t		*clip)
 {
     return _cairo_surface_stroke (intel_surface_map_to_image (abstract_surface),
 				  op, source, path, stroke_style, ctm, ctm_inverse,
@@ -225,11 +225,11 @@ static cairo_int_status_t
 intel_surface_fill (void			*abstract_surface,
 		    cairo_operator_t		 op,
 		    const cairo_pattern_t	*source,
-		    cairo_path_fixed_t		*path,
+		    const cairo_path_fixed_t	*path,
 		    cairo_fill_rule_t		 fill_rule,
 		    double			 tolerance,
 		    cairo_antialias_t		 antialias,
-		    cairo_clip_t		*clip)
+		    const cairo_clip_t		*clip)
 {
     return _cairo_surface_fill (intel_surface_map_to_image (abstract_surface),
 				op, source, path, fill_rule,
@@ -243,7 +243,7 @@ intel_surface_glyphs (void			*abstract_surface,
 		      cairo_glyph_t		*glyphs,
 		      int			 num_glyphs,
 		      cairo_scaled_font_t	*scaled_font,
-		      cairo_clip_t		*clip,
+		      const cairo_clip_t	*clip,
 		      int *num_remaining)
 {
     *num_remaining = 0;
