@@ -242,38 +242,20 @@ radeon_surface_glyphs (void			*abstract_surface,
 }
 
 static const cairo_surface_backend_t radeon_surface_backend = {
-    CAIRO_SURFACE_TYPE_DRM,
-    _cairo_default_context_create,
-
-    radeon_surface_create_similar,
-    radeon_surface_finish,
-
-    NULL,
-    radeon_surface_acquire_source_image,
-    radeon_surface_release_source_image,
-
-    NULL, NULL, NULL,
-    NULL, /* composite */
-    NULL, /* fill */
-    NULL, /* trapezoids */
-    NULL, /* span */
-    NULL, /* check-span */
-
-    NULL, /* copy_page */
-    NULL, /* show_page */
-    _cairo_drm_surface_get_extents,
-    NULL, /* old-glyphs */
-    _cairo_drm_surface_get_font_options,
-
-    radeon_surface_flush,
-    NULL, /* mark dirty */
-    NULL, NULL, /* font/glyph fini */
-
-    radeon_surface_paint,
-    radeon_surface_mask,
-    radeon_surface_stroke,
-    radeon_surface_fill,
-    radeon_surface_glyphs,
+    .type			= CAIRO_SURFACE_TYPE_DRM,
+    .create_context		= _cairo_default_context_create,
+    .create_similar		= radeon_surface_create_similar,
+    .finish			= radeon_surface_finish,
+    .acquire_source_image	= radeon_surface_acquire_source_image,
+    .release_source_image	= radeon_surface_release_source_image,
+    .get_extents		= _cairo_drm_surface_get_extents,
+    .get_font_options		= _cairo_drm_surface_get_font_options,
+    .flush			= radeon_surface_flush,
+    .paint			= radeon_surface_paint,
+    .mask			= radeon_surface_mask,
+    .stroke			= radeon_surface_stroke,
+    .fill			= radeon_surface_fill,
+    .show_glyphs		= radeon_surface_glyphs,
 };
 
 static void
