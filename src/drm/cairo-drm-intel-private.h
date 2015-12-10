@@ -393,8 +393,9 @@ intel_get_glyph (intel_device_t *device,
 		 cairo_scaled_glyph_t *scaled_glyph);
 
 cairo_private void
-intel_scaled_glyph_fini (cairo_scaled_glyph_t *scaled_glyph,
-			 cairo_scaled_font_t  *scaled_font);
+intel_scaled_glyph_fini (cairo_scaled_glyph_private_t *scaled_glyph_private,
+			 cairo_scaled_glyph_t         *scaled_glyph,
+			 cairo_scaled_font_t          *scaled_font);
 
 cairo_private void
 intel_scaled_font_fini (cairo_scaled_font_t *scaled_font);
