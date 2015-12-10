@@ -737,16 +737,16 @@ _intel_glyph_cache_fini (intel_device_t *device, intel_buffer_cache_t *cache)
 void
 intel_device_fini (intel_device_t *device)
 {
-    cairo_scaled_font_t *scaled_font, *next_scaled_font;
     int n;
 
-    cairo_list_foreach_entry_safe (scaled_font,
-				   next_scaled_font,
-				   cairo_scaled_font_t,
-				   &device->fonts,
-				   link)
-    {
-	_cairo_scaled_font_revoke_ownership (scaled_font);
+    while (! cairo_list_is_empty (&device->fonts)) {
+	cairo_scaled_font_t *font = cairo_list_first_entry (
+	    &device->fonts,
+	    cairo_scaled_font_t,
+	    link);
+
+	cairo_list_del (&font->link);
+	free (font);
     }
 
     for (n = 0; n < ARRAY_LENGTH (device->glyph_cache); n++)
