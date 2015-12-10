@@ -365,7 +365,7 @@ i965_clip_and_composite_spans (i965_surface_t		*dst,
 			       i965_spans_func_t	 draw_func,
 			       void			*draw_closure,
 			       const cairo_composite_rectangles_t*extents,
-			       cairo_clip_t		*clip)
+			       const cairo_clip_t		*clip)
 {
     i965_spans_t spans;
     i965_device_t *device;
