@@ -615,13 +615,12 @@ i915_spans_init (i915_spans_t *spans,
 	cairo_region_t *clip_region = NULL;
 
 	clip_region = _cairo_clip_get_region (clip);
-	assert (status == CAIRO_STATUS_SUCCESS || status == CAIRO_INT_STATUS_UNSUPPORTED);
 
 	if (clip_region != NULL && cairo_region_num_rectangles (clip_region) == 1)
 	    clip_region = NULL;
 
 	spans->clip_region = clip_region;
-	spans->need_clip_surface = status == CAIRO_INT_STATUS_UNSUPPORTED;
+	spans->need_clip_surface = (clip_region == NULL);
     }
 
     spans->head.next = NULL;
