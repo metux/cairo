@@ -171,6 +171,10 @@ typedef struct _intel_glyph {
     int width, height;
 } intel_glyph_t;
 
+typedef struct _intel_scaled_font {
+    cairo_scaled_font_private_t base;
+} intel_scaled_font_t;
+
 typedef struct _intel_gradient_cache {
     cairo_pattern_union_t pattern;
     intel_buffer_t buffer;

@@ -620,6 +620,7 @@ i915_fs_operand_pure_alpha (int pure)
 typedef struct i915_surface i915_surface_t;
 typedef struct i915_device i915_device_t;
 typedef struct i915_shader i915_shader_t;
+typedef struct i915_scaled_font_private i915_scaled_font_private_t;
 
 typedef void (*i915_add_rectangle_func_t) (const i915_shader_t *shader,
 					   int x, int y,
@@ -708,6 +709,12 @@ struct i915_device {
     uint32_t batch_header[13];
     uint32_t batch_base[I915_BATCH_SIZE / sizeof (uint32_t)];
     uint8_t vbo_base[I915_VBO_SIZE];
+};
+
+struct i915_scaled_font_private {
+    cairo_scaled_font_private_t base;
+    i915_device_t *device;
+    const cairo_surface_backend_t *backend;
 };
 
 enum {
