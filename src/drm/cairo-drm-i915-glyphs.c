@@ -217,7 +217,7 @@ i915_surface_mask_internal (i915_surface_t *dst,
 			1. / mask->intel.drm.width,
 			1. / mask->intel.drm.height);
 
-    shader.mask.base.bo = intel_bo_reference (to_intel_bo (mask->intel.drm.bo));
+    shader.mask.base.bo = i915_surface_get_bo_ref (mask);
     shader.mask.base.offset[0] = 0;
     shader.mask.base.map[0] = mask->map0;
     shader.mask.base.map[1] = mask->map1;
@@ -282,7 +282,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		     cairo_clip_t		*clip,
 		     int *num_remaining)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = _cairo_abstract_surface_cast_i915 (abstract_surface);
     i915_surface_t *mask = NULL;
     i915_device_t *device;
     i915_shader_t shader;

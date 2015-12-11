@@ -254,8 +254,8 @@ radeon_bo_create_for_name (radeon_device_t *device,
 static void
 radeon_bo_release (void *_dev, void *_bo)
 {
-    radeon_device_t *device = _dev;
-    radeon_bo_t *bo = _bo;
+    radeon_device_t *device = _cairo_device_cast_radeon(_dev);
+    radeon_bo_t *bo = _cairo_drm_bo_cast_radeon(_bo);
 
     _cairo_drm_bo_close (&device->base, &bo->base);
     _cairo_freepool_free (&device->bo_pool, bo);
@@ -270,10 +270,10 @@ radeon_bo_get_image (const radeon_device_t *device,
     uint8_t *dst;
     int size, row;
 
-    image = (cairo_image_surface_t *)
+    image = _cairo_surface_cast_image (
 	cairo_image_surface_create (surface->format,
 				    surface->width,
-				    surface->height);
+				    surface->height));
     if (unlikely (image->base.status))
 	return &image->base;
 

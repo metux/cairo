@@ -52,10 +52,11 @@ intel_surface_create_similar (void			*abstract_surface,
 cairo_status_t
 intel_surface_finish (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
-    intel_bo_in_flight_add (to_intel_device (surface->drm.base.device),
-			    to_intel_bo (surface->drm.bo));
+    intel_bo_in_flight_add (_cairo_intel_surface_get_device (surface),
+			    _cairo_intel_surface_get_bo (surface));
+
     return _cairo_drm_surface_finish (&surface->drm);
 }
 
@@ -71,7 +72,7 @@ intel_surface_acquire_source_image (void *abstract_surface,
 				    cairo_image_surface_t **image_out,
 				    void **image_extra)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
     cairo_surface_t *image;
     cairo_status_t status;
     void *ptr;
@@ -92,8 +93,9 @@ intel_surface_acquire_source_image (void *abstract_surface,
 	    return status;
     }
 
-    ptr = intel_bo_map (to_intel_device (surface->drm.base.device),
-			to_intel_bo (surface->drm.bo));
+    ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
+			_cairo_intel_surface_get_bo (surface));
+
     if (unlikely (ptr == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
@@ -124,7 +126,7 @@ intel_surface_release_source_image (void *abstract_surface,
 cairo_surface_t *
 intel_surface_map_to_image (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
     if (surface->drm.fallback == NULL) {
 	cairo_surface_t *image;
@@ -137,8 +139,9 @@ intel_surface_map_to_image (void *abstract_surface)
 		return _cairo_surface_create_in_error (status);
 	}
 
-	ptr = intel_bo_map (to_intel_device (surface->drm.base.device),
-			    to_intel_bo (surface->drm.bo));
+	ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
+			    _cairo_intel_surface_get_bo (surface));
+
 	if (unlikely (ptr == NULL))
 	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
 
@@ -159,7 +162,7 @@ intel_surface_map_to_image (void *abstract_surface)
 cairo_status_t
 intel_surface_flush (void *abstract_surface, unsigned flags)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
     cairo_status_t status;
 
     if (flags)
@@ -322,7 +325,7 @@ intel_surface_create (cairo_drm_device_t *device,
 	height = (height + 1) & -2;
 	surface->drm.stride =
 	    cairo_format_stride_for_width (surface->drm.format, width);
-	surface->drm.bo = &intel_bo_create (to_intel_device (&device->base),
+	surface->drm.bo = &intel_bo_create (_cairo_drm_device_cast_intel (device),
 					    surface->drm.stride * height,
 					    surface->drm.stride * height,
 					    TRUE, I915_TILING_NONE, surface->drm.stride)->base;
@@ -370,8 +373,9 @@ intel_surface_create_for_name (cairo_drm_device_t *device,
     if (width && height) {
 	surface->drm.stride = stride;
 
-	surface->drm.bo = &intel_bo_create_for_name (to_intel_device (&device->base),
+	surface->drm.bo = &intel_bo_create_for_name (_cairo_drm_device_cast_intel (device),
 						      name)->base;
+
 	if (unlikely (surface->drm.bo == NULL)) {
 	    status = _cairo_drm_surface_finish (&surface->drm);
 	    free (surface);
@@ -386,12 +390,12 @@ intel_surface_create_for_name (cairo_drm_device_t *device,
 static cairo_status_t
 intel_surface_enable_scan_out (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
     if (unlikely (surface->drm.bo == NULL))
 	return _cairo_error (CAIRO_STATUS_INVALID_SIZE);
 
-    to_intel_bo (surface->drm.bo)->tiling = I915_TILING_X;
+    _cairo_intel_surface_get_bo (surface)->tiling = I915_TILING_X;
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -399,7 +403,7 @@ intel_surface_enable_scan_out (void *abstract_surface)
 static cairo_int_status_t
 intel_device_throttle (cairo_drm_device_t *device)
 {
-    intel_throttle (to_intel_device (&device->base));
+    intel_throttle (_cairo_drm_device_cast_intel (device));
     return CAIRO_STATUS_SUCCESS;
 }
 

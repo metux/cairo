@@ -63,7 +63,7 @@ get_udev_property(struct udev_device *device, const char *name)
 static void
 _device_flush (void *abstract_device)
 {
-    cairo_drm_device_t *device = abstract_device;
+    cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
 
     device->device.flush (device);
 }
@@ -71,7 +71,7 @@ _device_flush (void *abstract_device)
 static void
 _device_finish (void *abstract_device)
 {
-    cairo_drm_device_t *device = abstract_device;
+    cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
 
     CAIRO_MUTEX_LOCK (_cairo_drm_device_mutex);
     if (device->prev != NULL)
@@ -93,7 +93,7 @@ _device_finish (void *abstract_device)
 static void
 _device_destroy (void *abstract_device)
 {
-    cairo_drm_device_t *device = abstract_device;
+    cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
 
     device->device.destroy (device);
 }
@@ -344,7 +344,7 @@ _cairo_drm_device_reset_static_data (void)
 int
 cairo_drm_device_get_fd (cairo_device_t *abstract_device)
 {
-    cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
+    cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
 
     if (device->base.status)
 	return -1;
@@ -362,7 +362,7 @@ _cairo_drm_device_fini (cairo_drm_device_t *device)
 void
 cairo_drm_device_throttle (cairo_device_t *abstract_device)
 {
-    cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
+    cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
     cairo_status_t status;
 
     if (unlikely (device->base.status))
