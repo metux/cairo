@@ -39,22 +39,6 @@
 
 #define MAX_SIZE 2048
 
-typedef struct _radeon_surface {
-    cairo_drm_surface_t base;
-} radeon_surface_t;
-
-static inline radeon_device_t *
-to_radeon_device (cairo_device_t *device)
-{
-    return (radeon_device_t *) device;
-}
-
-static inline radeon_bo_t *
-to_radeon_bo (cairo_drm_bo_t *bo)
-{
-    return (radeon_bo_t *) bo;
-}
-
 static cairo_surface_t *
 radeon_surface_create_similar (void			*abstract_surface,
 			      cairo_content_t		 content,
@@ -100,8 +84,8 @@ radeon_surface_acquire_source_image (void *abstract_surface,
 	    return status;
     }
 
-    image = radeon_bo_get_image (to_radeon_device (surface->base.base.device),
-				to_radeon_bo (surface->base.bo),
+    image = radeon_bo_get_image (_cairo_radeon_surface_get_device (surface),
+				 _cairo_radeon_surface_get_bo (surface),
 				&surface->base);
     status = image->status;
     if (unlikely (status))
@@ -137,8 +121,9 @@ radeon_surface_map_to_image (radeon_surface_t *surface)
 		return _cairo_surface_create_in_error (status);
 	}
 
-	ptr = radeon_bo_map (to_radeon_device (surface->base.base.device),
-			    to_radeon_bo (surface->base.bo));
+	ptr = radeon_bo_map (_cairo_radeon_surface_get_device (surface),
+			     _cairo_radeon_surface_get_bo (surface));
+
 	if (unlikely (ptr == NULL))
 	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
 
@@ -321,7 +306,7 @@ radeon_surface_create_internal (cairo_drm_device_t *device,
 	surface->base.stride =
 	    cairo_format_stride_for_width (surface->base.format, width);
 
-	surface->base.bo = radeon_bo_create (to_radeon_device (&device->base),
+	surface->base.bo = radeon_bo_create (_cairo_drm_device_cast_radeon (device),
 					     surface->base.stride * height,
 					     RADEON_GEM_DOMAIN_GTT);
 
@@ -388,7 +373,7 @@ radeon_surface_create_for_name (cairo_drm_device_t *device,
     if (width && height) {
 	surface->base.stride = stride;
 
-	surface->base.bo = radeon_bo_create_for_name (to_radeon_device (&device->base),
+	surface->base.bo = radeon_bo_create_for_name (_cairo_drm_device_cast_radeon(device),
 						      name);
 
 	if (unlikely (surface->base.bo == NULL)) {

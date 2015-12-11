@@ -264,7 +264,7 @@ i965_surface_clone (i965_device_t *device,
 	return clone->intel.drm.base.status;
 
     status = intel_bo_put_image (&device->intel,
-				 to_intel_bo (clone->intel.drm.bo),
+				 _cairo_intel_surface_get_bo (&(clone->intel)),
 				 image,
 				 0, 0,
 				 image->width, image->height,
@@ -308,8 +308,8 @@ i965_surface_clone_subimage (i965_device_t *device,
     if (unlikely (clone->intel.drm.base.status))
 	return clone->intel.drm.base.status;
 
-    status = intel_bo_put_image (to_intel_device (clone->intel.drm.base.device),
-				 to_intel_bo (clone->intel.drm.bo),
+    status = intel_bo_put_image (_cairo_intel_surface_get_device (&(clone->intel)),
+				 _cairo_intel_surface_get_bo (&(clone->intel.drm.bo)),
 				 image,
 				 extents->x, extents->y,
 				 extents->width, extents->height,
@@ -420,12 +420,12 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 			    return status;
 		    }
 
-		    if (to_intel_bo (s->intel.drm.bo)->batch_write_domain)
+		    if (_cairo_intel_surface_get_bo (&(s->intel))->batch_write_domain)
 			i965_pipelined_flush (i965_device (s));
 
 		    src->type.fragment = FS_SURFACE;
 
-		    src->base.bo = to_intel_bo (s->intel.drm.bo);
+		    src->base.bo = i965_surface_get_bo (s);
 		    src->base.format = s->intel.drm.format;
 		    src->base.content = s->intel.drm.base.content;
 		    src->base.width = sub->extents.width;
@@ -472,7 +472,7 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 		    i965_pipelined_flush (i965_device (s));
 		    src->type.fragment = FS_SURFACE;
 
-		    src->base.bo = to_intel_bo (clone->intel.drm.bo);
+		    src->base.bo = i965_surface_get_bo (clone);
 		    src->base.format = clone->intel.drm.format;
 		    src->base.content = clone->intel.drm.base.content;
 		    src->base.width = clone->intel.drm.width;
@@ -494,12 +494,12 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 			    return status;
 		    }
 
-		    if (to_intel_bo (s->intel.drm.bo)->batch_write_domain)
+		    if (i965_surface_get_bo (s)->batch_write_domain)
 			i965_pipelined_flush (i965_device (s));
 
 		    src->type.fragment = FS_SURFACE;
 
-		    src->base.bo = to_intel_bo (s->intel.drm.bo);
+		    src->base.bo = i965_surface_get_bo (s);
 		    src->base.format = s->intel.drm.format;
 		    src->base.content = s->intel.drm.base.content;
 		    src->base.width = s->intel.drm.width;
@@ -536,7 +536,7 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 		    i965_pipelined_flush (i965_device (s));
 		    src->type.fragment = FS_SURFACE;
 
-		    src->base.bo = to_intel_bo (clone->intel.drm.bo);
+		    src->base.bo = i965_surface_get_bo (clone);
 		    src->base.format = clone->intel.drm.format;
 		    src->base.content = clone->intel.drm.base.content;
 		    src->base.width = clone->intel.drm.width;
@@ -562,7 +562,7 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 					 shader->target->intel.drm.base.backend);
 	if (s != NULL) {
 	    i965_device_t *device = i965_device (shader->target);
-	    intel_bo_t *bo = to_intel_bo (s->intel.drm.bo);
+	    intel_bo_t *bo = i965_surface_get_bo (s);
 
 	    if (bo->purgeable &&
 		! intel_bo_madvise (&device->intel, bo, I915_MADV_WILLNEED))
@@ -599,12 +599,12 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 		return status;
 
 	    /* XXX? */
-	    //intel_bo_mark_purgeable (to_intel_bo (s->intel.drm.bo), TRUE);
+	    //intel_bo_mark_purgeable (i965_surface_get_bo (s), TRUE);
 	}
 
 	src->type.fragment = FS_SURFACE;
 
-	src->base.bo = to_intel_bo (s->intel.drm.bo);
+	src->base.bo = i965_surface_get_bo (s);
 	src->base.content = s->intel.drm.base.content;
 	src->base.format = s->intel.drm.format;
 	src->base.width  = s->intel.drm.width;
@@ -741,7 +741,7 @@ i965_shader_set_clip (i965_shader_t *shader,
     assert (clip_surface->type == CAIRO_SURFACE_TYPE_DRM);
     s = (i965_surface_t *) clip_surface;
 
-    if (to_intel_bo (s->intel.drm.bo)->batch_write_domain)
+    if (i965_surface_get_bo (s-)->batch_write_domain)
 	i965_pipelined_flush (i965_device (s));
 
     channel = &shader->clip;
@@ -749,7 +749,7 @@ i965_shader_set_clip (i965_shader_t *shader,
     channel->type.vertex  = VS_NONE;
     channel->type.fragment = FS_SURFACE;
 
-    channel->base.bo = to_intel_bo (s->intel.drm.bo);
+    channel->base.bo = i965_surface_get_bo (s);
     channel->base.content = CAIRO_CONTENT_ALPHA;
     channel->base.format = CAIRO_FORMAT_A8;
     channel->base.width  = s->intel.drm.width;
@@ -774,25 +774,25 @@ i965_shader_check_aperture (i965_shader_t *shader,
     uint32_t size = device->exec.gtt_size;
 
     if (shader->target != device->target) {
-	const intel_bo_t *bo = to_intel_bo (shader->target->intel.drm.bo);
+	const intel_bo_t *bo = i965_surface_get_bo (shader->target);
 	if (bo->exec == NULL)
 	    size += bo->base.size;
     }
 
     if (shader->source.base.bo != NULL && shader->source.base.bo != device->source) {
-	const intel_bo_t *bo = to_intel_bo (shader->target->intel.drm.bo);
+	const intel_bo_t *bo = i965_surface_get_bo (shader->target);
 	if (bo->exec == NULL)
 	    size += bo->base.size;
     }
 
     if (shader->mask.base.bo != NULL && shader->mask.base.bo != device->mask) {
-	const intel_bo_t *bo = to_intel_bo (shader->target->intel.drm.bo);
+	const intel_bo_t *bo = i965_surface_get_bo (shader->target);
 	if (bo->exec == NULL)
 	    size += bo->base.size;
     }
 
     if (shader->clip.base.bo != NULL && shader->clip.base.bo != device->clip) {
-	const intel_bo_t *bo = to_intel_bo (shader->target->intel.drm.bo);
+	const intel_bo_t *bo = i965_surface_get_bo (shader->target);
 	if (bo->exec == NULL)
 	    size += bo->base.size;
     }
@@ -832,7 +832,7 @@ i965_shader_setup_dst (i965_shader_t *shader)
     if (unlikely (clone->intel.drm.base.status))
 	return clone->intel.drm.base.status;
 
-    if (to_intel_bo (s->intel.drm.bo)->batch_write_domain)
+    if (i965_surface_get_bo (s)->batch_write_domain)
 	i965_pipelined_flush (i965_device (s));
 
     channel = &shader->dst;
@@ -842,7 +842,7 @@ i965_shader_setup_dst (i965_shader_t *shader)
     channel->type.pattern = PATTERN_SURFACE;
 
     /* swap buffer objects */
-    channel->base.bo = to_intel_bo (s->intel.drm.bo);
+    channel->base.bo = i965_surface_get_bo (s);
     s->intel.drm.bo = ((cairo_drm_surface_t *) clone)->bo;
     ((cairo_drm_surface_t *) clone)->bo = &channel->base.bo->base;
 
@@ -1426,7 +1426,7 @@ create_wm_kernel (i965_device_t *device,
     brw_compile_init (&compile, device->is_g4x);
 
     if (key.entry.hash == FS_CONSTANT &&
-	to_intel_bo (shader->target->intel.drm.bo)->tiling)
+	i965_surface_get_bo (shader->target)->tiling)
     {
 	struct brw_instruction *insn;
 
@@ -2207,7 +2207,7 @@ emit_binding_table (i965_device_t *device,
 	shader->target->stream = device->surface.serial;
 	shader->target->offset = emit_surface_state (device,
 						     TRUE,
-						     to_intel_bo (shader->target->intel.drm.bo),
+						     i965_surface_get_bo (shader->target),
 						     shader->target->intel.drm.format,
 						     shader->target->intel.drm.width,
 						     shader->target->intel.drm.height,
