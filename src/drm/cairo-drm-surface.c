@@ -76,7 +76,7 @@ cairo_bool_t
 _cairo_drm_surface_get_extents (void *abstract_surface,
 			        cairo_rectangle_int_t *rectangle)
 {
-    cairo_drm_surface_t *surface = abstract_surface;
+    cairo_drm_surface_t *surface = _cairo_abstract_surface_cast_drm(abstract_surface);
 
     rectangle->x = 0;
     rectangle->y = 0;
@@ -233,7 +233,7 @@ cairo_drm_surface_get_handle (cairo_surface_t *abstract_surface)
 cairo_int_status_t
 _cairo_drm_surface_flink (void *abstract_surface)
 {
-    cairo_drm_surface_t *surface = abstract_surface;
+    cairo_drm_surface_t *surface = _cairo_abstract_surface_cast_drm(abstract_surface);
 
     return _cairo_drm_bo_flink ((cairo_drm_device_t *) surface->base.device,
 				surface->bo);
