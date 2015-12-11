@@ -764,6 +764,39 @@ struct i915_surface {
     uint32_t stencil_offset;
 };
 
+static inline i915_surface_t *
+_cairo_abstract_surface_cast_i915 (cairo_surface_t* surface)
+{
+    return cairo_container_of (
+	cairo_abstract_surface_cast_intel (surface),
+	i915_surface_t,
+	intel);
+}
+
+static inline i915_device_t *
+_cairo_intel_device_cast_i915 (intel_device_t *device)
+{
+    return cairo_container_of (device, i915_device_t, intel);
+}
+
+static inline i915_device_t *
+_cairo_device_cast_i915 (void *device)
+{
+    return _cairo_intel_device_cast_i915 (_cairo_device_cast_intel (device) );
+}
+
+static inline intel_bo_t *
+i915_surface_get_bo (const i915_surface_t *surface)
+{
+    return _cairo_intel_surface_get_bo (&(surface->intel));
+}
+
+static inline intel_bo_t *
+i915_surface_get_bo_ref (const i915_surface_t *surface)
+{
+    return intel_bo_reference (i915_surface_get_bo (surface));
+}
+
 typedef enum {
     NONE = 0,
     YUV_I420,
@@ -1031,8 +1064,10 @@ BUF_tiling (uint32_t tiling)
 }
 
 #define OUT_DWORD(dword) i915_batch_emit_dword (device, dword)
-#define OUT_RELOC(surface, read, write) i915_batch_emit_reloc (device, to_intel_bo (surface->intel.drm.bo), surface->offset, read, write, FALSE)
-#define OUT_RELOC_FENCED(surface, read, write) i915_batch_emit_reloc (device, to_intel_bo (surface->intel.drm.bo), surface->offset, read, write, TRUE)
+#define OUT_RELOC(surface, read, write) \
+    i915_batch_emit_reloc (device, i915_surface_get_bo (surface), surface->offset, read, write, FALSE)
+#define OUT_RELOC_FENCED(surface, read, write) \
+    i915_batch_emit_reloc (device, i915_surface_get_bo (surface), surface->offset, read, write, TRUE)
 
 #define FS_LOCALS							\
     uint32_t *_shader_start

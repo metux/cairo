@@ -651,7 +651,7 @@ i915_surface_create_similar (void *abstract_other,
 static cairo_status_t
 i915_surface_finish (void *abstract_surface)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = _cairo_abstract_surface_cast_i915 (abstract_surface);
     i915_device_t *device = i915_device (surface);
 
     if (surface->stencil != NULL) {
@@ -700,7 +700,7 @@ i915_surface_batch_flush (i915_surface_t *surface)
 
     assert (surface->intel.drm.fallback == NULL);
 
-    bo = to_intel_bo (surface->intel.drm.bo);
+    bo = i915_surface_get_bo (surface);
     if (bo == NULL || bo->batch_write_domain == 0)
 	return CAIRO_STATUS_SUCCESS;
 
@@ -718,7 +718,7 @@ static cairo_status_t
 i915_surface_flush (void *abstract_surface,
 		    unsigned flags)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = _cairo_abstract_surface_cast_i915 (abstract_surface);
     cairo_status_t status;
 
     if (flags)
@@ -1041,8 +1041,8 @@ i915_blt (i915_surface_t *src,
     cairo_status_t status;
     int br13, cmd;
 
-    bo_array[0] = to_intel_bo (dst->intel.drm.bo);
-    bo_array[1] = to_intel_bo (src->intel.drm.bo);
+    bo_array[0] = i915_surface_get_bo (dst);
+    bo_array[1] = i915_surface_get_bo (src);
 
     status = i915_surface_fallback_flush (src);
     if (unlikely (status))
@@ -1138,7 +1138,7 @@ i915_clear_boxes (i915_surface_t *dst,
     i915_device_t *device = i915_device (dst);
     const struct _cairo_boxes_chunk *chunk;
     cairo_status_t status;
-    intel_bo_t *bo_array[1] = { to_intel_bo (dst->intel.drm.bo) };
+    intel_bo_t *bo_array[1] = { i915_surface_get_bo (dst) };
     int cmd, br13, clear = 0, i;
 
     cmd = XY_COLOR_BLT_CMD;
@@ -1307,7 +1307,7 @@ i915_blt_boxes (i915_surface_t *dst,
     ty = _cairo_lround (pattern->matrix.y0);
 
     device = i915_device (dst);
-    if (to_intel_bo (src->intel.drm.bo)->tiling == I915_TILING_Y) {
+    if (i915_surface_get_bo (src)->tiling == I915_TILING_Y) {
 	cairo_rectangle_int_t extents;
 
 	_cairo_boxes_extents (boxes, &extents);
@@ -1323,8 +1323,8 @@ i915_blt_boxes (i915_surface_t *dst,
 	ty = -extents.y;
     }
 
-    bo_array[0] = to_intel_bo (dst->intel.drm.bo);
-    bo_array[1] = to_intel_bo (src->intel.drm.bo);
+    bo_array[0] = i915_surface_get_bo (dst);
+    bo_array[1] = i915_surface_get_bo (src);
 
     status = cairo_device_acquire (&device->intel.base.base);
     if (unlikely (status))
@@ -1436,7 +1436,7 @@ _upload_image_inplace (i915_surface_t *surface,
     }
 
     device = i915_device (surface);
-    bo = to_intel_bo (surface->intel.drm.bo);
+    bo = i915_surface_get_bo (surface);
     if (bo->exec != NULL || ! intel_bo_is_inactive (&device->intel, bo)) {
 	intel_bo_t *new_bo;
 	cairo_bool_t need_clear = FALSE;
@@ -1658,7 +1658,7 @@ i915_surface_clear (i915_surface_t *dst)
 {
     i915_device_t *device;
     cairo_status_t status;
-    intel_bo_t *bo_array[1] = { to_intel_bo (dst->intel.drm.bo) };
+    intel_bo_t *bo_array[1] = { i915_surface_get_bo (dst) };
 
     device = i915_device (dst);
     status = cairo_device_acquire (&device->intel.base.base);
@@ -1876,7 +1876,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 			      cairo_clip_t		*clip,
 			      double			 opacity)
 {
-    i915_surface_t *dst = abstract_dst;
+    i915_surface_t *dst = _cairo_abstract_surface_cast_i915 (abstract_dst);
     cairo_composite_rectangles_t extents;
     composite_polygon_info_t info;
     cairo_box_t boxes_stack[32], *clip_boxes = boxes_stack;
@@ -2472,7 +2472,7 @@ i915_surface_create_internal (cairo_drm_device_t *base_dev,
 	}
 
 	size = stride * height;
-	bo = intel_bo_create (to_intel_device (&base_dev->base),
+	bo = intel_bo_create (_cairo_drm_device_cast_intel (base_dev),
 			      i915_tiling_size (tiling, size), size,
 			      gpu_target, tiling, stride);
 	if (bo == NULL) {
@@ -2552,15 +2552,15 @@ i915_surface_create_for_name (cairo_drm_device_t *base_dev,
 	surface->map1 = (surface->intel.drm.stride/4 - 1) << MS4_PITCH_SHIFT;
 
 	surface->intel.drm.bo =
-	    &intel_bo_create_for_name (to_intel_device (&base_dev->base),
+	    &intel_bo_create_for_name (_cairo_drm_device_cast_intel (base_dev),
 				       name)->base;
 	if (unlikely (surface->intel.drm.bo == NULL)) {
 	    free (surface);
 	    return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	}
-	to_intel_bo (surface->intel.drm.bo)->stride = stride;
+	i915_surface_get_bo (surface)->stride = stride;
 
-	surface->map0 |= MS3_tiling (to_intel_bo (surface->intel.drm.bo)->tiling);
+	surface->map0 |= MS3_tiling (i915_surface_get_bo (surface)->tiling);
     }
 
     return &surface->intel.drm.base;
@@ -2646,7 +2646,7 @@ i915_surface_create_from_cacheable_image_internal (i915_device_t *device,
 	    return surface;
 
 	status = intel_bo_put_image (&device->intel,
-				     to_intel_bo (surface->intel.drm.bo),
+				     i915_surface_get_bo (surface),
 				     image,
 				     0, 0,
 				     width, height,
@@ -2794,14 +2794,14 @@ i915_surface_create_from_cacheable_image (cairo_drm_device_t *device,
 static cairo_status_t
 i915_surface_enable_scan_out (void *abstract_surface)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = _cairo_abstract_surface_cast_i915 (abstract_surface);
     intel_bo_t *bo;
     cairo_status_t status;
 
     if (unlikely (surface->intel.drm.bo == NULL))
 	return _cairo_error (CAIRO_STATUS_INVALID_SIZE);
 
-    bo = to_intel_bo (surface->intel.drm.bo);
+    bo = i915_surface_get_bo (surface);
     if (bo->tiling == I915_TILING_Y) {
 	status = i915_surface_batch_flush (surface);
 	if (unlikely (status))
@@ -2853,7 +2853,7 @@ i915_device_throttle (cairo_drm_device_t *device)
 static void
 i915_device_destroy (void *data)
 {
-    i915_device_t *device = data;
+    i915_device_t *device = _cairo_device_cast_i915 (data);
 
     if (device->last_vbo)
 	intel_bo_destroy (&device->intel, device->last_vbo);
