@@ -255,6 +255,7 @@ typedef struct i965_device i965_device_t;
 typedef struct i965_surface i965_surface_t;
 typedef struct i965_shader i965_shader_t;
 typedef struct i965_stream i965_stream_t;
+typedef struct i965_scaled_font_private i965_scaled_font_private_t;
 
 struct i965_sf_state {
     cairo_hash_entry_t entry;
@@ -512,6 +513,12 @@ struct i965_shader {
     } source, mask, clip, dst;
 
     jmp_buf unwind;
+};
+
+struct i965_scaled_font_private {
+    cairo_scaled_font_private_t base;
+    i965_device_t *device;
+    const cairo_surface_backend_t *backend;
 };
 
 enum i965_shader_linear_mode {
