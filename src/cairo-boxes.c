@@ -361,6 +361,7 @@ _cairo_boxes_to_array (const cairo_boxes_t *boxes,
 
     j = 0;
     for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
+	// FIXME: use memcpy ?
 	for (i = 0; i < chunk->count; i++)
 	    box[j++] = chunk->base[i];
     }
