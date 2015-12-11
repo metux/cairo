@@ -546,6 +546,9 @@ typedef cairo_status_t
 		      cairo_span_renderer_t	*renderer,
 		      const cairo_rectangle_int_t	*extents);
 
+static inline i965_surface_t* 
+// fixme
+
 static inline i965_device_t *
 i965_device (i965_surface_t *surface)
 {
