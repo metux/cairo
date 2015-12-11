@@ -182,6 +182,15 @@ typedef struct _intel_surface {
     cairo_cache_entry_t snapshot_cache_entry;
 } intel_surface_t;
 
+static inline intel_surface_t*
+cairo_abstract_surface_cast_intel(cairo_surface_t* surface)
+{
+    return cairo_container_of(
+	cairo_abstract_surface_cast_drm(surface),
+	intel_surface_t,
+	drm);
+}
+
 typedef void (*intel_reset_context_func_t) (void *device);
 
 typedef struct _intel_device {

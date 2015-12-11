@@ -652,7 +652,7 @@ i915_surface_create_similar (void *abstract_other,
 static cairo_status_t
 i915_surface_finish (void *abstract_surface)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
     i915_device_t *device = i915_device (surface);
 
     if (surface->stencil != NULL) {
@@ -719,7 +719,7 @@ static cairo_status_t
 i915_surface_flush (void *abstract_surface,
 		    unsigned flags)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
     cairo_status_t status;
 
     if (flags)
@@ -2795,7 +2795,7 @@ i915_surface_create_from_cacheable_image (cairo_drm_device_t *device,
 static cairo_status_t
 i915_surface_enable_scan_out (void *abstract_surface)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
     intel_bo_t *bo;
     cairo_status_t status;
 

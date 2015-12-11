@@ -140,6 +140,12 @@ typedef struct _cairo_drm_surface {
     uint32_t map_count;
 } cairo_drm_surface_t;
 
+static inline cairo_drm_surface_t*
+cairo_abstract_surface_cast_drm(cairo_surface_t* surface)
+{
+    return cairo_container_of(surface, cairo_drm_surface_t, base);
+}
+
 static inline cairo_drm_bo_t *
 cairo_drm_bo_reference (cairo_drm_bo_t *bo)
 {

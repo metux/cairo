@@ -52,7 +52,7 @@ intel_surface_create_similar (void			*abstract_surface,
 cairo_status_t
 intel_surface_finish (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
     intel_bo_in_flight_add (to_intel_device (surface->drm.base.device),
 			    to_intel_bo (surface->drm.bo));
@@ -71,7 +71,7 @@ intel_surface_acquire_source_image (void *abstract_surface,
 				    cairo_image_surface_t **image_out,
 				    void **image_extra)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
     cairo_surface_t *image;
     cairo_status_t status;
     void *ptr;
@@ -124,7 +124,7 @@ intel_surface_release_source_image (void *abstract_surface,
 cairo_surface_t *
 intel_surface_map_to_image (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
     if (surface->drm.fallback == NULL) {
 	cairo_surface_t *image;
@@ -159,7 +159,7 @@ intel_surface_map_to_image (void *abstract_surface)
 cairo_status_t
 intel_surface_flush (void *abstract_surface, unsigned flags)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
     cairo_status_t status;
 
     if (flags)
@@ -386,7 +386,7 @@ intel_surface_create_for_name (cairo_drm_device_t *device,
 static cairo_status_t
 intel_surface_enable_scan_out (void *abstract_surface)
 {
-    intel_surface_t *surface = abstract_surface;
+    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
 
     if (unlikely (surface->drm.bo == NULL))
 	return _cairo_error (CAIRO_STATUS_INVALID_SIZE);
