@@ -1420,6 +1420,7 @@ CLEANUP_BOXES:
     return status;
 }
 
+// here
 static const cairo_surface_backend_t i965_surface_backend = {
     .type			= CAIRO_SURFACE_TYPE_DRM,
     .create_context		= _cairo_default_context_create,
