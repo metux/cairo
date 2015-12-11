@@ -764,6 +764,14 @@ struct i915_surface {
     uint32_t stencil_offset;
 };
 
+static inline i915_surface_t* cairo_abstract_surface_cast_i915(cairo_surface_t* surface)
+{
+    return cairo_container_of(
+	cairo_abstract_surface_cast_intel(surface),
+	i915_surface_t,
+	intel);
+}
+
 typedef enum {
     NONE = 0,
     YUV_I420,

@@ -282,7 +282,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		     cairo_clip_t		*clip,
 		     int *num_remaining)
 {
-    i915_surface_t *surface = abstract_surface;
+    i915_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
     i915_surface_t *mask = NULL;
     i915_device_t *device;
     i915_shader_t shader;

@@ -43,7 +43,7 @@
 static cairo_status_t
 i915_packed_pixel_surface_finish (void *abstract_surface)
 {
-    i915_packed_pixel_surface_t *surface = abstract_surface;
+    i915_packed_pixel_surface_t *surface = cairo_abstract_surface_cast_i915(abstract_surface);
     i915_device_t *device;
 
     device = i915_device_acquire (&surface->device->intel.base);

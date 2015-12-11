@@ -1095,7 +1095,7 @@ i965_surface_paint (void			*abstract_dst,
 		    const cairo_pattern_t	*source,
 		    cairo_clip_t		*clip)
 {
-    i965_surface_t *dst = abstract_dst;
+    i965_surface_t *dst = cairo_abstract_surface_cast_i965(abstract_dst);
     cairo_composite_rectangles_t extents;
     cairo_boxes_t boxes;
     cairo_box_t *clip_boxes = boxes.boxes_embedded;
