@@ -57,6 +57,102 @@ typedef struct _radeon_device {
     uint64_t gart_limit;
 } radeon_device_t;
 
+typedef struct _radeon_surface {
+    cairo_drm_surface_t base;
+} radeon_surface_t;
+
+/* cast void* to radeon_device_t* */
+static inline radeon_surface_t *
+_cairo_abstract_surface_cast_radeon (cairo_surface_t *surface)
+{
+    return cairo_container_of (
+	_cairo_abstract_surface_cast_drm (surface),
+	radeon_surface_t,
+	base);
+}
+
+/* cast cairo_drm_device_t* to radeon_device_t* */
+static inline radeon_surface_t *
+_cairo_drm_surface_cast_radeon (cairo_drm_surface_t *surface)
+{
+    return cairo_container_of (surface, radeon_surface_t, base);
+}
+
+/* cast const cairo_drm_device_t* to const radeon_device_t* */
+static inline const radeon_surface_t *
+_cairo_drm_surface_cast_radeon_const (const cairo_drm_surface_t *surface)
+{
+    return cairo_container_of (surface, const radeon_surface_t, base);
+}
+
+/* cast cairo_device_t to radeon_device_t */
+static inline radeon_surface_t *
+_cairo_surface_cast_radeon (cairo_surface_t *surface)
+{
+    return _cairo_drm_surface_cast_radeon (
+	_cairo_surface_cast_drm (surface));
+}
+
+/* cast const cairo_device_t* to const radeon_device_t* */
+static inline const radeon_surface_t *
+_cairo_surface_cast_radeon_cast (const cairo_surface_t *surface)
+{
+    return _cairo_drm_surface_cast_radeon_const (
+	_cairo_surface_cast_drm_const (surface));
+}
+
+static inline radeon_device_t *
+_cairo_drm_device_cast_radeon (cairo_drm_device_t *device)
+{
+    return cairo_container_of (device, radeon_device_t, base);
+}
+
+static inline const radeon_device_t *
+_cairo_drm_device_cast_radeon_const (const cairo_drm_device_t *device)
+{
+    return cairo_container_of (device, const radeon_device_t, base);
+}
+
+static inline radeon_device_t *
+_cairo_device_cast_radeon (cairo_device_t *device)
+{
+    return _cairo_drm_device_cast_radeon (
+	_cairo_device_cast_drm (device));
+}
+
+static inline const radeon_device_t *
+_cairo_device_cast_radeon_const (const cairo_device_t *device)
+{
+    return _cairo_drm_device_cast_radeon_const (
+	_cairo_device_cast_drm_const (device));
+}
+
+static inline radeon_bo_t *
+_cairo_drm_bo_cast_radeon (cairo_drm_bo_t *bo)
+{
+    return cairo_container_of (bo, radeon_bo_t, base);
+}
+
+static inline const radeon_bo_t *
+_cairo_drm_bo_cast_radeon_const (const cairo_drm_bo_t *bo)
+{
+    return cairo_container_of (bo, const radeon_bo_t, base);
+}
+
+/* get radeon device from radeon surface */
+static inline radeon_device_t *
+_cairo_radeon_surface_get_device (const radeon_surface_t *surface)
+{
+    return _cairo_device_cast_radeon (surface->base.base.device);
+}
+
+/* get radeon bo from radeon surface */
+static inline radeon_bo_t *
+_cairo_radeon_surface_get_bo (const radeon_surface_t *surface)
+{
+    return _cairo_drm_bo_cast_radeon (surface->base.bo);
+}
+
 cairo_private cairo_status_t
 radeon_device_init (radeon_device_t *device, int fd);
 
