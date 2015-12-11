@@ -1382,7 +1382,7 @@ i965_surface_fill (void			*abstract_dst,
 
 	_cairo_boxes_fini (&boxes);
 
-	if (status != CAIRO_INT_STATUS_UNSUPPORTED)
+	if (status != CAIRO_STATUS_UNSUPPORTED)
 	    goto CLEANUP_BOXES;
     }
 
