@@ -873,6 +873,7 @@ i965_fixup_unbounded (i965_surface_t *dst,
 static cairo_status_t
 i965_fixup_unbounded_boxes (i965_surface_t *dst,
 			    const cairo_composite_rectangles_t *extents,
+			    const cairo_antialias_t antialias,
 			    const cairo_clip_t *clip,
 			    cairo_boxes_t *boxes)
 {
@@ -916,7 +917,7 @@ i965_fixup_unbounded_boxes (i965_surface_t *dst,
 
 	_cairo_boxes_init (&tmp);
 
-	status = _cairo_boxes_add (&tmp, &box);
+	status = _cairo_boxes_add (&tmp, antialias, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	tmp.chunks.next = &boxes->chunks;
@@ -933,12 +934,12 @@ i965_fixup_unbounded_boxes (i965_surface_t *dst,
 	pbox = pixman_region32_rectangles (&clip_region->rgn, &i);
 	_cairo_boxes_limit (&clear, (cairo_box_t *) pbox, i);
 
-	status = _cairo_boxes_add (&clear, &box);
+	status = _cairo_boxes_add (&clear, antialias, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		status = _cairo_boxes_add (&clear, &chunk->base[i]);
+		status = _cairo_boxes_add (&clear, antialias, &chunk->base[i]);
 		if (unlikely (status)) {
 		    _cairo_boxes_fini (&clear);
 		    return status;
@@ -1048,7 +1049,7 @@ _composite_boxes (i965_surface_t *dst,
     }
 
     if (! extents->is_bounded)
-	status = i965_fixup_unbounded_boxes (dst, extents, clip, boxes);
+	status = i965_fixup_unbounded_boxes (dst, extents, antialias, clip, boxes);
 
   err_device:
     cairo_device_release (&device->intel.base.base);
@@ -1334,6 +1335,7 @@ i965_surface_stroke (void			*abstract_dst,
 	status = _cairo_path_fixed_stroke_rectilinear_to_boxes (path,
 								stroke_style,
 								ctm,
+								antialias,
 								&boxes);
 	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
@@ -1441,6 +1443,7 @@ i965_surface_fill (void			*abstract_dst,
 	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
 	status = _cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
+							      antialias,
 							      &boxes);
 	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
