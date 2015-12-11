@@ -220,6 +220,8 @@ lines_compare_x_for_y (const cairo_line_t *a,
     } have_ax_bx = HAVE_BOTH;
     int32_t ax = 0, bx = 0;
 
+    // FIXME: can we use vector operations here ?
+
     if (y == a->p1.y)
 	ax = a->p1.x;
     else if (y == a->p2.y)
