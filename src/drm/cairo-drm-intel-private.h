@@ -183,6 +183,15 @@ typedef struct _intel_surface {
     cairo_cache_entry_t snapshot_cache_entry;
 } intel_surface_t;
 
+static inline intel_surface_t*
+cairo_abstract_surface_cast_intel(cairo_surface_t* surface)
+{
+    return cairo_container_of(
+	_cairo_abstract_surface_cast_drm(surface),
+	intel_surface_t,
+	drm);
+}
+
 typedef void (*intel_reset_context_func_t) (void *device);
 
 typedef struct _intel_device {
@@ -214,21 +223,59 @@ typedef struct _intel_device {
 } intel_device_t;
 
 static inline intel_device_t *
-to_intel_device (cairo_device_t *base)
+_cairo_drm_device_cast_intel (cairo_drm_device_t *device)
 {
-    return (intel_device_t *) base;
+    return cairo_container_of (
+	device,
+	intel_device_t,
+	base);
+}
+
+static inline const intel_device_t *
+_cairo_drm_device_cast_intel_const (const cairo_drm_device_t *device)
+{
+    return cairo_container_of (
+	device,
+	const intel_device_t,
+	base);
+}
+
+static inline intel_device_t *
+_cairo_device_cast_intel (cairo_device_t *device)
+{
+    return _cairo_drm_device_cast_intel (
+	_cairo_device_cast_drm (device));
+}
+
+static inline const intel_device_t *
+_cairo_device_cast_intel_const (const cairo_device_t *device)
+{
+    return _cairo_drm_device_cast_intel_const (
+	_cairo_device_cast_drm_const (device));
 }
 
 static inline intel_bo_t *
-to_intel_bo (cairo_drm_bo_t *base)
+_cairo_drm_bo_cast_intel (cairo_drm_bo_t *bo)
 {
-    return (intel_bo_t *) base;
+    return cairo_container_of (bo, intel_bo_t, base);
+}
+
+static inline intel_device_t *
+_cairo_intel_surface_get_device (intel_surface_t *surface)
+{
+    return _cairo_device_cast_intel (surface->drm.base.device);
+}
+
+static inline intel_bo_t *
+_cairo_intel_surface_get_bo (const intel_surface_t *surface)
+{
+    return _cairo_drm_bo_cast_intel (surface->drm.bo);
 }
 
 static inline intel_bo_t *
 intel_bo_reference (intel_bo_t *bo)
 {
-    return to_intel_bo (cairo_drm_bo_reference (&bo->base));
+    return _cairo_drm_bo_cast_intel (cairo_drm_bo_reference (&bo->base));
 }
 
 cairo_private cairo_bool_t

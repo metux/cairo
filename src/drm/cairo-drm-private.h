@@ -142,11 +142,57 @@ typedef struct _cairo_drm_surface {
     uint32_t map_count;
 } cairo_drm_surface_t;
 
+/* cast from abstract void* pointer */
+static inline cairo_drm_device_t*
+_cairo_abstract_device_cast_drm(cairo_device_t* dev)
+{
+    return cairo_container_of(
+	dev,
+	cairo_drm_device_t,
+	base);
+}
+
+static inline cairo_drm_surface_t*
+_cairo_abstract_surface_cast_drm(cairo_surface_t* surface)
+{
+    return cairo_container_of(surface, cairo_drm_surface_t, base);
+}
+
+static inline cairo_drm_surface_t*
+_cairo_surface_cast_drm (cairo_surface_t* surface)
+{
+    return cairo_container_of (surface, cairo_drm_surface_t, base);
+}
+
+static inline const cairo_drm_surface_t*
+_cairo_surface_cast_drm_const (const cairo_surface_t* surface)
+{
+    return cairo_container_of (surface, const cairo_drm_surface_t, base);
+}
+
+static inline cairo_drm_device_t*
+_cairo_device_cast_drm(cairo_device_t *device)
+{
+    return cairo_container_of (device, cairo_drm_device_t, base);
+}
+
+static inline const cairo_drm_device_t*
+_cairo_device_cast_drm_const(const cairo_device_t *device)
+{
+    return cairo_container_of (device, const cairo_drm_device_t, base);
+}
+
 static inline cairo_drm_bo_t *
 cairo_drm_bo_reference (cairo_drm_bo_t *bo)
 {
     _cairo_reference_count_inc (&bo->ref_count);
     return bo;
+}
+
+static inline cairo_drm_device_t *
+_cairo_drm_surface_get_device (cairo_drm_surface_t *surface)
+{
+    return _cairo_device_cast_drm(surface->base.device);
 }
 
 static cairo_always_inline void
