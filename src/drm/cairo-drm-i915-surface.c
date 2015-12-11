@@ -878,6 +878,7 @@ i915_fixup_unbounded (i915_surface_t *dst,
 static cairo_status_t
 i915_fixup_unbounded_boxes (i915_surface_t *dst,
 			    const cairo_composite_rectangles_t *extents,
+			    cairo_antialias_t antialias,
 			    const cairo_clip_t *clip,
 			    cairo_boxes_t *boxes)
 {
@@ -910,7 +911,7 @@ i915_fixup_unbounded_boxes (i915_surface_t *dst,
 
 	_cairo_boxes_init (&tmp);
 
-	status = _cairo_boxes_add (&tmp, &box);
+	status = _cairo_boxes_add (&tmp, antialias, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	tmp.chunks.next = &boxes->chunks;
@@ -927,12 +928,12 @@ i915_fixup_unbounded_boxes (i915_surface_t *dst,
 	pbox = pixman_region32_rectangles (&clip_region->rgn, &i);
 	_cairo_boxes_limit (&clear, (cairo_box_t *) pbox, i);
 
-	status = _cairo_boxes_add (&clear, &box);
+	status = _cairo_boxes_add (&clear, antialias, &box);
 	assert (status == CAIRO_STATUS_SUCCESS);
 
 	for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		status = _cairo_boxes_add (&clear, &chunk->base[i]);
+		status = _cairo_boxes_add (&clear, antialias, &chunk->base[i]);
 		if (unlikely (status)) {
 		    _cairo_boxes_fini (&clear);
 		    return status;
@@ -1647,7 +1648,7 @@ _composite_boxes (i915_surface_t *dst,
     }
 
     if (! extents->is_bounded)
-	status = i915_fixup_unbounded_boxes (dst, extents, clip, boxes);
+	status = i915_fixup_unbounded_boxes (dst, extents, antialias, clip, boxes);
 
   err_device:
     cairo_device_release (&device->intel.base.base);
@@ -1933,6 +1934,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 	_cairo_boxes_limit (&boxes, clip_boxes, num_boxes);
 	status = (cairo_int_status_t)_cairo_path_fixed_fill_rectilinear_to_boxes (path,
 							      fill_rule,
+							      antialias,
 							      &boxes);
 	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
@@ -1991,6 +1993,7 @@ static cairo_int_status_t
 i915_surface_paint_with_alpha (void			*abstract_dst,
 			       cairo_operator_t		 op,
 			       const cairo_pattern_t	*source,
+			       cairo_antialias_t	antialias,
 			       const cairo_clip_t	*clip,
 			       double			 opacity)
 {
@@ -2048,7 +2051,7 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
     {
 	_cairo_boxes_init_for_array (&boxes, clip_boxes, num_boxes);
 	status = _clip_and_composite_boxes (dst, op, source,
-					    &boxes, CAIRO_ANTIALIAS_DEFAULT,
+					    &boxes, antialias,
 					    &extents, clip, opacity);
     }
     if (clip_boxes != boxes.boxes_embedded)
@@ -2075,7 +2078,7 @@ i915_surface_paint (void			*abstract_dst,
 	return CAIRO_STATUS_SUCCESS;
     }
 
-    return i915_surface_paint_with_alpha (dst, op, source, clip, 1.);
+    return i915_surface_paint_with_alpha (dst, op, source, CAIRO_ANTIALIAS_DEFAULT, clip, 1.);
 }
 
 static cairo_int_status_t
@@ -2097,7 +2100,7 @@ i915_surface_mask (void				*abstract_dst,
 
     if (mask->type == CAIRO_PATTERN_TYPE_SOLID) {
 	const cairo_solid_pattern_t *solid = (cairo_solid_pattern_t *) mask;
-	return i915_surface_paint_with_alpha (dst, op, source, clip, solid->color.alpha);
+	return i915_surface_paint_with_alpha (dst, op, source, CAIRO_ANTIALIAS_DEFAULT, clip, solid->color.alpha);
     }
 
     status = _cairo_composite_rectangles_init_for_mask (&extents,
@@ -2275,6 +2278,7 @@ i915_surface_stroke (void			*abstract_dst,
 	status = (cairo_int_status_t)_cairo_path_fixed_stroke_rectilinear_to_boxes (path,
 								stroke_style,
 								ctm,
+								antialias,
 								&boxes);
 	if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
 	    status = _clip_and_composite_boxes (dst, op, source,
