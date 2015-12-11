@@ -44,7 +44,7 @@
 static cairo_status_t
 i915_packed_pixel_surface_finish (void *abstract_surface)
 {
-    i915_packed_pixel_surface_t *surface = abstract_surface;
+    i915_packed_pixel_surface_t *surface = _cairo_abstract_surface_cast_i915 (abstract_surface);
     i915_device_t *device;
 
     device = i915_device_acquire (&surface->device->intel.base);
@@ -1306,7 +1306,7 @@ i915_surface_clone (i915_device_t *device,
 	return clone->intel.drm.base.status;
 
     status = intel_bo_put_image (&device->intel,
-				 to_intel_bo (clone->intel.drm.bo),
+				 i915_surface_get_bo (clone),
 				 image,
 				 0, 0,
 				 image->width, image->height,
@@ -1345,7 +1345,7 @@ i915_surface_clone_subimage (i915_device_t *device,
 	return clone->intel.drm.base.status;
 
     status = intel_bo_put_image (&device->intel,
-				 to_intel_bo (clone->intel.drm.bo),
+				 i915_surface_get_bo (clone),
 				 image,
 				 extents->x, extents->y,
 				 extents->width, extents->height,
@@ -1380,7 +1380,8 @@ i915_surface_render_pattern (i915_device_t *device,
 	return clone->intel.drm.base.status;
 
     ptr = intel_bo_map (&device->intel,
-			to_intel_bo (clone->intel.drm.bo));
+			i915_surface_get_bo (clone));
+
     if (unlikely (ptr == NULL)) {
 	cairo_surface_destroy (&clone->intel.drm.base);
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
@@ -1516,7 +1517,7 @@ i915_shader_acquire_surface (i915_shader_t *shader,
 
 		/* XXX blt subimage and cache snapshot */
 
-		if (to_intel_bo (s->intel.drm.bo)->batch_write_domain) {
+		if (i915_surface_get_bo (s)->batch_write_domain) {
 		    /* XXX pipelined flush of RENDER/TEXTURE cache */
 		}
 
@@ -1525,7 +1526,7 @@ i915_shader_acquire_surface (i915_shader_t *shader,
 		surface_width  = sub->extents.width;
 		surface_height = sub->extents.height;
 
-		src->base.bo = intel_bo_reference (to_intel_bo (s->intel.drm.bo));
+		src->base.bo = i915_surface_get_bo_ref (s);
 		src->base.n_samplers = 1;
 
 		x = sub->extents.x;
@@ -1563,7 +1564,7 @@ i915_shader_acquire_surface (i915_shader_t *shader,
 		surface_width  = s->intel.drm.width;
 		surface_height = s->intel.drm.height;
 
-		src->base.bo = intel_bo_reference (to_intel_bo (s->intel.drm.bo));
+		src->base.bo = i915_surface_get_bo_ref (s);
 		src->base.n_samplers = 1;
 		src->base.offset[0] = s->offset;
 		src->base.map[0] = s->map0;
@@ -1653,7 +1654,7 @@ i915_shader_acquire_surface (i915_shader_t *shader,
 	src->type.fragment = FS_TEXTURE;
 	src->surface.pixel = NONE;
 
-	src->base.bo = intel_bo_reference (to_intel_bo (s->intel.drm.bo));
+	src->base.bo = i915_surface_get_bo_ref (s);
 	src->base.n_samplers = 1;
 	src->base.offset[0] = s->offset;
 	src->base.map[0] = s->map0;
@@ -2400,7 +2401,7 @@ i915_set_dst (i915_device_t *device, i915_surface_t *dst)
     if (device->current_target != dst) {
 	intel_bo_t *bo;
 
-	bo = to_intel_bo (dst->intel.drm.bo);
+	bo = i915_surface_get_bo (dst);
 	assert (bo != NULL);
 
 	OUT_DWORD (_3DSTATE_BUF_INFO_CMD);
@@ -2520,7 +2521,7 @@ i915_shader_set_clip (i915_shader_t *shader,
     channel->surface.pixel = NONE;
 
     s = (i915_surface_t *) clip_surface;
-    channel->base.bo = to_intel_bo (s->intel.drm.bo);
+    channel->base.bo = i915_surface_get_bo (s);
     channel->base.n_samplers = 1;
     channel->base.offset[0] = s->offset;
     channel->base.map[0] = s->map0;
@@ -2549,7 +2550,7 @@ i915_shader_check_aperture (i915_shader_t *shader,
     uint32_t n = 0;
 
     if (shader->target != device->current_target)
-	bo_array[n++] = to_intel_bo (shader->target->intel.drm.bo);
+	bo_array[n++] = i915_surface_get_bo (shader->target);
 
     if (shader->source.base.bo != NULL)
 	bo_array[n++] = shader->source.base.bo;
@@ -2638,7 +2639,7 @@ i915_shader_setup_dst (i915_shader_t *shader)
     channel->surface.pixel = NONE;
 
     s = shader->target;
-    channel->base.bo = to_intel_bo (s->intel.drm.bo);
+    channel->base.bo = i915_surface_get_bo (s);
     channel->base.n_samplers = 1;
     channel->base.offset[0] = s->offset;
     channel->base.map[0] = s->map0;

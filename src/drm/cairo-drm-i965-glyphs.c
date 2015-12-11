@@ -157,7 +157,7 @@ i965_surface_mask_internal (i965_surface_t *dst,
 			1. / mask->intel.drm.width,
 			1. / mask->intel.drm.height);
 
-    shader.mask.base.bo = to_intel_bo (mask->intel.drm.bo);
+    shader.mask.base.bo = i965_surface_get_bo (mask);
     shader.mask.base.format = mask->intel.drm.format;
     shader.mask.base.width = mask->intel.drm.width;
     shader.mask.base.height = mask->intel.drm.height;

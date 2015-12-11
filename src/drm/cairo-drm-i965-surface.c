@@ -707,7 +707,7 @@ i965_surface_flush (void *abstract_surface, unsigned flags)
 
     /* Forgo flushing on finish as the user cannot access the surface directly. */
     if (! surface->intel.drm.base.finished &&
-	to_intel_bo (surface->intel.drm.bo)->exec != NULL)
+	i965_surface_get_bo (surface)->exec != NULL)
     {
 	status = cairo_device_acquire (surface->intel.drm.base.device);
 	if (likely (status == CAIRO_STATUS_SUCCESS)) {
@@ -1094,7 +1094,7 @@ i965_surface_paint (void			*abstract_dst,
 		    const cairo_pattern_t	*source,
 		    cairo_clip_t		*clip)
 {
-    i965_surface_t *dst = abstract_dst;
+    i965_surface_t *dst = cairo_abstract_surface_cast_i965(abstract_dst);
     cairo_composite_rectangles_t extents;
     cairo_boxes_t boxes;
     cairo_box_t *clip_boxes = boxes.boxes_embedded;
@@ -1588,7 +1588,7 @@ i965_surface_create_internal (cairo_drm_device_t *base_dev,
 	assert (height <= I965_MAX_SIZE);
 
 	size = stride * height;
-	bo = intel_bo_create (to_intel_device (&base_dev->base),
+	bo = intel_bo_create (_cairo_drm_device_cast_intel (base_dev),
 			      size, size,
 			      gpu_target, tiling, stride);
 	if (bo == NULL) {
@@ -1685,7 +1685,7 @@ i965_surface_enable_scan_out (void *abstract_surface)
     if (unlikely (surface->intel.drm.bo == NULL))
 	return _cairo_error (CAIRO_STATUS_INVALID_SIZE);
 
-    bo = to_intel_bo (surface->intel.drm.bo);
+    bo = i965_surface_get_bo (surface);
     if (bo->tiling != I915_TILING_X) {
 	i965_device_t *device = i965_device (surface);
 	cairo_surface_pattern_t pattern;
@@ -1720,7 +1720,7 @@ i965_surface_enable_scan_out (void *abstract_surface)
 	/* swap buffer objects */
 	surface->intel.drm.bo = ((cairo_drm_surface_t *) clone)->bo;
 	((cairo_drm_surface_t *) clone)->bo = &bo->base;
-	bo = to_intel_bo (surface->intel.drm.bo);
+	bo = i965_surface_get_bo (surface);
 
 	cairo_surface_destroy (clone);
     }
@@ -1768,7 +1768,7 @@ _i965_device_throttle (cairo_drm_device_t *device)
 static void
 _i965_device_destroy (void *base)
 {
-    i965_device_t *device = base;
+    i965_device_t *device = _cairo_device_cast_i965 (base);
 
     i965_device_reset (device);
     i965_general_state_reset (device);

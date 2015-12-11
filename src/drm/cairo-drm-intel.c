@@ -493,8 +493,8 @@ FAIL:
 static void
 intel_bo_release (void *_dev, void *_bo)
 {
-    intel_device_t *device = _dev;
-    intel_bo_t *bo = _bo;
+    intel_device_t *device = _cairo_drm_device_cast_intel(_dev);
+    intel_bo_t *bo = _cairo_drm_bo_cast_intel(_bo);
 
     if (bo->virtual != NULL)
 	intel_bo_unmap (bo);
