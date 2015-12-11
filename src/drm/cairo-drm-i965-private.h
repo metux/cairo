@@ -315,6 +315,21 @@ struct i965_surface {
     uint32_t offset;
 };
 
+static inline i965_surface_t*
+cairo_abstract_surface_cast_i965 (cairo_surface_t *surface)
+{
+    return cairo_container_of (
+	cairo_abstract_surface_cast_intel (surface),
+	i965_surface_t,
+	intel);
+}
+
+static inline intel_bo_t *
+i965_surface_get_bo (const i965_surface_t *surface)
+{
+    return _cairo_intel_surface_get_bo (&(surface->intel));
+}
+
 struct i965_pending_relocation {
     uint32_t offset;
     uint32_t read_domains;
