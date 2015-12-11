@@ -1079,6 +1079,7 @@ _clip_and_composite_boxes (i965_surface_t *dst,
 					  extents, clip);
 }
 
+// FIXME: perhaps consolidate w/ other intel surfaces ?
 static cairo_int_status_t
 i965_surface_paint (void			*abstract_dst,
 		    cairo_operator_t		 op,
