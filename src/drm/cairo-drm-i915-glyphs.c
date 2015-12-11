@@ -273,6 +273,22 @@ CLEANUP_SHADER:
     return status;
 }
 
+/* this is just a dummy to produce an unique address */
+static const char *_i915_scaled_font_key = "i915_scaled_font_t";
+
+/* destructor for the i915_scaled_font object */
+static void _i915_scaled_font_fini (
+    cairo_scaled_font_private_t *abstract_priv,
+    cairo_scaled_font_t* scaled_font)
+{
+    i915_scaled_font_private_t *i915_priv = cairo_container_of (abstract_priv, i915_scaled_font_private_t, base);
+
+    // FIXME: do we need to do something more ?
+
+    cairo_list_del (&i915_priv->base.link);
+    free (i915_priv);
+}
+
 cairo_int_status_t
 i915_surface_glyphs (void			*abstract_surface,
 		     cairo_operator_t		 op,
@@ -425,10 +441,19 @@ i915_surface_glyphs (void			*abstract_surface,
     device = i915_device (surface);
 
     _cairo_scaled_font_freeze_cache (scaled_font);
-    if (scaled_font->surface_private == NULL) {
-	scaled_font->surface_private = device;
-	scaled_font->surface_backend = surface->intel.drm.base.backend;
-	cairo_list_add (&scaled_font->link, &device->intel.fonts);
+
+    if (_cairo_scaled_font_find_private(scaled_font, _i915_scaled_font_key) == NULL) {
+	i915_scaled_font_private_t *priv = (i915_scaled_font_private_t*)calloc (1, sizeof (i915_scaled_font_private_t));
+
+	priv->device = device;
+	priv->backend = surface->intel.drm.base.backend;
+
+	_cairo_scaled_font_attach_private (
+		scaled_font,
+		&priv->base,
+		_i915_scaled_font_key,
+		_i915_scaled_font_fini
+	);
     }
 
     memset (glyph_cache, 0, sizeof (glyph_cache));
@@ -476,7 +501,7 @@ i915_surface_glyphs (void			*abstract_surface,
 	    continue;
 	}
 
-	if (scaled_glyph->surface_private == NULL) {
+	if (scaled_glyph->dev_private == NULL) {
 	    status = intel_get_glyph (&device->intel, scaled_font, scaled_glyph);
 	    if (unlikely (status == CAIRO_INT_STATUS_NOTHING_TO_DO)) {
 		status = CAIRO_INT_STATUS_SUCCESS;
@@ -486,7 +511,7 @@ i915_surface_glyphs (void			*abstract_surface,
 		goto FINISH;
 	}
 
-	glyph = intel_glyph_pin (scaled_glyph->surface_private);
+	glyph = intel_glyph_pin (scaled_glyph->dev_private);
 	if (glyph->cache->buffer.bo != last_bo) {
 	    intel_buffer_cache_t *cache = glyph->cache;
 
