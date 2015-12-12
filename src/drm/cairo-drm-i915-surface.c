@@ -1884,7 +1884,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 			      const cairo_clip_t	*clip,
 			      double			 opacity)
 {
-    i915_surface_t *dst = abstract_dst;
+    i915_surface_t *dst = cairo_abstract_surface_cast_i915(abstract_dst);
     cairo_composite_rectangles_t extents;
     composite_polygon_info_t info;
     cairo_box_t boxes_stack[32], *clip_boxes = boxes_stack;
