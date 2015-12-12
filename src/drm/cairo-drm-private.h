@@ -128,6 +128,15 @@ struct _cairo_drm_device {
     cairo_drm_device_t *next, *prev;
 };
 
+static inline cairo_drm_device_t*
+cairo_abstract_device_cast_drm(cairo_device_t* dev)
+{
+    return cairo_container_of(
+	dev,
+	cairo_drm_device_t,
+	base);
+}
+
 typedef struct _cairo_drm_surface {
     cairo_surface_t base;
 
