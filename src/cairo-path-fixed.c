@@ -1295,7 +1295,8 @@ _cairo_path_fixed_is_box (const cairo_path_fixed_t *path,
 
     buf = cairo_path_head (path);
     if (_points_form_rect (buf->points)) {
-	_canonical_box (box, &buf->points[0], &buf->points[2]);
+	if (box != NULL)
+	    _canonical_box (box, &buf->points[0], &buf->points[2]);
 	return TRUE;
     }
 
