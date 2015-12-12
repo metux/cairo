@@ -60,12 +60,12 @@ get_udev_property(struct udev_device *device, const char *name)
     return NULL;
 }
 
-static void
+static cairo_status_t
 _device_flush (void *abstract_device)
 {
     cairo_drm_device_t *device = _cairo_abstract_device_cast_drm(abstract_device);
 
-    device->device.flush (device);
+    return device->device.flush (device);
 }
 
 static void
