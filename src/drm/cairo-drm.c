@@ -147,6 +147,7 @@ cairo_drm_device_get (struct udev_device *device)
 	uint32_t chip_id;
 	cairo_drm_device_create_func_t create_func;
     } driver_map[] = {
+#if CAIRO_HAS_DRM_I965_SURFACE
 	{ 0x8086, 0x29a2, _cairo_drm_i965_device_create }, /* I965_G */
 	{ 0x8086, 0x2982, _cairo_drm_i965_device_create }, /* G35_G */
 	{ 0x8086, 0x2992, _cairo_drm_i965_device_create }, /* I965_Q */
@@ -158,7 +159,9 @@ cairo_drm_device_get (struct udev_device *device)
 	{ 0x8086, 0x2e12, _cairo_drm_i965_device_create }, /* Q45_G */
 	{ 0x8086, 0x2e32, _cairo_drm_i965_device_create }, /* G41_G */
 	{ 0x8086, 0x2a42, _cairo_drm_i965_device_create }, /* GM45_GM */
+#endif
 
+#if CAIRO_HAS_DRM_I915_SURFACE
 	{ 0x8086, 0x2582, _cairo_drm_i915_device_create }, /* I915_G */
 	{ 0x8086, 0x2592, _cairo_drm_i915_device_create }, /* I915_GM */
 	{ 0x8086, 0x258a, _cairo_drm_i915_device_create }, /* E7221_G */
@@ -170,12 +173,18 @@ cairo_drm_device_get (struct udev_device *device)
 	{ 0x8086, 0x29d2, _cairo_drm_i915_device_create }, /* Q33_G */
 	{ 0x8086, 0xa011, _cairo_drm_i915_device_create }, /* IGD_GM */
 	{ 0x8086, 0xa001, _cairo_drm_i915_device_create }, /* IGD_G */
+#endif
 
 	/* XXX i830 */
 
+#if CAIRO_HAS_DRM_INTEL_SURFACE
 	{ 0x8086, ~0, _cairo_drm_intel_device_create },
+#endif
 
+#if CAIRO_HAS_DRM_RADEON_SURFACE
 	{ 0x1002, ~0, _cairo_drm_radeon_device_create },
+#endif
+
 #if CAIRO_HAS_GALLIUM_SURFACE
 	{ ~0, ~0, _cairo_drm_gallium_device_create },
 #endif
