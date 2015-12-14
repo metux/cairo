@@ -450,40 +450,35 @@ edges_compare_x_for_y (const cairo_edge_t *a,
      * compare events at end-points, this happens frequently enough to warrant
      * special casing).
      */
-    enum {
-       HAVE_NEITHER = 0x0,
-       HAVE_AX      = 0x1,
-       HAVE_BX      = 0x2,
-       HAVE_BOTH    = HAVE_AX | HAVE_BX
-    } have_ax_bx = HAVE_BOTH;
-    int32_t ax, bx;
 
     /* XXX given we have x and dx? */
 
-    if (y == a->line.p1.y)
-	ax = a->line.p1.x;
-    else if (y == a->line.p2.y)
-	ax = a->line.p2.x;
+    if (y == a->line.p1.y)		/* HAVE_AX */
+    {
+	if (y == b->line.p1.y)		/* HAVE_BOTH */
+	    return a->line.p1.x - b->line.p1.x;;
+	else if (y == b->line.p2.y)	/* HAVE_BOTH */
+	    return a->line.p1.x - b->line.p2.x;
+	else				/* onyl HAVE_AX */
+	    return -edge_compare_for_y_against_x (b, y, a->line.p1.x);
+    }
+    else if (y == a->line.p2.y)		/* HAE_AX */
+    {
+	if (y == b->line.p1.y)		/* HAVE_BOTH */
+	    return a->line.p2.x - b->line.p1.x;
+	else if (y == b->line.p2.y)	/* HAVE_BOTH */
+	    return a->line.p2.x - b->line.p2.x;
+	else				/* only HAVE_AX */
+	    return -edge_compare_for_y_against_x (b, y, a->line.p2.x);
+    }
     else
-	have_ax_bx &= ~HAVE_AX;
-
-    if (y == b->line.p1.y)
-	bx = b->line.p1.x;
-    else if (y == b->line.p2.y)
-	bx = b->line.p2.x;
-    else
-	have_ax_bx &= ~HAVE_BX;
-
-    switch (have_ax_bx) {
-    default:
-    case HAVE_NEITHER:
-	return edges_compare_x_for_y_general (a, b, y);
-    case HAVE_AX:
-	return -edge_compare_for_y_against_x (b, y, ax);
-    case HAVE_BX:
-	return edge_compare_for_y_against_x (a, y, bx);
-    case HAVE_BOTH:
-	return ax - bx;
+    {
+	if (y == b->line.p1.y)		/* only HAVE_BX */
+	    return edge_compare_for_y_against_x (a, y, b->line.p1.x);
+	else if (y == b->line.p2.y)	/* only HAVE_BX */
+	    return edge_compare_for_y_against_x (a, y, b->line.p2.x);
+	else				/* HAVE_NEITHER */
+	    return edges_compare_x_for_y_general (a, b, y);
     }
 }
 
