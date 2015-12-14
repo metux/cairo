@@ -1,0 +1,23 @@
+#!/bin/bash
+
+PARAM=""
+
+PARAM="$PARAM --enable-jpeg"
+PARAM="$PARAM --enable-drm"
+PARAM="$PARAM --enable-drm-basic"
+PARAM="$PARAM --enable-drm-radeon"
+PARAM="$PARAM --enable-drm-intel"
+PARAM="$PARAM --enable-drm-i915"
+#PARAM="$PARAM --enable-drm-i965"
+PARAM="$PARAM --enable-png"
+
+./autogen.sh \
+    --prefix=/home/nekrad/.usr/cairo \
+    --disable-xlib \
+    --enable-xcb \
+    --disable-ps \
+    --disable-pdf \
+    --disable-interpreter \
+    --disable-gobject \
+    --disable-svg \
+    $PARAM
