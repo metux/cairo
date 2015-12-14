@@ -299,6 +299,32 @@ CAIRO_ENABLE_SURFACE_BACKEND(drm, DRM, no, [
   drm_REQUIRES="libudev >= 136, libdrm >= 2.4"
   PKG_CHECK_MODULES(drm, $drm_REQUIRES, ,
    [use_drm="no (requires $drm_REQUIRES, udev is available from git://git.kernel.org/pub/scm/linux/hotplug/udev.git)"])
+  enable_cairo_surface_drm=1
+])
+
+CAIRO_ENABLE_SURFACE_BACKEND(drm_intel, DRM_INTEL, no, [
+  if test "$enable_cairo_surface_drm" != "1"; then
+    AC_MSG_ERROR([drm-intel backend needs drm backend])
+  fi
+  enable_cairo_surface_drm_intel=1
+])
+
+CAIRO_ENABLE_SURFACE_BACKEND(drm_i915, DRM_I915, no, [
+  if test "$enable_cairo_surface_drm_intel" != "1"; then
+    AC_MSG_ERROR([drm-i915 backend needs drm backend])
+  fi
+])
+
+CAIRO_ENABLE_SURFACE_BACKEND(drm_i965, DRM_I965, no, [
+  if test "$enable_cairo_surface_drm_intel" != "1"; then
+    AC_MSG_ERROR([drm-i965 backend needs drm backend])
+  fi
+])
+
+CAIRO_ENABLE_SURFACE_BACKEND(drm_radeon, DRM_RADEON, no, [
+  if test "$enable_cairo_surface_drm" != "1"; then
+    AC_MSG_ERROR([drm-radeon backend needs drm backend])
+  fi
 ])
 
 CAIRO_ENABLE_SURFACE_BACKEND(gallium, Gallium3D, no, [
