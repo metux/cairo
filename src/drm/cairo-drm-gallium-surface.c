@@ -743,7 +743,7 @@ gallium_device_destroy (void *abstract_device)
 }
 
 cairo_drm_device_t *
-_cairo_drm_gallium_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
+_cairo_drm_gallium_device_create (int fd, dev_t dev)
 {
     gallium_device_t *device;
     cairo_status_t status;
