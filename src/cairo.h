@@ -352,6 +352,8 @@ typedef enum _cairo_status {
     CAIRO_STATUS_LAST_STATUS
 } cairo_status_t;
 
+const char* cairo_status_text(cairo_status_t status);
+
 /**
  * cairo_content_t:
  * @CAIRO_CONTENT_COLOR: The surface will hold color content only. (Since 1.0)
