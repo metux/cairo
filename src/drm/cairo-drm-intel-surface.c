@@ -36,6 +36,9 @@
 #include "cairo-error-private.h"
 #include "cairo-image-surface-private.h"
 
+#define _DEBUG(text, ...)       \
+    { fprintf(stderr, "[drm/intel] " text "\n", ##__VA_ARGS__); }
+
 /* Basic generic/stub surface for intel chipsets */
 
 #define MAX_SIZE 2048
@@ -217,7 +220,10 @@ _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
     cairo_status_t status;
 
     if (! intel_info (fd, NULL))
+    {
+	_DEBUG ("intel_info() failed");
 	return NULL;
+    }
 
     device = malloc (sizeof (intel_device_t));
     if (unlikely (device == NULL))
@@ -240,6 +246,8 @@ _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
     device->base.device.flush = NULL;
     device->base.device.throttle = intel_device_throttle;
     device->base.device.destroy = intel_device_destroy;
+
+    _DEBUG ("initialzing drm device");
 
     return _cairo_drm_device_init (&device->base,
 				   fd, dev,

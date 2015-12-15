@@ -37,6 +37,9 @@
 #include "cairo-error-private.h"
 #include "cairo-image-surface-inline.h"
 
+#define _DEBUG(text, ...)       \
+    { fprintf(stderr, "[drm] " text "\n", ##__VA_ARGS__); }
+
 void
 _cairo_drm_surface_init (cairo_drm_surface_t *surface,
 			 cairo_format_t format,
@@ -98,6 +101,7 @@ cairo_drm_surface_create (cairo_device_t *abstract_device,
 
     if (device != NULL && device->base.status)
     {
+	_DEBUG ("error: %s", cairo_status_to_string (device->base.status));
 	surface = _cairo_surface_create_in_error (device->base.status);
     }
     else if (device == NULL ||
@@ -105,17 +109,21 @@ cairo_drm_surface_create (cairo_device_t *abstract_device,
 	     width == 0 || width > device->max_surface_size ||
 	     height == 0 || height > device->max_surface_size)
     {
+	_DEBUG ("creating image surface ...");
 	surface = cairo_image_surface_create (format, width, height);
     }
     else if (device->base.finished)
     {
+	_DEBUG ("device->base finished");
 	surface = _cairo_surface_create_in_error (CAIRO_STATUS_SURFACE_FINISHED);
     }
     else
     {
 	surface = device->surface.create (device, format, width, height);
-	if (surface->status == CAIRO_STATUS_INVALID_SIZE)
+	if (surface->status == CAIRO_STATUS_INVALID_SIZE) {
+	    _DEBUG ("inalid image size -- creating image surface");
 	    surface = cairo_image_surface_create (format, width, height);
+	}
     }
 
     return surface;
