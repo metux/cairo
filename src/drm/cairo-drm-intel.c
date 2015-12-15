@@ -51,6 +51,9 @@
 #define IMAGE_CACHE_WIDTH 1024
 #define IMAGE_CACHE_HEIGHT 1024
 
+#define _DEBUG(text, ...)       \
+    { fprintf(stderr, "[drm/intel] " text "\n", ##__VA_ARGS__); }
+
 int
 intel_get (int fd, int param)
 {
@@ -73,13 +76,22 @@ intel_info (int fd, uint64_t *gtt_size)
     struct drm_i915_gem_get_aperture info;
 
     if (! intel_get (fd, I915_PARAM_HAS_GEM))
+    {
+	_DEBUG ("I915_PARAM_HAS_GEM failed");
 	return FALSE;
+    }
 
     if (! intel_get (fd, I915_PARAM_HAS_EXECBUF2))
+    {
+	_DEBUG ("I915_PARAM_HAS_EXECBUF2 failed");
 	return FALSE;
+    }
 
     if (ioctl (fd, DRM_IOCTL_I915_GEM_GET_APERTURE, &info) < 0)
+    {
+	_DEBUG ("DRM_IOCTL_I915_GEM_GET_APERTURE failed");
 	return FALSE;
+    }
 
     VG (VALGRIND_MAKE_MEM_DEFINED (&info, sizeof (info)));
 
