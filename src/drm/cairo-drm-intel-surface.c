@@ -89,7 +89,7 @@ intel_surface_acquire_source_image (void *abstract_surface,
 	goto DONE;
 
     if (surface->drm.base.backend->flush != NULL) {
-	status = surface->drm.base.backend->flush (surface);
+	status = surface->drm.base.backend->flush (surface, 0);
 	if (unlikely (status))
 	    return status;
     }
@@ -135,7 +135,7 @@ intel_surface_map_to_image (void *abstract_surface)
 	void *ptr;
 
 	if (surface->drm.base.backend->flush != NULL) {
-	    status = surface->drm.base.backend->flush (surface);
+	    status = surface->drm.base.backend->flush (surface, 0);
 	    if (unlikely (status))
 		return _cairo_surface_create_in_error (status);
 	}
