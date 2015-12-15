@@ -42,6 +42,7 @@
 #include <fcntl.h>
 #include <unistd.h> /* open(), close() */
 #include <errno.h>
+#include <stdio.h>
 
 static cairo_drm_device_t *_cairo_drm_known_devices;
 static cairo_drm_device_t *_cairo_drm_default_device;
@@ -148,6 +149,7 @@ _try_native_driver(struct udev_device *device, dev_t devid, int fd)
     struct udev_device *parent = udev_device_get_parent (device);
     const char *pci_id = get_udev_property (parent, "PCI_ID");
     if (pci_id == NULL || sscanf (pci_id, "%x:%x", &vendor_id, &chip_id) != 2) {
+	fprintf(stderr, "[cairo/drm] failed to retrieve PCI_ID\n");
 	return NULL;
     }
 
@@ -170,6 +172,7 @@ _try_native_driver(struct udev_device *device, dev_t devid, int fd)
 		case 0x2e12:	/* Q45_G */
 		case 0x2e32:	/* G41_G */
 		case 0x2a42:	/* GM45_GM */
+		    fprintf(stderr, "[cairo/drm] detected i965\n");
 		    return _cairo_drm_i965_device_create(fd, devid, vendor_id, chip_id);
 #endif /* CAIRO_HAS_DRM_I965_SURFACE */
 
@@ -185,9 +188,11 @@ _try_native_driver(struct udev_device *device, dev_t devid, int fd)
 		case 0x29d2:	/* Q33_G */
 		case 0xa011:	/* IGD_GM */
 		case 0xa001:	/* IGD_G */
+		    fprintf(stderr, "[cairo/drm] detected i915\n");
 		    return _cairo_drm_i915_device_create(fd, devid, vendor_id, chip_id);
 #endif /* CAIRO_HAS_DRM_I915_SURFACE */
 		default:
+		    fprintf(stderr, "[cairo/drm] detected generic intel\n");
 		    return _cairo_drm_intel_device_create(fd, devid, vendor_id, chip_id);
 	    }
 	    break;
@@ -195,6 +200,7 @@ _try_native_driver(struct udev_device *device, dev_t devid, int fd)
 
 #if CAIRO_HAS_DRM_RADEON_SURFACE
 	case 0x1002:
+	    fprintf(stderr, "[cairo/drm] detected radeon\n");
 	    return _cairo_drm_radeon_device_create(fd, devid, vendor_id, chip_id);
 #endif
     }
@@ -215,17 +221,21 @@ _do_drm_device_get (struct udev_device *device)
     /* try to find an known (already opened) device */
     for (dev = _cairo_drm_known_devices; dev != NULL; dev = dev->next) {
 	if (dev->id == devid) {
+	    fprintf(stderr, "[cairo/drm] using already opened device\n");
 	    return (cairo_drm_device_t *) cairo_device_reference (&dev->base);
 	}
     }
 
     path = udev_device_get_devnode (device);
-    if (path == NULL)
+    if (path == NULL) {
+	fprintf(stderr, "[cairo/drm] failed to fetch device name - falling back to /dev/dri/card0\n");
 	path = "/dev/dri/card0"; /* XXX buggy udev? */
+    }
 
     fd = open (path, O_RDWR);
     if (fd == -1) {
 	/* XXX more likely to be a permissions issue... */
+	fprintf(stderr, "[cairo/drm] failed to open device %s: %s\n", path, strerror(errno));
 	_cairo_error_throw (CAIRO_STATUS_FILE_NOT_FOUND);
 	return NULL;
     }
@@ -235,17 +245,22 @@ _do_drm_device_get (struct udev_device *device)
     if (!getenv ("CAIRO_GALLIUM_FORCE"))
 #endif
     {
+	fprintf(stderr, "[cairo/drm] probing for native driver\n");
 	dev = _try_native_driver(device, devid, fd);
+	fprintf(stderr, " --> driver rec = %ld\n", dev);
 	if (dev != NULL)
 	    return dev;
     }
 
 #if CAIRO_HAS_GALLIUM_SURFACE
     /* try gallium */
+    fprintf(stderr, "[cairo/drm] probing gallium\n");
     dev = _cairo_drm_gallium_device_create(fd, devid);
     if (dev != NULL)
 	return dev;
 #endif
+
+    fprintf(stderr, "[cairo/drm] no driver found\n");
 
     /* FIXME: need an plain framebuffer fallback */
 
