@@ -41,6 +41,7 @@
 #include <libudev.h>
 #include <fcntl.h>
 #include <unistd.h> /* open(), close() */
+#include <errno.h>
 
 static cairo_drm_device_t *_cairo_drm_known_devices;
 static cairo_drm_device_t *_cairo_drm_default_device;
@@ -139,103 +140,82 @@ _cairo_drm_device_init (cairo_drm_device_t *dev,
     return dev;
 }
 
-cairo_device_t *
-cairo_drm_device_get (struct udev_device *device)
+static cairo_drm_device_t *
+_try_native_driver(struct udev_device *device, dev_t devid, int fd)
 {
-    static const struct dri_driver_entry {
-	uint32_t vendor_id;
-	uint32_t chip_id;
-	cairo_drm_device_create_func_t create_func;
-    } driver_map[] = {
+    uint32_t vendor_id, chip_id;
+
+    struct udev_device *parent = udev_device_get_parent (device);
+    const char *pci_id = get_udev_property (parent, "PCI_ID");
+    if (pci_id == NULL || sscanf (pci_id, "%x:%x", &vendor_id, &chip_id) != 2) {
+	return NULL;
+    }
+
+    /* using switch statements, so the compiler has better chance for optimizations */
+    switch (vendor_id)
+    {
+#if CAIRO_HAS_DRM_INTEL_SURFACE
+	case 0x8086:
+	    switch (chip_id)
+	    {
 #if CAIRO_HAS_DRM_I965_SURFACE
-	{ 0x8086, 0x29a2, _cairo_drm_i965_device_create }, /* I965_G */
-	{ 0x8086, 0x2982, _cairo_drm_i965_device_create }, /* G35_G */
-	{ 0x8086, 0x2992, _cairo_drm_i965_device_create }, /* I965_Q */
-	{ 0x8086, 0x2972, _cairo_drm_i965_device_create }, /* I946_GZ */
-	{ 0x8086, 0x2a02, _cairo_drm_i965_device_create }, /* I965_GM */
-	{ 0x8086, 0x2a12, _cairo_drm_i965_device_create }, /* I965_GME */
-	{ 0x8086, 0x2e02, _cairo_drm_i965_device_create }, /* IGD_E_G */
-	{ 0x8086, 0x2e22, _cairo_drm_i965_device_create }, /* G45_G */
-	{ 0x8086, 0x2e12, _cairo_drm_i965_device_create }, /* Q45_G */
-	{ 0x8086, 0x2e32, _cairo_drm_i965_device_create }, /* G41_G */
-	{ 0x8086, 0x2a42, _cairo_drm_i965_device_create }, /* GM45_GM */
-#endif
+		case 0x29a2:	/* I965_G */
+		case 0x2982:	/* G35_G */
+		case 0x2992:	/* I965_Q */
+		case 0x2972:	/* I946_GZ */
+		case 0x2a02:	/* I965_GM */
+		case 0x2a12:	/* I965_GME */
+		case 0x2e02:	/* IGD_E_G */
+		case 0x2e22:	/* G45_G */
+		case 0x2e12:	/* Q45_G */
+		case 0x2e32:	/* G41_G */
+		case 0x2a42:	/* GM45_GM */
+		    return _cairo_drm_i965_device_create(fd, devid, vendor_id, chip_id);
+#endif /* CAIRO_HAS_DRM_I965_SURFACE */
 
 #if CAIRO_HAS_DRM_I915_SURFACE
-	{ 0x8086, 0x2582, _cairo_drm_i915_device_create }, /* I915_G */
-	{ 0x8086, 0x2592, _cairo_drm_i915_device_create }, /* I915_GM */
-	{ 0x8086, 0x258a, _cairo_drm_i915_device_create }, /* E7221_G */
-	{ 0x8086, 0x2772, _cairo_drm_i915_device_create }, /* I945_G */
-	{ 0x8086, 0x27a2, _cairo_drm_i915_device_create }, /* I945_GM */
-	{ 0x8086, 0x27ae, _cairo_drm_i915_device_create }, /* I945_GME */
-	{ 0x8086, 0x29c2, _cairo_drm_i915_device_create }, /* G33_G */
-	{ 0x8086, 0x29b2, _cairo_drm_i915_device_create }, /* Q35_G */
-	{ 0x8086, 0x29d2, _cairo_drm_i915_device_create }, /* Q33_G */
-	{ 0x8086, 0xa011, _cairo_drm_i915_device_create }, /* IGD_GM */
-	{ 0x8086, 0xa001, _cairo_drm_i915_device_create }, /* IGD_G */
-#endif
-
-	/* XXX i830 */
-
-#if CAIRO_HAS_DRM_INTEL_SURFACE
-	{ 0x8086, ~0, _cairo_drm_intel_device_create },
-#endif
+		case 0x2582:	/* I915_G */
+		case 0x2592:	/* I915_GM */
+		case 0x258a:	/* E7221_G */
+		case 0x2772:	/* I945_G */
+		case 0x27a2:	/* I945_GM */
+		case 0x27ae:	/* I945_GME */
+		case 0x29c2:	/* G33_G */
+		case 0x29b2:	/* Q35_G */
+		case 0x29d2:	/* Q33_G */
+		case 0xa011:	/* IGD_GM */
+		case 0xa001:	/* IGD_G */
+		    return _cairo_drm_i915_device_create(fd, devid, vendor_id, chip_id);
+#endif /* CAIRO_HAS_DRM_I915_SURFACE */
+		default:
+		    return _cairo_drm_intel_device_create(fd, devid, vendor_id, chip_id);
+	    }
+	    break;
+#endif /* CAIRO_HAS_DRM_INTEL_SURFACE */
 
 #if CAIRO_HAS_DRM_RADEON_SURFACE
-	{ 0x1002, ~0, _cairo_drm_radeon_device_create },
+	case 0x1002:
+	    return _cairo_drm_radeon_device_create(fd, devid, vendor_id, chip_id);
 #endif
+    }
 
-#if CAIRO_HAS_GALLIUM_SURFACE
-	{ ~0, ~0, _cairo_drm_gallium_device_create },
-#endif
-    };
+    return NULL;
+}
 
+static cairo_drm_device_t *
+_do_drm_device_get (struct udev_device *device)
+{
     cairo_drm_device_t *dev;
     dev_t devid;
-    struct udev_device *parent;
-    const char *pci_id;
-    uint32_t vendor_id, chip_id;
     const char *path;
-    int i, fd;
+    int fd;
 
     devid = udev_device_get_devnum (device);
 
-    CAIRO_MUTEX_LOCK (_cairo_drm_device_mutex);
+    /* try to find an known (already opened) device */
     for (dev = _cairo_drm_known_devices; dev != NULL; dev = dev->next) {
 	if (dev->id == devid) {
-	    dev = (cairo_drm_device_t *) cairo_device_reference (&dev->base);
-	    goto DONE;
-	}
-    }
-
-    parent = udev_device_get_parent (device);
-    pci_id = get_udev_property (parent, "PCI_ID");
-    if (pci_id == NULL || sscanf (pci_id, "%x:%x", &vendor_id, &chip_id) != 2) {
-        dev = NULL;
-	goto DONE;
-    }
-
-#if CAIRO_HAS_GALLIUM_SURFACE
-    if (getenv ("CAIRO_GALLIUM_FORCE"))
-    {
-	i = ARRAY_LENGTH (driver_map) - 1;
-    }
-    else
-#endif
-    {
-	for (i = 0; i < ARRAY_LENGTH (driver_map); i++) {
-	    if (driver_map[i].vendor_id == ~0U)
-		break;
-
-	    if (driver_map[i].vendor_id == vendor_id &&
-		(driver_map[i].chip_id == ~0U || driver_map[i].chip_id == chip_id))
-		break;
-	}
-
-	if (i == ARRAY_LENGTH (driver_map)) {
-	    dev = (cairo_drm_device_t *)
-		_cairo_device_create_in_error (CAIRO_STATUS_DEVICE_ERROR);
-	    goto DONE;
+	    return (cairo_drm_device_t *) cairo_device_reference (&dev->base);
 	}
     }
 
@@ -247,21 +227,43 @@ cairo_drm_device_get (struct udev_device *device)
     if (fd == -1) {
 	/* XXX more likely to be a permissions issue... */
 	_cairo_error_throw (CAIRO_STATUS_FILE_NOT_FOUND);
-	dev = NULL;
-	goto DONE;
+	return NULL;
     }
 
-    dev = driver_map[i].create_func (fd, devid, vendor_id, chip_id);
-    if (dev == NULL)
-	close (fd);
+#if CAIRO_HAS_GALLIUM_SURFACE
+    /* do not probe native driver - just use gallium */
+    if (!getenv ("CAIRO_GALLIUM_FORCE"))
+#endif
+    {
+	dev = _try_native_driver(device, devid, fd);
+	if (dev != NULL)
+	    return dev;
+    }
 
-  DONE:
+#if CAIRO_HAS_GALLIUM_SURFACE
+    /* try gallium */
+    dev = _cairo_drm_gallium_device_create(fd, devid);
+    if (dev != NULL)
+	return dev;
+#endif
+
+    /* FIXME: need an plain framebuffer fallback */
+
+    close (fd);
+
+    return NULL;
+}
+
+cairo_device_t *
+cairo_drm_device_get (struct udev_device *device)
+{
+    CAIRO_MUTEX_LOCK (_cairo_drm_device_mutex);
+    cairo_drm_device_t* dev = _do_drm_device_get(device);
     CAIRO_MUTEX_UNLOCK (_cairo_drm_device_mutex);
 
-    if (dev == NULL)
-        return _cairo_device_create_in_error (CAIRO_STATUS_DEVICE_ERROR);
-    else
-        return &dev->base;
+    return (dev == NULL ?
+            _cairo_device_create_in_error (CAIRO_STATUS_DEVICE_ERROR) :
+             (&dev->base));
 }
 slim_hidden_def (cairo_drm_device_get);
 
