@@ -96,6 +96,7 @@ cairo_drm_surface_create (cairo_device_t *abstract_device,
 
     if (device != NULL && device->base.status)
     {
+	fprintf(stderr, "error: %s\n", cairo_status_text(device->base.status));
 	surface = _cairo_surface_create_in_error (device->base.status);
     }
     else if (device == NULL ||
@@ -103,17 +104,21 @@ cairo_drm_surface_create (cairo_device_t *abstract_device,
 	     width == 0 || width > device->max_surface_size ||
 	     height == 0 || height > device->max_surface_size)
     {
+	fprintf(stderr, "creating image surface ...\n");
 	surface = cairo_image_surface_create (format, width, height);
     }
     else if (device->base.finished)
     {
+	fprintf(stderr, "device->base finished\n");
 	surface = _cairo_surface_create_in_error (CAIRO_STATUS_SURFACE_FINISHED);
     }
     else
     {
 	surface = device->surface.create (device, format, width, height);
-	if (surface->status == CAIRO_STATUS_INVALID_SIZE)
+	if (surface->status == CAIRO_STATUS_INVALID_SIZE) {
+	    fprintf(stderr, "inalid image size -- creating image surface\n");
 	    surface = cairo_image_surface_create (format, width, height);
+	}
     }
 
     return surface;

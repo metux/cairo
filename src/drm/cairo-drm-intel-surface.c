@@ -409,7 +409,10 @@ _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
     cairo_status_t status;
 
     if (! intel_info (fd, NULL))
+    {
+	fprintf(stderr, "[drm/intel] intel_info() failed\n");
 	return NULL;
+    }
 
     device = malloc (sizeof (intel_device_t));
     if (unlikely (device == NULL))
@@ -432,6 +435,8 @@ _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
     device->base.device.flush = NULL;
     device->base.device.throttle = intel_device_throttle;
     device->base.device.destroy = intel_device_destroy;
+
+    fprintf(stderr, "[drm/intel] initialzing drm device\n");
 
     return _cairo_drm_device_init (&device->base,
 				   fd, dev,

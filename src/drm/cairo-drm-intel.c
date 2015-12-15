@@ -73,13 +73,22 @@ intel_info (int fd, uint64_t *gtt_size)
     struct drm_i915_gem_get_aperture info;
 
     if (! intel_get (fd, I915_PARAM_HAS_GEM))
+    {
+	fprintf(stderr, "[drm/intel] I915_PARAM_HAS_GEM failed\n");
 	return FALSE;
+    }
 
     if (! intel_get (fd, I915_PARAM_HAS_EXECBUF2))
+    {
+	fprintf(stderr, "[drm/intel] I915_PARAM_HAS_EXECBUF2 failed\n");
 	return FALSE;
+    }
 
     if (ioctl (fd, DRM_IOCTL_I915_GEM_GET_APERTURE, &info) < 0)
+    {
+	fprintf(stderr, "[drm/intel] DRM_IOCTL_I915_GEM_GET_APERTURE failed\n");
 	return FALSE;
+    }
 
     VG (VALGRIND_MAKE_MEM_DEFINED (&info, sizeof (info)));
 
