@@ -237,7 +237,7 @@ _cairo_drm_radeon_device_create (int fd, dev_t dev, int vendor_id, int chip_id);
 
 #if CAIRO_HAS_GALLIUM_SURFACE
 cairo_private cairo_drm_device_t *
-_cairo_drm_gallium_device_create (int fd, dev_t dev, int vendor_id, int chip_id);
+_cairo_drm_gallium_device_create (int fd, dev_t dev);
 #endif
 
 slim_hidden_proto (cairo_drm_device_default);
