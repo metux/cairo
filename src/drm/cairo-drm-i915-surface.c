@@ -1882,15 +1882,13 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
     cairo_clip_t *local_clip = NULL;
     cairo_int_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_fill (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill (&extents,
 							&(dst->intel.drm.base),
 							op,
 							source,
 							path,
-							clip);
-
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (_cairo_clip_contains_extents (clip, &extents))
 	clip = NULL;

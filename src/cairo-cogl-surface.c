@@ -2305,12 +2305,11 @@ _cairo_cogl_surface_fill (void			    *abstract_surface,
 	return CAIRO_INT_STATUS_UNSUPPORTED;
     }
 
-    status = _cairo_composite_rectangles_init_for_fill (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill (&extents,
 							&surface->base,
 							op, source, path,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
 #ifndef FILL_WITH_COGL_PATH
 #ifdef ENABLE_PATH_CACHE
@@ -2395,12 +2394,11 @@ _cairo_cogl_surface_fill_rectangle (void		     *abstract_surface,
 
     /* FIXME */
 #if 0
-    status = _cairo_composite_rectangles_init_for_fill_rectangle (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill_rectangle (&extents,
 								  &surface->base,
 								  op, source, path,
-								  clip);
-    if (unlikely (status))
-	return status;
+								  clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 #endif
 
     if (source->type == CAIRO_PATTERN_TYPE_SOLID) {

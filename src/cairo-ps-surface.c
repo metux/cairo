@@ -4308,12 +4308,11 @@ _cairo_ps_surface_fill (void		*abstract_surface,
     cairo_composite_rectangles_t extents;
     cairo_int_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_fill (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill (&extents,
 							&surface->base,
 							op, source, path,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     /* use the more accurate extents */
     {

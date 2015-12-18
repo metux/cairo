@@ -358,7 +358,7 @@ _cairo_composite_rectangles_init_for_stroke (cairo_composite_rectangles_t *exten
 	    CAIRO_INT_STATUS_NOTHING_TO_DO);
 }
 
-cairo_int_status_t
+cairo_bool_t
 _cairo_composite_rectangles_init_for_fill (cairo_composite_rectangles_t *extents,
 					   cairo_surface_t *surface,
 					   cairo_operator_t		 op,
@@ -368,15 +368,11 @@ _cairo_composite_rectangles_init_for_fill (cairo_composite_rectangles_t *extents
 {
     if (! _cairo_composite_rectangles_init (extents,
 					    surface, op, source, clip))
-    {
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
-    }
+	return 0;
 
     _cairo_path_fixed_approximate_fill_extents (path, &extents->mask);
 
-    return (_cairo_composite_rectangles_intersect (extents, clip) ?
-	    CAIRO_INT_STATUS_SUCCESS :
-	    CAIRO_INT_STATUS_NOTHING_TO_DO);
+    return _cairo_composite_rectangles_intersect (extents, clip);
 }
 
 cairo_int_status_t

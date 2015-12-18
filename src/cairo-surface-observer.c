@@ -921,14 +921,14 @@ _cairo_surface_observer_fill (void			*abstract_surface,
     add_path (&device->log.fill.path, path, TRUE);
     add_clip (&device->log.fill.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_fill (&composite,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill (&composite,
 							surface->target,
 							op, source, path,
-							clip);
-    if (unlikely (status)) {
+							clip)))
+    {
 	surface->log.fill.noop++;
 	device->log.fill.noop++;
-	return status;
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
     }
 
     midpt (&composite, &x, &y);

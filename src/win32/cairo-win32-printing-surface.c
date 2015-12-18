@@ -1627,12 +1627,11 @@ _cairo_win32_printing_surface_fill (void		        *abstract_surface,
     cairo_solid_pattern_t clear;
     cairo_composite_rectangles_t extents;
 
-    status = _cairo_composite_rectangles_init_for_fill (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_fill (&extents,
 							&surface->win32.base,
 							op, source, path,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     /* use the more accurate extents */
     {

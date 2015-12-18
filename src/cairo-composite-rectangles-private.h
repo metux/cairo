@@ -100,7 +100,7 @@ _cairo_composite_rectangles_init_for_stroke (cairo_composite_rectangles_t *exten
 					     const cairo_matrix_t	*ctm,
 					     const cairo_clip_t		*clip);
 
-cairo_private cairo_int_status_t
+cairo_private cairo_bool_t
 _cairo_composite_rectangles_init_for_fill (cairo_composite_rectangles_t *extents,
 					   cairo_surface_t *surface,
 					   cairo_operator_t	 op,
