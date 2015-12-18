@@ -1095,12 +1095,11 @@ i965_surface_paint (void			*abstract_dst,
 
     /* XXX unsupported operators? use pixel shader blending, eventually */
 
-    status = _cairo_composite_rectangles_init_for_paint (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&extents,
 							 &(dst->intel.drm.base),
 							 op, source,
-							 clip);
-    if (unlikely (status))
-	return status;
+							 clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (clip != NULL && _cairo_clip_contains_extents (clip, &extents))
 	clip = NULL;

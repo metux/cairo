@@ -1988,13 +1988,12 @@ i915_surface_paint_with_alpha (void			*abstract_dst,
     cairo_clip_path_t *clip_path;
     cairo_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_paint (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&extents,
 							 &(dst->intel.drm.base),
 							 op,
 							 source,
-							 clip);
-    if (unlikely (status))
-	return status;
+							 clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (_cairo_clip_contains_extents (clip, &extents))
 	clip = NULL;

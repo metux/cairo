@@ -75,7 +75,7 @@ struct _cairo_composite_rectangles {
     cairo_clip_t *clip; /* clip will be reduced to the minimal container */
 };
 
-cairo_private cairo_int_status_t
+cairo_private cairo_bool_t
 _cairo_composite_rectangles_init_for_paint (cairo_composite_rectangles_t *extents,
 					    cairo_surface_t *surface,
 					    cairo_operator_t	 op,

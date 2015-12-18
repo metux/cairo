@@ -729,14 +729,14 @@ _cairo_surface_observer_paint (void *abstract_surface,
     add_pattern (&device->log.paint.source, source, surface->target);
     add_clip (&device->log.paint.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_paint (&composite,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&composite,
 							 surface->target,
 							 op, source,
-							 clip);
-    if (unlikely (status)) {
+							 clip)))
+    {
 	surface->log.paint.noop++;
 	device->log.paint.noop++;
-	return status;
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
     }
 
     midpt (&composite, &x, &y);
