@@ -333,6 +333,12 @@ _cairo_unbounded_rectangle_init (cairo_rectangle_int_t *rect)
     *rect = _cairo_unbounded_rectangle;
 }
 
+static inline void
+_cairo_zero_rectangle_init (cairo_rectangle_int_t *rect)
+{
+    *rect = (cairo_rectangle_int_t){ 0 };
+}
+
 cairo_private_no_warn cairo_bool_t
 _cairo_rectangle_intersect (cairo_rectangle_int_t *dst,
 			    const cairo_rectangle_int_t *src);
