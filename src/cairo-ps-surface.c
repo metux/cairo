@@ -4183,11 +4183,10 @@ _cairo_ps_surface_mask (void			*abstract_surface,
     cairo_composite_rectangles_t extents;
     cairo_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_mask (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents,
 							&surface->base,
-							op, source, mask, clip);
-    if (unlikely (status))
-	return status;
+							op, source, mask, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
 	status = _cairo_ps_surface_analyze_operation (surface, op, source, mask, &extents.bounded);

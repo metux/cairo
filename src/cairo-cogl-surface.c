@@ -1779,7 +1779,6 @@ _cairo_cogl_surface_mask (void                    *abstract_surface,
 {
     cairo_cogl_surface_t *surface = abstract_surface;
     cairo_composite_rectangles_t extents;
-    cairo_status_t status;
     CoglPipeline *pipeline;
     cairo_matrix_t identity;
 
@@ -1790,18 +1789,15 @@ _cairo_cogl_surface_mask (void                    *abstract_surface,
     if (!is_operator_supported (op))
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
-    status = _cairo_composite_rectangles_init_for_mask (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents,
 							&surface->base,
-							op, source, mask, clip);
-    if (unlikely (status))
-	return status;
+							op, source, mask, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     pipeline = get_source_mask_operator_destination_pipeline (mask, source,
 							      op, surface, &extents);
-    if (!pipeline){
-	status = CAIRO_INT_STATUS_UNSUPPORTED;
-	goto BAIL;
-    }
+    if (!pipeline)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     _cairo_cogl_maybe_log_clip (surface, &extents);
 
@@ -1817,8 +1813,7 @@ _cairo_cogl_surface_mask (void                    *abstract_surface,
     /* The journal will take a reference on the pipeline and clip_path... */
     cogl_object_unref (pipeline);
 
-BAIL:
-    return status;
+    return CAIRO_INT_STATUS_SUCCESS;
 }
 
 static int

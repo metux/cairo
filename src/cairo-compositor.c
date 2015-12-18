@@ -93,11 +93,10 @@ _cairo_compositor_mask (const cairo_compositor_t	*compositor,
     cairo_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    status = _cairo_composite_rectangles_init_for_mask (&extents, surface,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents, surface,
 							op, source, mask,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     do {
 	while (compositor->mask == NULL)
