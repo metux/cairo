@@ -731,12 +731,11 @@ _cairo_recording_surface_paint (void			  *abstract_surface,
 	}
     }
 
-    status = _cairo_composite_rectangles_init_for_paint (&composite,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&composite,
 							 &surface->base,
 							 op, source,
-							 clip);
-    if (unlikely (status))
-	return status;
+							 clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     command = malloc (sizeof (cairo_command_paint_t));
     if (unlikely (command == NULL)) {

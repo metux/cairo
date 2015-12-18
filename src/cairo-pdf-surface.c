@@ -6954,11 +6954,10 @@ _cairo_pdf_surface_paint (void			*abstract_surface,
     cairo_composite_rectangles_t extents;
     cairo_int_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_paint (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&extents,
 							 &surface->base,
-							 op, source, clip);
-    if (unlikely (status))
-	return status;
+							 op, source, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
 	status = _cairo_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);

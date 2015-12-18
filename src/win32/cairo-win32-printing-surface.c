@@ -1362,11 +1362,10 @@ _cairo_win32_printing_surface_paint (void			*abstract_surface,
     cairo_composite_rectangles_t extents;
     cairo_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_paint (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_paint (&extents,
 							 &surface->win32.base,
-							 op, source, clip);
-    if (unlikely (status))
-	return status;
+							 op, source, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     status = _cairo_surface_clipper_set_clip (&surface->clipper, clip);
     if (unlikely (status))
