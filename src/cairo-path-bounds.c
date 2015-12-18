@@ -144,8 +144,7 @@ _cairo_path_fixed_fill_extents (const cairo_path_fixed_t	*path,
 	path->extents.p1.y < path->extents.p2.y) {
 	_cairo_box_round_to_rectangle (&path->extents, extents);
     } else {
-	extents->x = extents->y = 0;
-	extents->width = extents->height = 0;
+	_cairo_zero_rectangle_init (extents);
     }
 }
 
