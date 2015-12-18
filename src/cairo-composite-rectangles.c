@@ -314,7 +314,7 @@ _cairo_composite_rectangles_intersect_mask_extents (cairo_composite_rectangles_t
     return CAIRO_INT_STATUS_SUCCESS;
 }
 
-cairo_int_status_t
+cairo_bool_t
 _cairo_composite_rectangles_init_for_mask (cairo_composite_rectangles_t *extents,
 					   cairo_surface_t*surface,
 					   cairo_operator_t		 op,
@@ -325,16 +325,14 @@ _cairo_composite_rectangles_init_for_mask (cairo_composite_rectangles_t *extents
     if (! _cairo_composite_rectangles_init (extents,
 					    surface, op, source, clip))
     {
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+	return 0;
     }
 
     extents->original_mask_pattern = mask;
     _cairo_composite_reduce_pattern (mask, &extents->mask_pattern);
     _cairo_pattern_get_extents (&extents->mask_pattern.base, &extents->mask);
 
-    return (_cairo_composite_rectangles_intersect (extents, clip) ?
-	    CAIRO_INT_STATUS_SUCCESS :
-	    CAIRO_INT_STATUS_NOTHING_TO_DO);
+    return _cairo_composite_rectangles_intersect (extents, clip);
 }
 
 cairo_int_status_t

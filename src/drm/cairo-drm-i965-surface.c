@@ -1133,11 +1133,10 @@ i965_surface_mask (void				*abstract_dst,
     cairo_region_t *clip_region = NULL;
     cairo_status_t status;
 
-    status = _cairo_composite_rectangles_init_for_mask (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents,
 							&(dst->intel.drm.base),
-							op, source, mask, clip);
-    if (unlikely (status))
-	return status;
+							op, source, mask, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (clip != NULL && _cairo_clip_contains_extents (clip, &extents))
 	clip = NULL;

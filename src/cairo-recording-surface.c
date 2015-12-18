@@ -787,12 +787,11 @@ _cairo_recording_surface_mask (void			*abstract_surface,
 
     TRACE ((stderr, "%s: surface=%d\n", __FUNCTION__, surface->base.unique_id));
 
-    status = _cairo_composite_rectangles_init_for_mask (&composite,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&composite,
 							&surface->base,
 							op, source, mask,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     command = malloc (sizeof (cairo_command_mask_t));
     if (unlikely (command == NULL)) {

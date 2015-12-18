@@ -2065,14 +2065,13 @@ i915_surface_mask (void				*abstract_dst,
 	return i915_surface_paint_with_alpha (dst, op, source, CAIRO_ANTIALIAS_DEFAULT, clip, solid->color.alpha);
     }
 
-    status = _cairo_composite_rectangles_init_for_mask (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents,
 							&(dst->intel.drm.base),
 							op,
 							source,
 							mask,
-							clip);
-    if (unlikely (status))
-	return status;
+							clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (_cairo_clip_contains_extents (clip, &extents))
 	clip = NULL;

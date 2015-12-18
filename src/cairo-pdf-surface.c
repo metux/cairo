@@ -7075,11 +7075,10 @@ _cairo_pdf_surface_mask (void			*abstract_surface,
     cairo_rectangle_int_t r;
     cairo_box_t box;
 
-    status = _cairo_composite_rectangles_init_for_mask (&extents,
+    if (unlikely(!_cairo_composite_rectangles_init_for_mask (&extents,
 							&surface->base,
-							op, source, mask, clip);
-    if (unlikely (status))
-	return status;
+							op, source, mask, clip)))
+	return CAIRO_INT_STATUS_NOTHING_TO_DO;
 
     if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
 	cairo_int_status_t source_status, mask_status;
