@@ -78,7 +78,7 @@ get_prim_name (uint32_t val)
     }
 }
 
-static cairo_bool_t
+static void
 debug_prim (struct debug_stream *stream,
 	    const char *name,
 	    cairo_bool_t dump_floats,
@@ -101,7 +101,6 @@ debug_prim (struct debug_stream *stream,
     fprintf (stderr, "\n");
 
     stream->offset += len * sizeof(uint32_t);
-    return TRUE;
 }
 
 static const char *opcodes[] = {
@@ -1071,14 +1070,19 @@ decode_3d_i915 (struct debug_stream *stream)
 	break;
     case 0x1f:
 	if ((cmd & (1 << 23)) == 0) {
-	    return debug_prim (stream, "3DPRIM (inline)", 1, (cmd & 0x1ffff) + 2);
+	    debug_prim (stream, "3DPRIM (inline)", 1, (cmd & 0x1ffff) + 2);
+	    return TRUE;
 	} else if (cmd & (1 << 17)) {
 	    if ((cmd & 0xffff) == 0)
 		return debug_variable_length_prim (stream);
-	    else
-		return debug_prim (stream, "3DPRIM (indexed)", 0, (((cmd & 0xffff) + 1) / 2) + 1);
-	} else
-	    return debug_prim (stream, "3DPRIM  (indirect sequential)", 0, 2);
+	    else {
+		debug_prim (stream, "3DPRIM (indexed)", 0, (((cmd & 0xffff) + 1) / 2) + 1);
+		return TRUE;
+	    }
+	} else {
+	    debug_prim (stream, "3DPRIM  (indirect sequential)", 0, 2);
+	    return TRUE;
+	}
 	break;
     default:
 	return debug (stream, "", 0);
