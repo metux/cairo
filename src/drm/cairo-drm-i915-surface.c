@@ -2516,11 +2516,6 @@ i915_buffer_cache_init (intel_buffer_cache_t *cache,
     cache->buffer.height = height;
 
     switch (format) {
-    case CAIRO_FORMAT_INVALID:
-    case CAIRO_FORMAT_A1:
-    case CAIRO_FORMAT_RGB24:
-    case CAIRO_FORMAT_RGB16_565:
-	ASSERT_NOT_REACHED;
     case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_ARGB32:
 	cache->buffer.map0 = MAPSURF_32BIT | MT_32BIT_ARGB8888;
@@ -2530,6 +2525,12 @@ i915_buffer_cache_init (intel_buffer_cache_t *cache,
 	cache->buffer.map0 = MAPSURF_8BIT | MT_8BIT_I8;
 	stride = width;
 	break;
+    case CAIRO_FORMAT_INVALID:
+    case CAIRO_FORMAT_A1:
+    case CAIRO_FORMAT_RGB24:
+    case CAIRO_FORMAT_RGB16_565:
+    default:
+	return _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
     }
     assert ((stride & 7) == 0);
     assert (i915_tiling_stride (tiling, stride) == stride);
