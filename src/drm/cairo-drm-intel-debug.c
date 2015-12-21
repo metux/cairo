@@ -789,52 +789,59 @@ debug_map_state (struct debug_stream *stream,
 		 const char *name,
 		 uint32_t len)
 {
+    // the buffer must consist of 2+n*3 dword's
+    assert (((len - 2) % 3) == 0);
+
     uint32_t *ptr = (uint32_t *)(stream->ptr + stream->offset);
-    uint32_t j = 0;
+    uint32_t *end = (uint32_t *)(ptr + len*sizeof(uint32_t));
 
     fprintf (stderr, "%04x:  ", stream->offset);
     fprintf (stderr, "%s (%d dwords):\n", name, len);
-    fprintf (stderr, "\t0x%08x\n",  ptr[j++]);
+    fprintf (stderr, "\t0x%08x\n",  *ptr);
+    ptr+=sizeof(uint32_t);
 
     {
-	fprintf (stderr, "\t0x%08x\n",  ptr[j]);
-	BITS (ptr[j], 15, 0,   "map mask");
-	j++;
+	uint32_t i = *ptr;
+	fprintf (stderr, "\t0x%08x\n", i);
+	BITS (i, 15, 0,   "map mask");
+	ptr+=sizeof(uint32_t);
     }
 
-    while (j < len) {
+    while (ptr < end) {
 	{
-	    fprintf (stderr, "\t  TMn.0: 0x%08x\n", ptr[j]);
-	    fprintf (stderr, "\t map address: 0x%08x\n", (ptr[j] & ~0x3));
-	    FLAG (ptr[j], 1, "vertical line stride");
-	    FLAG (ptr[j], 0, "vertical line stride offset");
-	    j++;
+	    uint32_t i = *ptr;
+	    fprintf (stderr, "\t  TMn.0: 0x%08x\n", i);
+	    fprintf (stderr, "\t map address: 0x%08x\n", (i & ~0x3));
+	    FLAG (i, 1, "vertical line stride");
+	    FLAG (i, 0, "vertical line stride offset");
+	    ptr+=sizeof(uint32_t);
 	}
 
 	{
-	    fprintf (stderr, "\t  TMn.1: 0x%08x\n", ptr[j]);
-	    BITS (ptr[j], 31, 21, "height");
-	    BITS (ptr[j], 20, 10, "width");
-	    BITS (ptr[j], 9, 7, "surface format");
-	    BITS (ptr[j], 6, 3, "texel format");
-	    FLAG (ptr[j], 2, "use fence regs");
-	    FLAG (ptr[j], 1, "tiled surface");
-	    FLAG (ptr[j], 0, "tile walk ymajor");
-	    j++;
+	    uint32_t i = *ptr;
+	    fprintf (stderr, "\t  TMn.1: 0x%08x\n", i);
+	    BITS (i, 31, 21, "height");
+	    BITS (i, 20, 10, "width");
+	    BITS (i, 9, 7, "surface format");
+	    BITS (i, 6, 3, "texel format");
+	    FLAG (i, 2, "use fence regs");
+	    FLAG (i, 1, "tiled surface");
+	    FLAG (i, 0, "tile walk ymajor");
+	    ptr+=sizeof(uint32_t);
 	}
 	{
-	    fprintf (stderr, "\t  TMn.2: 0x%08x\n", ptr[j]);
-	    BITS (ptr[j], 31, 21, "dword pitch");
-	    BITS (ptr[j], 20, 15, "cube face enables");
-	    BITS (ptr[j], 14, 9, "max lod");
-	    FLAG (ptr[j], 8,     "mip layout right");
-	    BITS (ptr[j], 7, 0, "depth");
-	    j++;
+	    uint32_t i = *ptr;
+	    fprintf (stderr, "\t  TMn.2: 0x%08x\n", i);
+	    BITS (i, 31, 21, "dword pitch");
+	    BITS (i, 20, 15, "cube face enables");
+	    BITS (i, 14, 9, "max lod");
+	    FLAG (i, 8,     "mip layout right");
+	    BITS (i, 7, 0, "depth");
+	    ptr+=sizeof(uint32_t);
 	}
     }
 
     stream->offset += len * sizeof(uint32_t);
-    assert(j == len);
     return TRUE;
 }
 
@@ -844,59 +851,65 @@ debug_sampler_state (struct debug_stream *stream,
 		     uint32_t len)
 {
     uint32_t *ptr = (uint32_t *)(stream->ptr + stream->offset);
-    uint32_t j = 0;
+    uint32_t *end = (uint32_t *)(ptr + len*sizeof(uint32_t));
+
+    // the buffer must consist of 2+n*3 dword's
+    assert (((len - 2) % 3) == 0);
 
     fprintf (stderr, "%04x:  ", stream->offset);
     fprintf (stderr, "%s (%d dwords):\n", name, len);
-    fprintf (stderr, "\t0x%08x\n",  ptr[j++]);
+    fprintf (stderr, "\t0x%08x\n",  *ptr);
+    ptr += sizeof(uint32_t);
 
     {
-	fprintf (stderr, "\t0x%08x\n",  ptr[j]);
-	BITS (ptr[j], 15, 0,   "sampler mask");
-	j++;
+	uint32_t i = *ptr;
+	fprintf (stderr, "\t0x%08x\n", i);
+	BITS (i, 15, 0,   "sampler mask");
+	ptr += sizeof(uint32_t);
     }
 
-    while (j < len) {
+    while (ptr < end) {
 	{
-	    fprintf (stderr, "\t  TSn.0: 0x%08x\n", ptr[j]);
-	    FLAG (ptr[j], 31, "reverse gamma");
-	    FLAG (ptr[j], 30, "planar to packed");
-	    FLAG (ptr[j], 29, "yuv->rgb");
-	    BITS (ptr[j], 28, 27, "chromakey index");
-	    BITS (ptr[j], 26, 22, "base mip level");
-	    BITS (ptr[j], 21, 20, "mip mode filter");
-	    BITS (ptr[j], 19, 17, "mag mode filter");
-	    BITS (ptr[j], 16, 14, "min mode filter");
-	    BITS (ptr[j], 13, 5,  "lod bias (s4.4)");
-	    FLAG (ptr[j], 4,      "shadow enable");
-	    FLAG (ptr[j], 3,      "max-aniso-4");
-	    BITS (ptr[j], 2, 0,   "shadow func");
-	    j++;
+	    uint32_t i = *ptr;
+	    fprintf (stderr, "\t  TSn.0: 0x%08x\n", i);
+	    FLAG (i, 31, "reverse gamma");
+	    FLAG (i, 30, "planar to packed");
+	    FLAG (i, 29, "yuv->rgb");
+	    BITS (i, 28, 27, "chromakey index");
+	    BITS (i, 26, 22, "base mip level");
+	    BITS (i, 21, 20, "mip mode filter");
+	    BITS (i, 19, 17, "mag mode filter");
+	    BITS (i, 16, 14, "min mode filter");
+	    BITS (i, 13, 5,  "lod bias (s4.4)");
+	    FLAG (i, 4,      "shadow enable");
+	    FLAG (i, 3,      "max-aniso-4");
+	    BITS (i, 2, 0,   "shadow func");
+	    ptr += sizeof(uint32_t);
 	}
 
 	{
-	    fprintf (stderr, "\t  TSn.1: 0x%08x\n", ptr[j]);
-	    BITS (ptr[j], 31, 24, "min lod");
-	    MBZ( ptr[j], 23, 18 );
-	    FLAG (ptr[j], 17,     "kill pixel enable");
-	    FLAG (ptr[j], 16,     "keyed tex filter mode");
-	    FLAG (ptr[j], 15,     "chromakey enable");
-	    BITS (ptr[j], 14, 12, "tcx wrap mode");
-	    BITS (ptr[j], 11, 9,  "tcy wrap mode");
-	    BITS (ptr[j], 8,  6,  "tcz wrap mode");
-	    FLAG (ptr[j], 5,      "normalized coords");
-	    BITS (ptr[j], 4,  1,  "map (surface) index");
-	    FLAG (ptr[j], 0,      "EAST deinterlacer enable");
-	    j++;
+	    uint32_t i = *ptr;
+	    fprintf (stderr, "\t  TSn.1: 0x%08x\n", i);
+	    BITS (i, 31, 24, "min lod");
+	    MBZ( i, 23, 18 );
+	    FLAG (i, 17,     "kill pixel enable");
+	    FLAG (i, 16,     "keyed tex filter mode");
+	    FLAG (i, 15,     "chromakey enable");
+	    BITS (i, 14, 12, "tcx wrap mode");
+	    BITS (i, 11, 9,  "tcy wrap mode");
+	    BITS (i, 8,  6,  "tcz wrap mode");
+	    FLAG (i, 5,      "normalized coords");
+	    BITS (i, 4,  1,  "map (surface) index");
+	    FLAG (i, 0,      "EAST deinterlacer enable");
+	    ptr += sizeof(uint32_t);
 	}
 	{
-	    fprintf (stderr, "\t  TSn.2: 0x%08x  (default color)\n", ptr[j]);
-	    j++;
+	    fprintf (stderr, "\t  TSn.2: 0x%08x  (default color)\n", *ptr);
+	    ptr += sizeof(uint32_t);
 	}
     }
 
     stream->offset += len * sizeof(uint32_t);
-    assert(j == len);
     return TRUE;
 }
 
@@ -906,34 +919,35 @@ debug_dest_vars (struct debug_stream *stream,
 		 uint32_t len)
 {
     uint32_t *ptr = (uint32_t *)(stream->ptr + stream->offset);
-    uint32_t j = 0;
+
+    // the buffer must consist of 2 dword's
+    assert (len==2);
 
     fprintf (stderr, "%04x:  ", stream->offset);
     fprintf (stderr, "%s (%d dwords):\n", name, len);
-    fprintf (stderr, "\t0x%08x\n",  ptr[j++]);
+    fprintf (stderr, "\t0x%08x\n",  ptr[0]);
 
     {
-	fprintf (stderr, "\t0x%08x\n",  ptr[j]);
-	FLAG (ptr[j], 31,     "early classic ztest");
-	FLAG (ptr[j], 30,     "opengl tex default color");
-	FLAG (ptr[j], 29,     "bypass iz");
-	FLAG (ptr[j], 28,     "lod preclamp");
-	BITS (ptr[j], 27, 26, "dither pattern");
-	FLAG (ptr[j], 25,     "linear gamma blend");
-	FLAG (ptr[j], 24,     "debug dither");
-	BITS (ptr[j], 23, 20, "dstorg x");
-	BITS (ptr[j], 19, 16, "dstorg y");
-	MBZ (ptr[j], 15, 15 );
-	BITS (ptr[j], 14, 12, "422 write select");
-	BITS (ptr[j], 11, 8,  "cbuf format");
-	BITS (ptr[j], 3, 2,   "zbuf format");
-	FLAG (ptr[j], 1,      "vert line stride");
-	FLAG (ptr[j], 1,      "vert line stride offset");
-	j++;
+	uint32_t i = ptr[1];
+	fprintf (stderr, "\t0x%08x\n", i);
+	FLAG (i, 31,     "early classic ztest");
+	FLAG (i, 30,     "opengl tex default color");
+	FLAG (i, 29,     "bypass iz");
+	FLAG (i, 28,     "lod preclamp");
+	BITS (i, 27, 26, "dither pattern");
+	FLAG (i, 25,     "linear gamma blend");
+	FLAG (i, 24,     "debug dither");
+	BITS (i, 23, 20, "dstorg x");
+	BITS (i, 19, 16, "dstorg y");
+	MBZ  (i, 15, 15);
+	BITS (i, 14, 12, "422 write select");
+	BITS (i, 11, 8,  "cbuf format");
+	BITS (i, 3, 2,   "zbuf format");
+	FLAG (i, 1,      "vert line stride");
+	FLAG (i, 1,      "vert line stride offset");
     }
 
     stream->offset += len * sizeof(uint32_t);
-    assert(j == len);
     return TRUE;
 }
 
@@ -942,29 +956,30 @@ static cairo_bool_t debug_buf_info( struct debug_stream *stream,
 				    uint32_t len )
 {
     uint32_t *ptr = (uint32_t *)(stream->ptr + stream->offset);
-    uint32_t j = 0;
+
+    // the buffer must consist of 3 dword's
+    assert (len == 3);
 
     fprintf (stderr, "%04x:  ", stream->offset);
     fprintf (stderr, "%s (%d dwords):\n", name, len);
-    fprintf (stderr, "\t0x%08x\n",  ptr[j++]);
+    fprintf (stderr, "\t0x%08x\n",  ptr[0]);
 
     {
-	fprintf (stderr, "\t0x%08x\n",  ptr[j]);
-	BITS (ptr[j], 28, 28, "aux buffer id");
-	BITS (ptr[j], 27, 24, "buffer id (7=depth, 3=back)");
-	FLAG (ptr[j], 23,     "use fence regs");
-	FLAG (ptr[j], 22,     "tiled surface");
-	FLAG (ptr[j], 21,     "tile walk ymajor");
-	MBZ (ptr[j], 20, 14);
-	BITS (ptr[j], 13, 2,  "dword pitch");
-	MBZ (ptr[j], 2,  0);
-	j++;
+	uint32_t i = ptr[1];
+	fprintf (stderr, "\t0x%08x\n",  i);
+	BITS (i, 28, 28, "aux buffer id");
+	BITS (i, 27, 24, "buffer id (7=depth, 3=back)");
+	FLAG (i, 23,     "use fence regs");
+	FLAG (i, 22,     "tiled surface");
+	FLAG (i, 21,     "tile walk ymajor");
+	MBZ  (i, 20, 14);
+	BITS (i, 13, 2,  "dword pitch");
+	MBZ  (i, 2,  0);
     }
 
-    fprintf (stderr, "\t0x%08x -- buffer base address\n",  ptr[j++]);
+    fprintf (stderr, "\t0x%08x -- buffer base address\n",  ptr[2]);
 
     stream->offset += len * sizeof(uint32_t);
-    assert(j == len);
     return TRUE;
 }
 
