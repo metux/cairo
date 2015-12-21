@@ -54,31 +54,6 @@ radeon_surface_create_similar (void			*abstract_surface,
 				       width, height);
 }
 
-static cairo_status_t
-radeon_surface_flush (void *abstract_surface,
-		      unsigned flags)
-{
-    radeon_surface_t *surface = _cairo_surface_cast_radeon(abstract_surface);
-    cairo_status_t status;
-
-    if (flags)
-	return CAIRO_STATUS_SUCCESS;
-
-    if (surface->base.fallback == NULL)
-	return CAIRO_STATUS_SUCCESS;
-
-    /* kill any outstanding maps */
-    cairo_surface_finish (surface->base.fallback);
-
-    status = cairo_surface_status (surface->base.fallback);
-    cairo_surface_destroy (surface->base.fallback);
-    surface->base.fallback = NULL;
-
-    _cairo_drm_bo_unmap (surface->base.bo);
-
-    return status;
-}
-
 static const cairo_surface_backend_t radeon_surface_backend = {
     .type			= CAIRO_SURFACE_TYPE_DRM,
     .create_context		= _cairo_default_context_create,
@@ -88,7 +63,7 @@ static const cairo_surface_backend_t radeon_surface_backend = {
     .release_source_image	= _cairo_drm_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
-    .flush			= radeon_surface_flush,
+    .flush			= _cairo_drm_surface_flush,
     .paint			= _cairo_drm_surface_paint,
     .mask			= _cairo_drm_surface_mask,
     .stroke			= _cairo_drm_surface_stroke,
