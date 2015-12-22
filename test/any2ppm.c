@@ -102,6 +102,7 @@
 
 #define ARRAY_LENGTH(__array) ((int) (sizeof (__array) / sizeof (__array[0])))
 
+#if CAIRO_HAS_INTERPRETER || CAIRO_CAN_TEST_PDF_SURFACE || CAIRO_CAN_TEST_SVG_SURFACE || CAIRO_HAS_SPECTRE
 static int
 _cairo_writen (int fd, char *buf, int len)
 {
@@ -267,6 +268,8 @@ _create_image (void *closure,
     *out = cairo_image_surface_create (format, width, height);
     return cairo_surface_reference (*out);
 }
+#endif /* CAIRO_HAS_INTERPRETER || CAIRO_CAN_TEST_PDF_SURFACE || CAIRO_CAN_TEST_SVG_SURFACE || CAIRO_HAS_SPECTRE */
+
 
 #if CAIRO_HAS_INTERPRETER
 static const char *
