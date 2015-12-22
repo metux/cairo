@@ -54,14 +54,6 @@ radeon_surface_create_similar (void			*abstract_surface,
 				       width, height);
 }
 
-static void
-radeon_surface_release_source_image (void *abstract_surface,
-				     cairo_image_surface_t *image,
-				     void *image_extra)
-{
-    cairo_surface_destroy (&image->base);
-}
-
 static cairo_status_t
 radeon_surface_flush (void *abstract_surface,
 		      unsigned flags)
@@ -93,7 +85,7 @@ static const cairo_surface_backend_t radeon_surface_backend = {
     .create_similar		= radeon_surface_create_similar,
     .finish			= _cairo_drm_surface_finish,
     .acquire_source_image	= _cairo_drm_surface_acquire_source_image,
-    .release_source_image	= radeon_surface_release_source_image,
+    .release_source_image	= _cairo_drm_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
     .flush			= radeon_surface_flush,
