@@ -155,8 +155,11 @@ intel_bo_read (const intel_device_t *device,
 }
 
 void *
-intel_bo_map (const intel_device_t *device, intel_bo_t *bo)
+_cairo_drm_intel_bo_map (const cairo_drm_device_t *drm_dev, cairo_drm_bo_t *drm_bo)
 {
+    const intel_device_t *device = _cairo_drm_device_cast_intel_const (drm_dev);
+    intel_bo_t *bo = _cairo_drm_bo_cast_intel (drm_bo);
+
     struct drm_i915_gem_set_domain set_domain;
     uint32_t domain;
     int ret;
@@ -763,6 +766,7 @@ intel_device_init (intel_device_t *device, int fd)
     device->gradient_cache.size = 0;
 
     device->base.bo.release = intel_bo_release;
+    device->base.bo_map = _cairo_drm_intel_bo_map;
 
     return CAIRO_STATUS_SUCCESS;
 }
