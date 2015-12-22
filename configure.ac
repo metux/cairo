@@ -302,6 +302,12 @@ CAIRO_ENABLE_SURFACE_BACKEND(drm, DRM, no, [
   enable_cairo_surface_drm=1
 ])
 
+CAIRO_ENABLE_SURFACE_BACKEND(drm_basic, DRM_BASIC, no, [
+  if test "$enable_cairo_surface_drm" != "1"; then
+    AC_MSG_ERROR([drm-basic backend needs drm backend])
+  fi
+])
+
 CAIRO_ENABLE_SURFACE_BACKEND(drm_intel, DRM_INTEL, no, [
   if test "$enable_cairo_surface_drm" != "1"; then
     AC_MSG_ERROR([drm-intel backend needs drm backend])

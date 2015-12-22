@@ -455,6 +455,10 @@ cairo_drm_radeon_sources = \
 		    drm/cairo-drm-radeon.c \
 		    drm/cairo-drm-radeon-surface.c
 
+cairo_drm_basic_sources = \
+		    drm/cairo-drm-basic.c \
+		    drm/cairo-drm-basic-surface.c
+
 cairo_drm_headers = cairo-drm.h
 cairo_drm_private = drm/cairo-drm-private.h
 

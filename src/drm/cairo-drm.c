@@ -230,6 +230,16 @@ _do_drm_device_get (struct udev_device *device)
 	return NULL;
     }
 
+#if CAIRO_HAS_DRM_BASIC_SURFACE
+    if (getenv ("CAIRO_DRM_BASIC_FORCE"))
+    {
+	fprintf (stderr, "[cairo/drm] forcing basic drm interface\n");
+	return _cairo_drm_basic_device_create (fd, devid, -1 , -1);
+    }
+#else
+    fprintf (stderr, "[cairo/drm] no support for basic framebuffer\n");
+#endif
+
 #if CAIRO_HAS_GALLIUM_SURFACE
     /* do not probe native driver - just use gallium */
     if (!getenv ("CAIRO_GALLIUM_FORCE"))
@@ -247,7 +257,11 @@ _do_drm_device_get (struct udev_device *device)
 	return dev;
 #endif
 
-    /* FIXME: need an plain framebuffer fallback */
+    fprintf(stderr, "[cairo/drm] no driver native found - trying dumb framebuffer\n");
+
+    dev = _cairo_drm_basic_device_create(fd, devid, -1, -1);
+    if (dev != NULL)
+	return dev;
 
     close (fd);
 
