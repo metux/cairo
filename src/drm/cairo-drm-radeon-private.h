@@ -179,7 +179,13 @@ cairo_private void
 radeon_bo_wait (const radeon_device_t *dev, radeon_bo_t *bo);
 
 cairo_private void *
-radeon_bo_map (const radeon_device_t *dev, radeon_bo_t *bo);
+_cairo_drm_radeon_bo_map (const cairo_drm_device_t *dev, cairo_drm_bo_t *bo);
+
+static inline void *
+radeon_bo_map (const radeon_device_t *dev, radeon_bo_t *bo)
+{
+    return dev->base.bo.map (&(dev->base), &(bo->base));
+}
 
 cairo_private cairo_drm_bo_t *
 radeon_bo_create (radeon_device_t *dev,

@@ -346,7 +346,13 @@ intel_bo_read (const intel_device_t *dev,
 	       void *data);
 
 cairo_private void *
-intel_bo_map (const intel_device_t *dev, intel_bo_t *bo);
+_cairo_drm_intel_bo_map (const cairo_drm_device_t *dev, cairo_drm_bo_t *bo);
+
+static inline void *
+intel_bo_map (const intel_device_t *dev, intel_bo_t *bo)
+{
+    return dev->base.bo.map (&(dev->base), &(bo->base));
+}
 
 cairo_private cairo_status_t
 intel_bo_init (const intel_device_t *dev,
