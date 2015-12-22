@@ -3,6 +3,7 @@
 PARAM=""
 
 PARAM="$PARAM --enable-drm"
+PARAM="$PARAM --enable-drm-basic"
 PARAM="$PARAM --enable-drm-radeon"
 PARAM="$PARAM --enable-drm-intel"
 PARAM="$PARAM --enable-drm-i915"
