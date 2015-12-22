@@ -263,6 +263,9 @@ _do_drm_device_get (struct udev_device *device)
     fprintf(stderr, "[cairo/drm] no driver found\n");
 
     /* FIXME: need an plain framebuffer fallback */
+    dev = _cairo_drm_basic_device_create(fd, devid, -1, -1);
+    if (dev != NULL)
+	return dev;
 
     close (fd);
 
