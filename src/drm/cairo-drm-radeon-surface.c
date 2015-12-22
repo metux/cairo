@@ -134,7 +134,7 @@ radeon_surface_map_to_image (radeon_surface_t *surface)
 						     surface->base.height,
 						     surface->base.stride);
 	if (unlikely (image->status)) {
-	    radeon_bo_unmap (to_radeon_bo (surface->base.bo));
+	    _cairo_drm_bo_unmap (surface->base.bo);
 	    return image;
 	}
 
@@ -164,7 +164,7 @@ radeon_surface_flush (void *abstract_surface,
     cairo_surface_destroy (surface->base.fallback);
     surface->base.fallback = NULL;
 
-    radeon_bo_unmap (to_radeon_bo (surface->base.bo));
+    _cairo_drm_bo_unmap (surface->base.bo);
 
     return status;
 }
