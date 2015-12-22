@@ -263,6 +263,9 @@ _cairo_drm_device_fini (cairo_drm_device_t *device);
 /* h/w specific backends */
 
 cairo_private cairo_drm_device_t *
+_cairo_drm_basic_device_create (int fd, dev_t dev, int vendor_id, int chip_id);
+
+cairo_private cairo_drm_device_t *
 _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id);
 
 cairo_private cairo_drm_device_t *
