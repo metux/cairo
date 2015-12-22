@@ -256,9 +256,9 @@ i915_bo_exec (i915_device_t *device, intel_bo_t *bo, uint32_t offset)
 
     bo->offset = device->batch.exec[i].offset;
     bo->busy = TRUE;
-    if (bo->virtual)
-	intel_bo_unmap (bo);
     bo->cpu = FALSE;
+
+    _cairo_drm_bo_unmap (&(bo->base));
 
     while (cnt--) {
 	intel_bo_t *bo = device->batch.target_bo[cnt];
@@ -270,8 +270,6 @@ i915_bo_exec (i915_device_t *device, intel_bo_t *bo, uint32_t offset)
 	bo->batch_write_domain = 0;
 	cairo_list_del (&bo->cache_list);
 
-	if (bo->virtual)
-	    intel_bo_unmap (bo);
 	bo->cpu = FALSE;
 
 	intel_bo_destroy (&device->intel, bo);

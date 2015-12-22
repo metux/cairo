@@ -163,8 +163,8 @@ intel_bo_map (const intel_device_t *device, intel_bo_t *bo)
 
     intel_bo_set_tiling (device, bo);
 
-    if (bo->virtual != NULL)
-	return bo->virtual;
+    if (bo->base.mapped != NULL)
+	return bo->base.mapped;
 
     if (bo->cpu && bo->tiling == I915_TILING_NONE) {
 	struct drm_i915_gem_mmap mmap_arg;
@@ -182,7 +182,7 @@ intel_bo_map (const intel_device_t *device, intel_bo_t *bo)
 	    return NULL;
 	}
 
-	bo->virtual = (void *) (uintptr_t) mmap_arg.addr_ptr;
+	bo->base.mapped = (void *) (uintptr_t) mmap_arg.addr_ptr;
 	domain = I915_GEM_DOMAIN_CPU;
     } else {
 	struct drm_i915_gem_mmap_gtt mmap_arg;
@@ -208,11 +208,11 @@ intel_bo_map (const intel_device_t *device, intel_bo_t *bo)
 	    return NULL;
 	}
 
-	bo->virtual = ptr;
+	bo->base.mapped = ptr;
 	domain = I915_GEM_DOMAIN_GTT;
     }
 
-    VG (VALGRIND_MAKE_MEM_DEFINED (bo->virtual, bo->base.size));
+    VG (VALGRIND_MAKE_MEM_DEFINED (bo->base.mapped, bo->base.size));
 
     set_domain.handle = bo->base.handle;
     set_domain.read_domains = domain;
@@ -225,20 +225,13 @@ intel_bo_map (const intel_device_t *device, intel_bo_t *bo)
     } while (ret == -1 && errno == EINTR);
 
     if (ret != 0) {
-	intel_bo_unmap (bo);
+	_cairo_drm_bo_unmap (&(bo->base));
 	_cairo_error_throw (CAIRO_STATUS_DEVICE_ERROR);
 	return NULL;
     }
 
     bo->busy = FALSE;
-    return bo->virtual;
-}
-
-void
-intel_bo_unmap (intel_bo_t *bo)
-{
-    munmap (bo->virtual, bo->base.size);
-    bo->virtual = NULL;
+    return bo->base.mapped;
 }
 
 cairo_bool_t
@@ -398,7 +391,7 @@ intel_bo_create (intel_device_t *device,
     bo->base.name = 0;
 
     bo->offset = 0;
-    bo->virtual = NULL;
+    bo->base.mapped = NULL;
     bo->cpu = TRUE;
 
     bo->_tiling = I915_TILING_NONE;
@@ -457,7 +450,7 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
 
     bo->full_size = bo->base.size;
     bo->offset = 0;
-    bo->virtual = NULL;
+    bo->base.mapped = NULL;
     bo->purgeable = 0;
     bo->busy = TRUE;
     bo->cpu = FALSE;
@@ -496,8 +489,7 @@ intel_bo_release (void *_dev, void *_bo)
     intel_device_t *device = _dev;
     intel_bo_t *bo = _bo;
 
-    if (bo->virtual != NULL)
-	intel_bo_unmap (bo);
+    _cairo_drm_bo_unmap (&(bo->base));
 
     assert (bo->exec == NULL);
     assert (cairo_list_is_empty (&bo->cache_list));
@@ -874,7 +866,7 @@ intel_glyph_cache_add_glyph (intel_device_t *device,
 
     height = glyph_surface->height;
     src = glyph_surface->data;
-    dst = cache->buffer.bo->virtual;
+    dst = cache->buffer.bo->base.mapped;
     if (dst == NULL) {
 	dst = intel_bo_map (device, cache->buffer.bo);
 	if (unlikely (dst == NULL))
