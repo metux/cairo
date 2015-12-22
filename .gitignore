@@ -35,3 +35,8 @@ stamp-h.in
 *.rej
 *-uninstalled.pc
 .vimrc
+
+boilerplate/Makefile.win32.features
+build/Makefile.win32.features
+build/Makefile.win32.features-h
+src/Makefile.win32.features
