@@ -573,3 +573,10 @@ DONE:
     *image_extra = NULL;
     return CAIRO_STATUS_SUCCESS;
 }
+
+void _cairo_drm_surface_release_source_image (void *abstract_surface,
+					      cairo_image_surface_t *image,
+					      void *image_extra)
+{
+    cairo_surface_destroy (&image->base);
+}
