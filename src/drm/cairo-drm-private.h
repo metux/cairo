@@ -112,6 +112,7 @@ struct _cairo_drm_bo {
     uint32_t name;
     uint32_t handle;
     uint32_t size;
+    void*    mapped;
 };
 
 struct _cairo_drm_device {
@@ -183,6 +184,9 @@ _cairo_device_cast_drm_const(const cairo_device_t *device)
     return cairo_container_of (device, const cairo_drm_device_t, base);
 }
 
+cairo_private void
+_cairo_drm_bo_unmap (cairo_drm_bo_t *bo);
+
 static inline cairo_drm_bo_t *
 cairo_drm_bo_reference (cairo_drm_bo_t *bo)
 {
@@ -200,6 +204,8 @@ static cairo_always_inline void
 cairo_drm_bo_destroy (cairo_device_t *abstract_device,
 		      cairo_drm_bo_t *bo)
 {
+    _cairo_drm_bo_unmap (bo);
+
     if (_cairo_reference_count_dec_and_test (&bo->ref_count)) {
 	cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
 	device->bo.release (device, bo);

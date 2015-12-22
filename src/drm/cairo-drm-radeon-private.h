@@ -38,8 +38,6 @@
 typedef struct _radeon_bo {
     cairo_drm_bo_t base;
 
-    void *virtual;
-
     cairo_bool_t in_batch;
     uint32_t read_domains;
     uint32_t write_domain;
@@ -179,9 +177,6 @@ radeon_bo_wait (const radeon_device_t *dev, radeon_bo_t *bo);
 
 cairo_private void *
 radeon_bo_map (const radeon_device_t *dev, radeon_bo_t *bo);
-
-cairo_private void
-radeon_bo_unmap (radeon_bo_t *bo);
 
 cairo_private cairo_drm_bo_t *
 radeon_bo_create (radeon_device_t *dev,
