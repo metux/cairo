@@ -92,6 +92,7 @@ typedef cairo_surface_t *
 
 typedef struct _cairo_drm_bo_backend {
     void (*release) (cairo_drm_device_t *device, cairo_drm_bo_t *bo);
+    void *(*map)    (const cairo_drm_device_t *device, cairo_drm_bo_t *bo);
 } cairo_drm_bo_backend_t;
 
 typedef struct _cairo_drm_device_backend {
