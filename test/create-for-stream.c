@@ -59,6 +59,8 @@
 
 #define BASENAME "create-for-stream.out"
 
+#if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE
+
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
@@ -238,14 +240,15 @@ static cairo_test_status_t
 preamble (cairo_test_context_t *ctx)
 {
     cairo_test_status_t status = CAIRO_TEST_UNTESTED;
-    cairo_test_status_t test_status;
-    char *filename;
     const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
 
 #if CAIRO_HAS_PS_SURFACE
     if (cairo_test_is_target_enabled (ctx, "ps2") ||
 	cairo_test_is_target_enabled (ctx, "ps3"))
     {
+	cairo_test_status_t test_status;
+	char *filename;
+
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
@@ -264,6 +267,9 @@ preamble (cairo_test_context_t *ctx)
 
 #if CAIRO_HAS_PDF_SURFACE
     if (cairo_test_is_target_enabled (ctx, "pdf")) {
+	cairo_test_status_t test_status;
+	char *filename;
+
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
@@ -284,6 +290,9 @@ preamble (cairo_test_context_t *ctx)
     if (cairo_test_is_target_enabled (ctx, "svg11") ||
 	cairo_test_is_target_enabled (ctx, "svg12"))
     {
+	cairo_test_status_t test_status;
+	char *filename;
+
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
@@ -302,6 +311,16 @@ preamble (cairo_test_context_t *ctx)
 
     return status;
 }
+
+#else /* CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE */
+
+static cairo_test_status_t
+preamble (cairo_test_context_t *ctx)
+{
+    return CAIRO_TEST_UNTESTED;
+}
+
+#endif /* CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE */
 
 CAIRO_TEST (create_for_stream,
 	    "Checks creating vector surfaces with user defined I/O\n",
