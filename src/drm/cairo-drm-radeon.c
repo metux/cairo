@@ -138,11 +138,14 @@ radeon_bo_wait (const radeon_device_t *device, radeon_bo_t *bo)
 }
 
 void *
-radeon_bo_map (const radeon_device_t *device, radeon_bo_t *bo)
+_cairo_drm_radeon_bo_map (const cairo_drm_device_t *drm_dev, cairo_drm_bo_t *drm_bo)
 {
     struct drm_radeon_gem_mmap mmap_arg;
     void *ptr;
     int ret;
+
+    const radeon_device_t* device = _cairo_drm_device_cast_radeon_const (drm_dev);
+    radeon_bo_t *bo = _cairo_drm_bo_cast_radeon (drm_bo);
 
     assert (bo->base.mapped == NULL);
 

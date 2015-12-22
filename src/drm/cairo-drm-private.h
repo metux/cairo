@@ -126,6 +126,8 @@ struct _cairo_drm_device {
     cairo_drm_surface_backend_t surface;
     cairo_drm_device_backend_t device;
 
+    void *(*bo_map)(const cairo_drm_device_t *, cairo_drm_bo_t *);
+
     cairo_drm_device_t *next, *prev;
 };
 
