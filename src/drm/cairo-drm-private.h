@@ -283,6 +283,11 @@ _cairo_drm_device_fini (cairo_drm_device_t *device);
 cairo_private cairo_surface_t *
 _cairo_drm_surface_map_to_image (void *abstract_surface);
 
+cairo_private void
+_cairo_drm_surface_release_source_image (void *abstract_surface,
+					 cairo_image_surface_t *image,
+					 void *image_extra);
+
 /* default / dumb framebuffer backend ops */
 
 cairo_private cairo_int_status_t
@@ -335,6 +340,9 @@ _cairo_drm_surface_acquire_source_image (void *abstract_surface,
 					 void **image_extra);
 
 /* h/w specific backends */
+
+cairo_private cairo_drm_device_t *
+_cairo_drm_basic_device_create (int fd, dev_t dev, int vendor_id, int chip_id);
 
 cairo_private cairo_drm_device_t *
 _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id);

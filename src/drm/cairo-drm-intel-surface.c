@@ -62,14 +62,6 @@ intel_surface_finish (void *abstract_surface)
     return _cairo_drm_surface_finish (&surface->drm);
 }
 
-void
-intel_surface_release_source_image (void *abstract_surface,
-				    cairo_image_surface_t *image,
-				    void *image_extra)
-{
-    cairo_surface_destroy (&image->base);
-}
-
 cairo_status_t
 intel_surface_flush (void *abstract_surface, unsigned flags)
 {
@@ -98,7 +90,7 @@ static const cairo_surface_backend_t intel_surface_backend = {
     .create_similar		= intel_surface_create_similar,
     .finish			= intel_surface_finish,
     .acquire_source_image	= _cairo_drm_surface_acquire_source_image,
-    .release_source_image	= intel_surface_release_source_image,
+    .release_source_image	= _cairo_drm_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
     .flush			= intel_surface_flush,
