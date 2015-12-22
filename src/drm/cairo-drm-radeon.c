@@ -87,7 +87,7 @@ radeon_bo_write (const radeon_device_t *device,
 	ptr = radeon_bo_map (device, bo);
 	if (ptr != NULL) {
 	    memcpy (ptr + offset, data, size);
-	    radeon_bo_unmap (bo);
+	    _cairo_drm_bo_unmap (&(bo->base));
 	}
     }
 }
@@ -118,7 +118,7 @@ radeon_bo_read (const radeon_device_t *device,
 	ptr = radeon_bo_map (device, bo);
 	if (ptr != NULL) {
 	    memcpy (data, ptr + offset, size);
-	    radeon_bo_unmap (bo);
+	    _cairo_drm_bo_unmap (&(bo->base));
 	}
     }
 
@@ -144,7 +144,7 @@ radeon_bo_map (const radeon_device_t *device, radeon_bo_t *bo)
     void *ptr;
     int ret;
 
-    assert (bo->virtual == NULL);
+    assert (bo->base.mapped == NULL);
 
     memset (&mmap_arg, 0, sizeof (mmap_arg));
     mmap_arg.handle = bo->base.handle;
@@ -170,19 +170,10 @@ radeon_bo_map (const radeon_device_t *device, radeon_bo_t *bo)
 	return NULL;
     }
 
-    bo->virtual = ptr;
+    bo->base.mapped = ptr;
 
     /* XXX set_domain? */
-    return bo->virtual;
-}
-
-void
-radeon_bo_unmap (radeon_bo_t *bo)
-{
-    assert (bo->virtual != NULL);
-
-    munmap (bo->virtual, bo->base.size);
-    bo->virtual = NULL;
+    return bo->base.mapped;
 }
 
 cairo_drm_bo_t *
@@ -215,7 +206,7 @@ radeon_bo_create (radeon_device_t *device,
     bo->base.handle = create.handle;
     bo->base.size = size;
 
-    bo->virtual = NULL;
+    bo->base.mapped = NULL;
 
     bo->in_batch = FALSE;
     bo->read_domains = 0;
@@ -242,7 +233,7 @@ radeon_bo_create_for_name (radeon_device_t *device,
 	return NULL;
     }
 
-    bo->virtual = NULL;
+    bo->base.mapped = NULL;
 
     bo->in_batch = FALSE;
     bo->read_domains = 0;

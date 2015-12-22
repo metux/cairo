@@ -34,6 +34,7 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <libdrm/drm.h>
+#include <sys/mman.h>  /* munmap() */
 
 #define ERR_DEBUG(x) x
 
@@ -92,8 +93,23 @@ _cairo_drm_bo_close (const cairo_drm_device_t *dev,
     struct drm_gem_close close;
     int ret;
 
+    _cairo_drm_bo_unmap (bo);
+
     close.handle = bo->handle;
     do {
 	ret = ioctl (dev->fd, DRM_IOCTL_GEM_CLOSE, &close);
     } while (ret == -1 && errno == EINTR);
+}
+
+void
+_cairo_drm_bo_unmap (cairo_drm_bo_t *bo)
+{
+    if (unlikely(bo == NULL))
+	return;
+
+    if (unlikely(bo->mapped == NULL))
+	return;
+
+    munmap (bo->mapped, bo->size);
+    bo->mapped = NULL;
 }
