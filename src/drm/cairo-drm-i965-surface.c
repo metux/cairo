@@ -382,10 +382,9 @@ i965_exec (i965_device_t *device, uint32_t offset)
 	bo->exec = NULL;
 	bo->batch_read_domains = 0;
 	bo->batch_write_domain = 0;
-
-	if (bo->virtual)
-	    intel_bo_unmap (bo);
 	bo->cpu = FALSE;
+
+	_cairo_drm_bo_unmap (&bo->base);
 
 	if (bo->purgeable)
 	    ret = intel_bo_madvise (&device->intel, bo, I915_MADV_DONTNEED);

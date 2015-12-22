@@ -75,7 +75,6 @@ typedef struct _intel_bo {
     uint32_t cpu :1;
 
     struct drm_i915_gem_exec_object2 *exec;
-    void *virtual;
 } intel_bo_t;
 
 #define INTEL_BATCH_SIZE (64*1024)
@@ -349,9 +348,6 @@ intel_bo_read (const intel_device_t *dev,
 
 cairo_private void *
 intel_bo_map (const intel_device_t *dev, intel_bo_t *bo);
-
-cairo_private void
-intel_bo_unmap (intel_bo_t *bo);
 
 cairo_private cairo_status_t
 intel_bo_init (const intel_device_t *dev,
