@@ -491,7 +491,7 @@ FAIL:
 }
 
 static void
-intel_bo_release (void *_dev, void *_bo)
+intel_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
 {
     intel_device_t *device = _cairo_drm_device_cast_intel(_dev);
     intel_bo_t *bo = _cairo_drm_bo_cast_intel(_bo);
@@ -502,7 +502,7 @@ intel_bo_release (void *_dev, void *_bo)
     assert (bo->exec == NULL);
     assert (cairo_list_is_empty (&bo->cache_list));
 
-    _cairo_drm_bo_close (&device->base, &bo->base);
+    _cairo_drm_bo_close (_dev, _bo);
     _cairo_freepool_free (&device->bo_pool, bo);
 }
 
