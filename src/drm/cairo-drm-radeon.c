@@ -242,16 +242,6 @@ radeon_bo_create_for_name (radeon_device_t *device,
     return &bo->base;
 }
 
-static void
-radeon_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
-{
-    radeon_device_t *device = _cairo_drm_device_cast_radeon(_dev);
-    radeon_bo_t *bo = _cairo_drm_bo_cast_radeon(_bo);
-
-    _cairo_drm_bo_close (&device->base, &bo->base);
-    _cairo_freepool_free (&device->base.bo_pool, bo);
-}
-
 cairo_surface_t *
 _cairo_drm_radeon_bo_get_image (const cairo_drm_device_t *drm_dev,
 	             cairo_drm_bo_t *drm_bo,
@@ -299,7 +289,7 @@ radeon_device_init (radeon_device_t *device, int fd)
 {
     _cairo_freepool_init (&device->base.bo_pool, sizeof (radeon_bo_t));
 
-    device->base.bo.release   = radeon_bo_release;
+    device->base.bo.release   = _cairo_drm_bo_release;
     device->base.bo.map       = _cairo_drm_radeon_bo_map;
     device->base.bo.get_image = _cairo_drm_radeon_bo_get_image;
 
