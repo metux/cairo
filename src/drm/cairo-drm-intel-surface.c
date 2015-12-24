@@ -124,42 +124,6 @@ intel_surface_release_source_image (void *abstract_surface,
     cairo_surface_destroy (&image->base);
 }
 
-cairo_surface_t *
-intel_surface_map_to_image (void *abstract_surface)
-{
-    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
-
-    if (surface->drm.fallback == NULL) {
-	cairo_surface_t *image;
-	cairo_status_t status;
-	void *ptr;
-
-	if (surface->drm.base.backend->flush != NULL) {
-	    status = surface->drm.base.backend->flush (surface, 0);
-	    if (unlikely (status))
-		return _cairo_surface_create_in_error (status);
-	}
-
-	ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
-			    _cairo_intel_surface_get_bo (surface));
-
-	if (unlikely (ptr == NULL))
-	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
-
-	image = cairo_image_surface_create_for_data (ptr,
-						     surface->drm.format,
-						     surface->drm.width,
-						     surface->drm.height,
-						     surface->drm.stride);
-	if (unlikely (image->status))
-	    return image;
-
-	surface->drm.fallback = image;
-    }
-
-    return surface->drm.fallback;
-}
-
 cairo_status_t
 intel_surface_flush (void *abstract_surface, unsigned flags)
 {
@@ -188,7 +152,7 @@ intel_surface_paint (void *abstract_surface,
 		     const cairo_pattern_t	*source,
 		     const cairo_clip_t		*clip)
 {
-    return _cairo_surface_paint (intel_surface_map_to_image (abstract_surface),
+    return _cairo_surface_paint (_cairo_drm_surface_map_to_image (abstract_surface),
 				 op, source, clip);
 }
 
@@ -199,7 +163,7 @@ intel_surface_mask (void			*abstract_surface,
 		    const cairo_pattern_t	*mask,
 		    const cairo_clip_t		*clip)
 {
-    return _cairo_surface_mask (intel_surface_map_to_image (abstract_surface),
+    return _cairo_surface_mask (_cairo_drm_surface_map_to_image (abstract_surface),
 				op, source, mask, clip);
 }
 
@@ -215,7 +179,7 @@ intel_surface_stroke (void			*abstract_surface,
 		      cairo_antialias_t		 antialias,
 		      const cairo_clip_t		*clip)
 {
-    return _cairo_surface_stroke (intel_surface_map_to_image (abstract_surface),
+    return _cairo_surface_stroke (_cairo_drm_surface_map_to_image (abstract_surface),
 				  op, source, path, stroke_style, ctm, ctm_inverse,
 				  tolerance, antialias, clip);
 }
@@ -230,7 +194,7 @@ intel_surface_fill (void			*abstract_surface,
 		    cairo_antialias_t		 antialias,
 		    const cairo_clip_t		*clip)
 {
-    return _cairo_surface_fill (intel_surface_map_to_image (abstract_surface),
+    return _cairo_surface_fill (_cairo_drm_surface_map_to_image (abstract_surface),
 				op, source, path, fill_rule,
 				tolerance, antialias, clip);
 }
@@ -244,7 +208,7 @@ intel_surface_glyphs (void			*abstract_surface,
 		      cairo_scaled_font_t	*scaled_font,
 		      const cairo_clip_t	*clip)
 {
-    return _cairo_surface_show_text_glyphs (intel_surface_map_to_image (abstract_surface),
+    return _cairo_surface_show_text_glyphs (_cairo_drm_surface_map_to_image (abstract_surface),
 					    op, source,
 					    NULL, 0,
 					    glyphs, num_glyphs,
@@ -426,7 +390,7 @@ _cairo_drm_intel_device_create (int fd, dev_t dev, int vendor_id, int chip_id)
     device->base.surface.flink = _cairo_drm_surface_flink;
     device->base.surface.enable_scan_out = intel_surface_enable_scan_out;
 
-    device->base.surface.map_to_image = intel_surface_map_to_image;
+    device->base.surface.map_to_image = _cairo_drm_surface_map_to_image;
 
     device->base.device.flush = NULL;
     device->base.device.throttle = intel_device_throttle;
