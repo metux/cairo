@@ -203,7 +203,6 @@ typedef struct _intel_device {
     size_t gtt_max_size;
     size_t gtt_avail_size;
 
-    cairo_freepool_t bo_pool;
     cairo_list_t bo_in_flight;
 
     cairo_mutex_t mutex;

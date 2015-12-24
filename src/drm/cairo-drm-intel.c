@@ -380,7 +380,7 @@ intel_bo_create (intel_device_t *device,
     }
 
     /* no cached buffer available, allocate fresh */
-    bo = _cairo_freepool_alloc (&device->bo_pool);
+    bo = _cairo_drm_bo_cast_intel (_cairo_drm_bo_from_pool (&device->base));
     if (unlikely (bo == NULL)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return bo;
@@ -412,7 +412,7 @@ intel_bo_create (intel_device_t *device,
     ret = ioctl (device->base.fd, DRM_IOCTL_I915_GEM_CREATE, &create);
     if (unlikely (ret != 0)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	_cairo_freepool_free (&device->bo_pool, bo);
+	_cairo_freepool_free (&device->base.bo_pool, bo);
 	return NULL;
     }
 
@@ -435,7 +435,7 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
     intel_bo_t *bo;
     int ret;
 
-    bo = _cairo_freepool_alloc (&device->bo_pool);
+    bo = _cairo_drm_bo_cast_intel (_cairo_drm_bo_from_pool (&device->base));
     if (unlikely (bo == NULL)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return NULL;
@@ -450,7 +450,6 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
 
     bo->full_size = bo->base.size;
     bo->offset = 0;
-    bo->base.mapped = NULL;
     bo->purgeable = 0;
     bo->busy = TRUE;
     bo->cpu = FALSE;
@@ -479,7 +478,7 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
     return bo;
 
 FAIL:
-    _cairo_freepool_free (&device->bo_pool, bo);
+    _cairo_freepool_free (&device->base.bo_pool, bo);
     return NULL;
 }
 
@@ -495,7 +494,7 @@ intel_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
     assert (cairo_list_is_empty (&bo->cache_list));
 
     _cairo_drm_bo_close (_dev, _bo);
-    _cairo_freepool_free (&device->bo_pool, bo);
+    _cairo_freepool_free (&device->base.bo_pool, bo);
 }
 
 void
@@ -767,7 +766,6 @@ intel_device_fini (intel_device_t *device)
     _cairo_cache_fini (&device->snapshot_cache);
 
     _intel_gradient_cache_fini (device);
-    _cairo_freepool_fini (&device->bo_pool);
 
     _cairo_drm_device_fini (&device->base);
 }
