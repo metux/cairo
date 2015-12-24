@@ -137,76 +137,6 @@ radeon_surface_flush (void *abstract_surface,
     return status;
 }
 
-static cairo_int_status_t
-radeon_surface_paint (void *abstract_surface,
-		     cairo_operator_t		 op,
-		     const cairo_pattern_t	*source,
-		     const cairo_clip_t		*clip)
-{
-    return _cairo_surface_paint (_cairo_drm_surface_map_to_image (abstract_surface),
-				 op, source, clip);
-}
-
-static cairo_int_status_t
-radeon_surface_mask (void			*abstract_surface,
-		    cairo_operator_t		 op,
-		    const cairo_pattern_t	*source,
-		    const cairo_pattern_t	*mask,
-		    const cairo_clip_t		*clip)
-{
-    return _cairo_surface_mask (_cairo_drm_surface_map_to_image (abstract_surface),
-				op, source, mask, clip);
-}
-
-static cairo_int_status_t
-radeon_surface_stroke (void			*abstract_surface,
-		      cairo_operator_t		 op,
-		      const cairo_pattern_t	*source,
-		      const cairo_path_fixed_t		*path,
-		      const cairo_stroke_style_t	*stroke_style,
-		      const cairo_matrix_t		*ctm,
-		      const cairo_matrix_t		*ctm_inverse,
-		      double			 tolerance,
-		      cairo_antialias_t		 antialias,
-		      const cairo_clip_t		*clip)
-{
-    return _cairo_surface_stroke (_cairo_drm_surface_map_to_image (abstract_surface),
-				  op, source, path, stroke_style, ctm, ctm_inverse,
-				  tolerance, antialias, clip);
-}
-
-static cairo_int_status_t
-radeon_surface_fill (void			*abstract_surface,
-		    cairo_operator_t		 op,
-		    const cairo_pattern_t	*source,
-		    const cairo_path_fixed_t	*path,
-		    cairo_fill_rule_t		 fill_rule,
-		    double			 tolerance,
-		    cairo_antialias_t		 antialias,
-		    const cairo_clip_t		*clip)
-{
-    return _cairo_surface_fill (_cairo_drm_surface_map_to_image (abstract_surface),
-				op, source, path, fill_rule,
-				tolerance, antialias, clip);
-}
-
-static cairo_int_status_t
-radeon_surface_glyphs (void			*abstract_surface,
-		      cairo_operator_t		 op,
-		      const cairo_pattern_t	*source,
-		      cairo_glyph_t		*glyphs,
-		      int			 num_glyphs,
-		      cairo_scaled_font_t	*scaled_font,
-		      const cairo_clip_t	*clip)
-{
-    return _cairo_surface_show_text_glyphs (_cairo_drm_surface_map_to_image (abstract_surface),
-					    op, source,
-					    NULL, 0,
-					    glyphs, num_glyphs,
-					    NULL, 0, 0,
-					    scaled_font, clip);
-}
-
 static const cairo_surface_backend_t radeon_surface_backend = {
     .type			= CAIRO_SURFACE_TYPE_DRM,
     .create_context		= _cairo_default_context_create,
@@ -217,11 +147,11 @@ static const cairo_surface_backend_t radeon_surface_backend = {
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
     .flush			= radeon_surface_flush,
-    .paint			= radeon_surface_paint,
-    .mask			= radeon_surface_mask,
-    .stroke			= radeon_surface_stroke,
-    .fill			= radeon_surface_fill,
-    .show_glyphs		= radeon_surface_glyphs,
+    .paint			= _cairo_drm_dumb_surface_paint,
+    .mask			= _cairo_drm_dumb_surface_mask,
+    .stroke			= _cairo_drm_dumb_surface_stroke,
+    .fill			= _cairo_drm_dumb_surface_fill,
+    .show_glyphs		= _cairo_drm_dumb_surface_glyphs,
 };
 
 static void

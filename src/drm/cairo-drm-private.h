@@ -320,6 +320,52 @@ _cairo_drm_device_fini (cairo_drm_device_t *device);
 cairo_private cairo_surface_t *
 _cairo_drm_surface_map_to_image (void *abstract_surface);
 
+/* default / dumb framebuffer backend ops */
+
+cairo_private cairo_int_status_t
+_cairo_drm_dumb_surface_paint (void			*abstract_surface,
+			       cairo_operator_t		op,
+			       const cairo_pattern_t	*source,
+			       const cairo_clip_t	*clip);
+
+cairo_private cairo_int_status_t
+_cairo_drm_dumb_surface_mask (void			*abstract_surface,
+			      cairo_operator_t		op,
+			      const cairo_pattern_t	*source,
+			      const cairo_pattern_t	*mask,
+			      const cairo_clip_t	*clip);
+
+cairo_private cairo_int_status_t
+_cairo_drm_dumb_surface_stroke (void				*abstract_surface,
+				cairo_operator_t		op,
+				const cairo_pattern_t		*source,
+				const cairo_path_fixed_t	*path,
+				const cairo_stroke_style_t	*stroke_style,
+				const cairo_matrix_t		*ctm,
+				const cairo_matrix_t		*ctm_inverse,
+				double				tolerance,
+				cairo_antialias_t		antialias,
+				const cairo_clip_t		*clip);
+
+cairo_private cairo_int_status_t
+_cairo_drm_dumb_surface_fill (void			*abstract_surface,
+			      cairo_operator_t		op,
+			      const cairo_pattern_t	*source,
+			      const cairo_path_fixed_t	*path,
+			      cairo_fill_rule_t		fill_rule,
+			      double			tolerance,
+			      cairo_antialias_t		antialias,
+			      const cairo_clip_t	*clip);
+
+cairo_private cairo_int_status_t
+_cairo_drm_dumb_surface_glyphs (void			*abstract_surface,
+				cairo_operator_t	op,
+				const cairo_pattern_t	*source,
+				cairo_glyph_t		*glyphs,
+				int			num_glyphs,
+				cairo_scaled_font_t	*scaled_font,
+				const cairo_clip_t	*clip);
+
 /* h/w specific backends */
 
 cairo_private cairo_drm_device_t *
