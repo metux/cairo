@@ -53,8 +53,10 @@ _cairo_drm_surface_init (cairo_drm_surface_t *surface,
 }
 
 cairo_status_t
-_cairo_drm_surface_finish (cairo_drm_surface_t *surface)
+_cairo_drm_surface_finish (void *abstract_surface)
 {
+    cairo_drm_surface_t *surface = _cairo_surface_cast_drm (abstract_surface);
+
     assert (surface->fallback == NULL);
 
     if (surface->bo != NULL)
@@ -514,7 +516,7 @@ _cairo_drm_surface_acquire_source_image (void *abstract_surface,
 					 cairo_image_surface_t **image_out,
 					 void **image_extra)
 {
-    cairo_drm_surface_t *surface = _cairo_surface_cast_drm(abstract_surface);
+    cairo_drm_surface_t *surface = _cairo_surface_cast_drm (abstract_surface);
     cairo_surface_t *image;
     cairo_status_t status;
 

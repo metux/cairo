@@ -289,7 +289,7 @@ _cairo_drm_surface_init (cairo_drm_surface_t *surface,
 			 int width, int height);
 
 cairo_private cairo_status_t
-_cairo_drm_surface_finish (cairo_drm_surface_t *surface);
+_cairo_drm_surface_finish (void *surface);
 
 cairo_private void
 _cairo_drm_surface_get_font_options (void                  *abstract_surface,
