@@ -253,9 +253,9 @@ radeon_bo_create_for_name (radeon_device_t *device,
 }
 
 static void
-radeon_bo_release (void *_dev, void *_bo)
+radeon_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
 {
-    radeon_device_t *device = _cairo_device_cast_radeon(_dev);
+    radeon_device_t *device = _cairo_drm_device_cast_radeon(_dev);
     radeon_bo_t *bo = _cairo_drm_bo_cast_radeon(_bo);
 
     _cairo_drm_bo_close (&device->base, &bo->base);
