@@ -192,8 +192,8 @@ cairo_private cairo_drm_bo_t *
 radeon_bo_create_for_name (radeon_device_t *dev, uint32_t name);
 
 cairo_private cairo_surface_t *
-radeon_bo_get_image (const radeon_device_t *device,
-	             radeon_bo_t *bo,
-		     const cairo_drm_surface_t *surface);
+_cairo_drm_radeon_bo_get_image (const cairo_drm_device_t *device,
+				cairo_drm_bo_t *bo,
+				const cairo_drm_surface_t *surface);
 
 #endif /* CAIRO_DRM_RADEON_PRIVATE_H */
