@@ -108,42 +108,6 @@ radeon_surface_release_source_image (void *abstract_surface,
     cairo_surface_destroy (&image->base);
 }
 
-static cairo_surface_t *
-radeon_surface_map_to_image (radeon_surface_t *surface)
-{
-    if (surface->base.fallback == NULL) {
-	cairo_surface_t *image;
-	cairo_status_t status;
-	void *ptr;
-
-	if (surface->base.base.backend->flush != NULL) {
-	    status = surface->base.base.backend->flush (surface, 0);
-	    if (unlikely (status))
-		return _cairo_surface_create_in_error (status);
-	}
-
-	ptr = radeon_bo_map (_cairo_radeon_surface_get_device (surface),
-			     _cairo_radeon_surface_get_bo (surface));
-
-	if (unlikely (ptr == NULL))
-	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
-
-	image = cairo_image_surface_create_for_data (ptr,
-						     surface->base.format,
-						     surface->base.width,
-						     surface->base.height,
-						     surface->base.stride);
-	if (unlikely (image->status)) {
-	    _cairo_drm_bo_unmap (surface->base.bo);
-	    return image;
-	}
-
-	surface->base.fallback = image;
-    }
-
-    return surface->base.fallback;
-}
-
 static cairo_status_t
 radeon_surface_flush (void *abstract_surface,
 		      unsigned flags)
@@ -175,7 +139,7 @@ radeon_surface_paint (void *abstract_surface,
 		     const cairo_pattern_t	*source,
 		     const cairo_clip_t		*clip)
 {
-    return _cairo_surface_paint (radeon_surface_map_to_image (abstract_surface),
+    return _cairo_surface_paint (_cairo_drm_surface_map_to_image (abstract_surface),
 				 op, source, clip);
 }
 
@@ -186,7 +150,7 @@ radeon_surface_mask (void			*abstract_surface,
 		    const cairo_pattern_t	*mask,
 		    const cairo_clip_t		*clip)
 {
-    return _cairo_surface_mask (radeon_surface_map_to_image (abstract_surface),
+    return _cairo_surface_mask (_cairo_drm_surface_map_to_image (abstract_surface),
 				op, source, mask, clip);
 }
 
@@ -202,7 +166,7 @@ radeon_surface_stroke (void			*abstract_surface,
 		      cairo_antialias_t		 antialias,
 		      const cairo_clip_t		*clip)
 {
-    return _cairo_surface_stroke (radeon_surface_map_to_image (abstract_surface),
+    return _cairo_surface_stroke (_cairo_drm_surface_map_to_image (abstract_surface),
 				  op, source, path, stroke_style, ctm, ctm_inverse,
 				  tolerance, antialias, clip);
 }
@@ -217,7 +181,7 @@ radeon_surface_fill (void			*abstract_surface,
 		    cairo_antialias_t		 antialias,
 		    const cairo_clip_t		*clip)
 {
-    return _cairo_surface_fill (radeon_surface_map_to_image (abstract_surface),
+    return _cairo_surface_fill (_cairo_drm_surface_map_to_image (abstract_surface),
 				op, source, path, fill_rule,
 				tolerance, antialias, clip);
 }
@@ -231,7 +195,7 @@ radeon_surface_glyphs (void			*abstract_surface,
 		      cairo_scaled_font_t	*scaled_font,
 		      const cairo_clip_t	*clip)
 {
-    return _cairo_surface_show_text_glyphs (radeon_surface_map_to_image (abstract_surface),
+    return _cairo_surface_show_text_glyphs (_cairo_drm_surface_map_to_image (abstract_surface),
 					    op, source,
 					    NULL, 0,
 					    glyphs, num_glyphs,
