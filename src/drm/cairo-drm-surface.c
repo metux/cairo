@@ -372,3 +372,41 @@ cairo_drm_surface_unmap (cairo_surface_t *abstract_surface,
     if (--surface->map_count == 0)
 	cairo_surface_flush (&surface->base);
 }
+
+cairo_surface_t *
+_cairo_drm_surface_map_to_image (cairo_drm_surface_t *surface)
+{
+    if (surface->fallback == NULL) {
+	cairo_surface_t *image;
+	cairo_status_t status;
+	void *ptr;
+
+	if (surface->base.backend->flush != NULL) {
+	    status = surface->base.backend->flush (surface, 0);
+	    if (unlikely (status))
+		return _cairo_surface_create_in_error (status);
+	}
+
+	cairo_drm_device_t * drm_dev = _cairo_device_cast_drm (surface->base.device);
+
+	ptr = drm_dev->bo_map (drm_dev, surface->bo);
+
+	if (unlikely (ptr == NULL))
+	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
+
+	image = cairo_image_surface_create_for_data (ptr,
+						     surface->format,
+						     surface->width,
+						     surface->height,
+						     surface->stride);
+
+	if (unlikely (image->status)) {
+	    _cairo_drm_bo_unmap (surface->bo);
+	    return image;
+	}
+
+	surface->fallback = image;
+    }
+
+    return surface->fallback;
+}
