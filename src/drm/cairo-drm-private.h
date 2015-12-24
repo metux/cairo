@@ -48,6 +48,7 @@
 
 typedef struct _cairo_drm_device cairo_drm_device_t;
 typedef struct _cairo_drm_bo cairo_drm_bo_t;
+typedef struct _cairo_drm_surface cairo_drm_surface_t;
 
 typedef cairo_drm_device_t *
 (*cairo_drm_device_create_func_t) (int fd,
@@ -91,6 +92,7 @@ typedef cairo_surface_t *
 typedef struct _cairo_drm_bo_backend {
     void (*release) (cairo_drm_device_t *device, cairo_drm_bo_t *bo);
     void *(*map)    (const cairo_drm_device_t *device, cairo_drm_bo_t *bo);
+    cairo_surface_t *(*get_image) (const cairo_drm_device_t *device, cairo_drm_bo_t *bo, const cairo_drm_surface_t *surface);
 } cairo_drm_bo_backend_t;
 
 typedef struct _cairo_drm_device_backend {
@@ -134,7 +136,7 @@ struct _cairo_drm_device {
     cairo_drm_device_t *next, *prev;
 };
 
-typedef struct _cairo_drm_surface {
+struct _cairo_drm_surface {
     cairo_surface_t base;
 
     cairo_drm_bo_t *bo;
@@ -144,7 +146,7 @@ typedef struct _cairo_drm_surface {
 
     cairo_surface_t *fallback;
     uint32_t map_count;
-} cairo_drm_surface_t;
+};
 
 /* cast from abstract void* pointer */
 static inline cairo_drm_device_t*
@@ -323,6 +325,11 @@ _cairo_drm_dumb_surface_glyphs (void			*abstract_surface,
 				int			num_glyphs,
 				cairo_scaled_font_t	*scaled_font,
 				const cairo_clip_t	*clip);
+
+cairo_private cairo_status_t
+_cairo_drm_surface_acquire_source_image (void *abstract_surface,
+					 cairo_image_surface_t **image_out,
+					 void **image_extra);
 
 /* h/w specific backends */
 
