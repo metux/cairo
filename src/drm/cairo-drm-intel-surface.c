@@ -95,8 +95,9 @@ intel_surface_acquire_source_image (void *abstract_surface,
 	    return status;
     }
 
-    ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
-			_cairo_intel_surface_get_bo (surface));
+    cairo_drm_device_t *drm_dev = _cairo_drm_surface_get_device (&(surface->drm));
+
+    ptr = drm_dev->bo_map (drm_dev, surface->drm.bo);
 
     if (unlikely (ptr == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
@@ -141,8 +142,9 @@ intel_surface_map_to_image (void *abstract_surface)
 		return _cairo_surface_create_in_error (status);
 	}
 
-	ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
-			    _cairo_intel_surface_get_bo (surface));
+	cairo_drm_device_t *drm_dev = _cairo_drm_surface_get_device (&(surface->drm));
+
+	ptr = drm_dev->bo_map (drm_dev, surface->drm.bo);
 
 	if (unlikely (ptr == NULL))
 	    return _cairo_surface_create_in_error (CAIRO_STATUS_NO_MEMORY);
