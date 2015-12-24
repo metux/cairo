@@ -438,8 +438,6 @@ cairo_private void
 intel_surface_release_source_image (void *abstract_surface,
 				    cairo_image_surface_t *image,
 				    void *image_extra);
-cairo_private cairo_surface_t *
-intel_surface_map_to_image (void *abstract_surface);
 
 cairo_private cairo_status_t
 intel_surface_flush (void *abstract_surface,
