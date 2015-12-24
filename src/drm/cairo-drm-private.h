@@ -45,6 +45,7 @@
 #include <sys/types.h> /* dev_t */
 
 typedef struct _cairo_drm_device cairo_drm_device_t;
+typedef struct _cairo_drm_bo cairo_drm_bo_t;
 
 typedef cairo_drm_device_t *
 (*cairo_drm_device_create_func_t) (int fd,
@@ -86,7 +87,7 @@ typedef cairo_surface_t *
 (*cairo_drm_surface_map_to_image_func_t) (void *surface);
 
 typedef struct _cairo_drm_bo_backend {
-    void (*release) (void *device, void *bo);
+    void (*release) (cairo_drm_device_t *device, cairo_drm_bo_t *bo);
 } cairo_drm_bo_backend_t;
 
 typedef struct _cairo_drm_device_backend {
@@ -104,12 +105,12 @@ typedef struct _cairo_drm_surface_backend {
     cairo_drm_surface_map_to_image_func_t map_to_image;
 } cairo_drm_surface_backend_t;
 
-typedef struct _cairo_drm_bo {
+struct _cairo_drm_bo {
     cairo_reference_count_t ref_count;
     uint32_t name;
     uint32_t handle;
     uint32_t size;
-} cairo_drm_bo_t;
+};
 
 struct _cairo_drm_device {
     cairo_device_t base;
