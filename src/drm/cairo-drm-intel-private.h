@@ -429,11 +429,6 @@ intel_snapshot_cache_thaw (intel_device_t *device);
 cairo_private void
 intel_throttle (intel_device_t *device);
 
-cairo_private cairo_status_t
-intel_surface_acquire_source_image (void *abstract_surface,
-				    cairo_image_surface_t **image_out,
-				    void **image_extra);
-
 cairo_private void
 intel_surface_release_source_image (void *abstract_surface,
 				    cairo_image_surface_t *image,
