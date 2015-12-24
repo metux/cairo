@@ -379,7 +379,7 @@ radeon_device_destroy (void *data)
 {
     radeon_device_t *device = _cairo_device_cast_radeon (data);
 
-    radeon_device_fini (device);
+    _cairo_drm_device_fini (&device->base);
 
     free (data);
 }
