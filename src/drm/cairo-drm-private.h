@@ -193,6 +193,9 @@ _cairo_device_cast_drm_const(const cairo_device_t *device)
 cairo_private void
 _cairo_drm_bo_unmap (cairo_drm_bo_t *bo);
 
+cairo_private void
+_cairo_drm_bo_release (cairo_drm_device_t *device, cairo_drm_bo_t *bo);
+
 static inline cairo_drm_bo_t *
 cairo_drm_bo_reference (cairo_drm_bo_t *bo)
 {
