@@ -62,48 +62,6 @@ radeon_surface_finish (void *abstract_surface)
     return _cairo_drm_surface_finish (&surface->base);
 }
 
-static cairo_status_t
-radeon_surface_acquire_source_image (void *abstract_surface,
-				     cairo_image_surface_t **image_out,
-				     void **image_extra)
-{
-    radeon_surface_t *surface = abstract_surface;
-    cairo_surface_t *image;
-    cairo_status_t status;
-
-    /* XXX batch flush */
-
-    if (surface->base.fallback != NULL) {
-	image = surface->base.fallback;
-	goto DONE;
-    }
-
-    image = _cairo_surface_has_snapshot (&surface->base.base,
-	                                 &_cairo_image_surface_backend);
-    if (image != NULL)
-	goto DONE;
-
-    if (surface->base.base.backend->flush != NULL) {
-	status = surface->base.base.backend->flush (surface, 0);
-	if (unlikely (status))
-	    return status;
-    }
-
-    image = radeon_bo_get_image (_cairo_radeon_surface_get_device (surface),
-				 _cairo_radeon_surface_get_bo (surface),
-				&surface->base);
-    status = image->status;
-    if (unlikely (status))
-	return status;
-
-    _cairo_surface_attach_snapshot (&surface->base.base, image, cairo_surface_destroy);
-
-DONE:
-    *image_out = (cairo_image_surface_t *) cairo_surface_reference (image);
-    *image_extra = NULL;
-    return CAIRO_STATUS_SUCCESS;
-}
-
 static void
 radeon_surface_release_source_image (void *abstract_surface,
 				     cairo_image_surface_t *image,
@@ -142,7 +100,7 @@ static const cairo_surface_backend_t radeon_surface_backend = {
     .create_context		= _cairo_default_context_create,
     .create_similar		= radeon_surface_create_similar,
     .finish			= radeon_surface_finish,
-    .acquire_source_image	= radeon_surface_acquire_source_image,
+    .acquire_source_image	= _cairo_drm_surface_acquire_source_image,
     .release_source_image	= radeon_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,

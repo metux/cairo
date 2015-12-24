@@ -62,61 +62,6 @@ intel_surface_finish (void *abstract_surface)
     return _cairo_drm_surface_finish (&surface->drm);
 }
 
-static void
-surface_finish_and_destroy (cairo_surface_t *surface)
-{
-    cairo_surface_finish (surface);
-    cairo_surface_destroy (surface);
-}
-
-cairo_status_t
-intel_surface_acquire_source_image (void *abstract_surface,
-				    cairo_image_surface_t **image_out,
-				    void **image_extra)
-{
-    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
-    cairo_surface_t *image;
-    cairo_status_t status;
-    void *ptr;
-
-    if (surface->drm.fallback != NULL) {
-	image = surface->drm.fallback;
-	goto DONE;
-    }
-
-    image = _cairo_surface_has_snapshot (&surface->drm.base,
-	                                 &_cairo_image_surface_backend);
-    if (image != NULL)
-	goto DONE;
-
-    if (surface->drm.base.backend->flush != NULL) {
-	status = surface->drm.base.backend->flush (surface, 0);
-	if (unlikely (status))
-	    return status;
-    }
-
-    ptr = intel_bo_map (_cairo_intel_surface_get_device (surface),
-			_cairo_intel_surface_get_bo (surface));
-
-    if (unlikely (ptr == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-
-    image = cairo_image_surface_create_for_data (ptr,
-						 surface->drm.format,
-						 surface->drm.width,
-						 surface->drm.height,
-						 surface->drm.stride);
-    if (unlikely (image->status))
-	return image->status;
-
-    _cairo_surface_attach_snapshot (&surface->drm.base, image, surface_finish_and_destroy);
-
-DONE:
-    *image_out = (cairo_image_surface_t *) cairo_surface_reference (image);
-    *image_extra = NULL;
-    return CAIRO_STATUS_SUCCESS;
-}
-
 void
 intel_surface_release_source_image (void *abstract_surface,
 				    cairo_image_surface_t *image,
@@ -152,7 +97,7 @@ static const cairo_surface_backend_t intel_surface_backend = {
     .create_context		= _cairo_default_context_create,
     .create_similar		= intel_surface_create_similar,
     .finish			= intel_surface_finish,
-    .acquire_source_image	= intel_surface_acquire_source_image,
+    .acquire_source_image	= _cairo_drm_surface_acquire_source_image,
     .release_source_image	= intel_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
