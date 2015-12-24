@@ -33,7 +33,7 @@
 #include "cairoint.h"
 
 #include "cairo-drm-private.h"
-
+#include "cairo-freelist-private.h"
 #include "cairo-device-private.h"
 #include "cairo-error-private.h"
 
@@ -368,6 +368,8 @@ _cairo_drm_device_fini (cairo_drm_device_t *device)
 {
     if (device->fd != -1)
 	close (device->fd);
+
+    _cairo_freepool_fini (&device->bo_pool);
 }
 
 void

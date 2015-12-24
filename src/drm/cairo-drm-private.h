@@ -41,6 +41,8 @@
 #include "cairo-device-private.h"
 #include "cairo-reference-count-private.h"
 #include "cairo-surface-private.h"
+#include "cairo-freelist-type-private.h"
+#include "cairo-freelist-private.h"
 
 #include <sys/types.h> /* dev_t */
 
@@ -126,6 +128,7 @@ struct _cairo_drm_device {
     cairo_drm_bo_backend_t bo;
     cairo_drm_surface_backend_t surface;
     cairo_drm_device_backend_t device;
+    cairo_freepool_t bo_pool;
 
     cairo_drm_device_t *next, *prev;
 };
@@ -196,6 +199,18 @@ static inline cairo_drm_device_t *
 _cairo_drm_surface_get_device (cairo_drm_surface_t *surface)
 {
     return _cairo_device_cast_drm(surface->base.device);
+}
+
+static inline cairo_always_inline cairo_drm_bo_t *
+_cairo_drm_bo_from_pool (cairo_drm_device_t *device)
+{
+    cairo_drm_bo_t *bo = _cairo_freepool_alloc (&device->bo_pool);
+
+    if (unlikely(bo == NULL))
+	return NULL;
+    bo->mapped = NULL;
+
+    return bo;
 }
 
 static cairo_always_inline void

@@ -49,7 +49,6 @@ typedef struct _radeon_bo {
 
 typedef struct _radeon_device {
     cairo_drm_device_t base;
-    cairo_freepool_t bo_pool;
 
     uint64_t vram_limit;
     uint64_t gart_limit;

@@ -61,6 +61,7 @@ _cairo_drm_bo_open_for_name (const cairo_drm_device_t *dev,
     bo->name = name;
     bo->size = open.size;
     bo->handle = open.handle;
+    bo->mapped = NULL;
 
     return CAIRO_STATUS_SUCCESS;
 }
