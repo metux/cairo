@@ -317,6 +317,9 @@ _cairo_drm_device_init (cairo_drm_device_t *device,
 cairo_private void
 _cairo_drm_device_fini (cairo_drm_device_t *device);
 
+cairo_private cairo_surface_t *
+_cairo_drm_surface_map_to_image (void *abstract_surface);
+
 /* h/w specific backends */
 
 cairo_private cairo_drm_device_t *
