@@ -401,3 +401,11 @@ _cairo_drm_size_is_valid (cairo_device_t *abstract_device,
     return width  <= device->max_surface_size &&
 	   height <= device->max_surface_size;
 }
+
+void
+_cairo_drm_bo_release (cairo_drm_device_t *device, cairo_drm_bo_t *bo)
+{
+    _cairo_drm_bo_unmap (bo);
+    _cairo_drm_bo_close (device, bo);
+    _cairo_freepool_free (&device->bo_pool, bo);
+}
