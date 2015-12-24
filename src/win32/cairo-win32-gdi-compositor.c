@@ -219,7 +219,7 @@ copy_boxes (cairo_win32_display_surface_t *dst,
     pattern = (const cairo_surface_pattern_t *) source;
     surface = _cairo_surface_get_source (pattern->surface, &cb.limit);
     if (surface->type == CAIRO_SURFACE_TYPE_IMAGE) {
-	surface = to_image_surface(surface)->parent;
+	surface = _cairo_surface_cast_image (surface)->parent;
 	if (surface == NULL)
 	    return CAIRO_INT_STATUS_UNSUPPORTED;
     }
@@ -285,7 +285,7 @@ upload_boxes (cairo_win32_display_surface_t *dst,
 	if (status)
 	    return status;
     } else
-	image = to_image_surface(surface);
+	image = _cairo_surface_cast_image (surface);
 
     status = CAIRO_INT_STATUS_UNSUPPORTED;
     if (!(image->format == CAIRO_FORMAT_ARGB32 ||
@@ -342,7 +342,7 @@ alpha_blend_boxes (cairo_win32_display_surface_t *dst,
     pattern = (const cairo_surface_pattern_t *) source;
     surface = _cairo_surface_get_source (pattern->surface, &cb.limit);
     if (surface->type == CAIRO_SURFACE_TYPE_IMAGE) {
-	surface = to_image_surface(surface)->parent;
+	surface = _cairo_surface_cast_image (surface)->parent;
 	if (surface == NULL)
 	    return CAIRO_INT_STATUS_UNSUPPORTED;
     }
