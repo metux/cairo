@@ -316,7 +316,7 @@ _cairo_win32_display_surface_create_for_dc (HDC             original_dc,
     if (status)
 	goto FAIL;
 
-    _cairo_image_surface_set_parent (to_image_surface(surface->image),
+    _cairo_image_surface_set_parent (_cairo_surface_cast_image(surface->image),
 				     &surface->win32.base);
 
     surface->win32.format = format;
@@ -416,10 +416,10 @@ _cairo_win32_display_surface_finish (void *abstract_surface)
 {
     cairo_win32_display_surface_t *surface = abstract_surface;
 
-    if (surface->image && to_image_surface(surface->image)->parent) {
-	assert (to_image_surface(surface->image)->parent == &surface->win32.base);
+    if (surface->image && _cairo_surface_cast_image (surface->image)->parent) {
+	assert (_cairo_surface_cast_image(surface->image)->parent == &surface->win32.base);
 	/* Unhook ourselves first to avoid the double-unref from the image */
-	to_image_surface(surface->image)->parent = NULL;
+	_cairo_surface_cast_image (surface->image)->parent = NULL;
 	cairo_surface_finish (surface->image);
 	cairo_surface_destroy (surface->image);
     }

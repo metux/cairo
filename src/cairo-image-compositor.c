@@ -2080,10 +2080,10 @@ mono_renderer_init (cairo_image_span_renderer_t	*r,
 		 (dst->base.is_clear || (dst->base.content & CAIRO_CONTENT_ALPHA) == 0))) &&
 	       composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SURFACE &&
 	       composite->source_pattern.surface.surface->backend->type == CAIRO_SURFACE_TYPE_IMAGE &&
-	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
+	       _cairo_surface_cast_image (composite->source_pattern.surface.surface)->format == dst->format)
     {
        cairo_image_surface_t *src =
-	   to_image_surface(composite->source_pattern.surface.surface);
+	   _cairo_surface_cast_image (composite->source_pattern.surface.surface);
        int tx, ty;
 
 	if (_cairo_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
@@ -2850,10 +2850,10 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 		 (dst->base.is_clear || (dst->base.content & CAIRO_CONTENT_ALPHA) == 0))) &&
 	       composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SURFACE &&
 	       composite->source_pattern.surface.surface->backend->type == CAIRO_SURFACE_TYPE_IMAGE &&
-	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
+	       _cairo_surface_cast_image (composite->source_pattern.surface.surface)->format == dst->format)
     {
        cairo_image_surface_t *src =
-	   to_image_surface(composite->source_pattern.surface.surface);
+	   _cairo_surface_cast_image (composite->source_pattern.surface.surface);
        int tx, ty;
 
 	if (_cairo_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
