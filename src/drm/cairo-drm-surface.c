@@ -501,3 +501,66 @@ _cairo_drm_surface_glyphs (void				*abstract_surface,
 					    scaled_font,
 					    clip);
 }
+
+static void
+_surface_finish_and_destroy (cairo_surface_t *surface)
+{
+    cairo_surface_finish (surface);
+    cairo_surface_destroy (surface);
+}
+
+cairo_status_t
+_cairo_drm_surface_acquire_source_image (void *abstract_surface,
+					 cairo_image_surface_t **image_out,
+					 void **image_extra)
+{
+    cairo_drm_surface_t *surface = _cairo_surface_cast_drm(abstract_surface);
+    cairo_surface_t *image;
+    cairo_status_t status;
+
+    if (surface->fallback != NULL) {
+	image = surface->fallback;
+	goto DONE;
+    }
+
+    image = _cairo_surface_has_snapshot (&surface->base,
+					 &_cairo_image_surface_backend);
+    if (image != NULL)
+	goto DONE;
+
+    if (surface->base.backend->flush != NULL) {
+	status = surface->base.backend->flush (surface, 0);
+	if (unlikely (status))
+	    return status;
+    }
+
+    cairo_drm_device_t *drm_dev = _cairo_drm_surface_get_device (surface);
+
+    if (drm_dev->bo.get_image == NULL)
+    {
+	void *ptr = drm_dev->bo.map (drm_dev, surface->bo);
+
+	if (unlikely (ptr == NULL))
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+	image = cairo_image_surface_create_for_data (ptr,
+						     surface->format,
+						     surface->width,
+						     surface->height,
+						     surface->stride);
+    }
+    else
+    {
+	image = drm_dev->bo.get_image (drm_dev, surface->bo, surface);
+    }
+
+    if (unlikely (image->status))
+	return image->status;
+
+    _cairo_surface_attach_snapshot (&surface->base, image, _surface_finish_and_destroy);
+
+DONE:
+    *image_out = (cairo_image_surface_t *) cairo_surface_reference (image);
+    *image_extra = NULL;
+    return CAIRO_STATUS_SUCCESS;
+}
