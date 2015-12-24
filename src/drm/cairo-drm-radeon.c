@@ -185,7 +185,7 @@ radeon_bo_create (radeon_device_t *device,
     radeon_bo_t *bo;
     int ret;
 
-    bo = _cairo_freepool_alloc (&device->bo_pool);
+    bo = _cairo_drm_bo_cast_radeon (_cairo_drm_bo_from_pool (&device->base));
     if (unlikely (bo == NULL))
 	return NULL;
 
@@ -199,14 +199,12 @@ radeon_bo_create (radeon_device_t *device,
 	ret = ioctl (device->base.fd, DRM_IOCTL_RADEON_GEM_CREATE, &create);
     } while (ret == -1 && errno == EINTR);
     if (ret == -1) {
-	_cairo_freepool_free (&device->bo_pool, bo);
+	_cairo_freepool_free (&device->base.bo_pool, bo);
 	return NULL;
     }
 
     bo->base.handle = create.handle;
     bo->base.size = size;
-
-    bo->base.mapped = NULL;
 
     bo->in_batch = FALSE;
     bo->read_domains = 0;
@@ -223,17 +221,15 @@ radeon_bo_create_for_name (radeon_device_t *device,
     radeon_bo_t *bo;
     cairo_status_t status;
 
-    bo = _cairo_freepool_alloc (&device->bo_pool);
+    bo = _cairo_drm_bo_cast_radeon (_cairo_drm_bo_from_pool (&device->base));
     if (unlikely (bo == NULL))
 	return NULL;
 
     status = _cairo_drm_bo_open_for_name (&device->base, &bo->base, name);
     if (unlikely (status)) {
-	_cairo_freepool_free (&device->bo_pool, bo);
+	_cairo_freepool_free (&device->base.bo_pool, bo);
 	return NULL;
     }
-
-    bo->base.mapped = NULL;
 
     bo->in_batch = FALSE;
     bo->read_domains = 0;
@@ -250,7 +246,7 @@ radeon_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
     radeon_bo_t *bo = _cairo_drm_bo_cast_radeon(_bo);
 
     _cairo_drm_bo_close (&device->base, &bo->base);
-    _cairo_freepool_free (&device->bo_pool, bo);
+    _cairo_freepool_free (&device->base.bo_pool, bo);
 }
 
 cairo_surface_t *
@@ -292,31 +288,12 @@ radeon_bo_get_image (const radeon_device_t *device,
     return &image->base;
 }
 
-static void
-_radeon_device_init_bo_cache (radeon_device_t *device)
-{
-    _cairo_freepool_init (&device->bo_pool, sizeof (radeon_bo_t));
-}
-
 cairo_status_t
 radeon_device_init (radeon_device_t *device, int fd)
 {
-    _radeon_device_init_bo_cache (device);
+    _cairo_freepool_init (&device->base.bo_pool, sizeof (radeon_bo_t));
 
     device->base.bo.release = radeon_bo_release;
 
     return CAIRO_STATUS_SUCCESS;
-}
-
-static void
-_radeon_bo_cache_fini (radeon_device_t *device)
-{
-    _cairo_freepool_fini (&device->bo_pool);
-}
-
-void
-radeon_device_fini (radeon_device_t *device)
-{
-    _radeon_bo_cache_fini (device);
-    _cairo_drm_device_fini (&device->base);
 }
