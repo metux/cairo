@@ -485,21 +485,6 @@ FAIL:
     return NULL;
 }
 
-static void
-intel_bo_release (cairo_drm_device_t *_dev, cairo_drm_bo_t *_bo)
-{
-    intel_device_t *device = _cairo_drm_device_cast_intel(_dev);
-    intel_bo_t *bo = _cairo_drm_bo_cast_intel(_bo);
-
-    _cairo_drm_bo_unmap (_bo);
-
-    assert (bo->exec == NULL);
-    assert (cairo_list_is_empty (&bo->cache_list));
-
-    _cairo_drm_bo_close (_dev, _bo);
-    _cairo_freepool_free (&device->base.bo_pool, bo);
-}
-
 void
 intel_bo_set_tiling (const intel_device_t *device,
 	             intel_bo_t *bo)
@@ -720,7 +705,7 @@ intel_device_init (intel_device_t *device, int fd)
 
     device->gradient_cache.size = 0;
 
-    device->base.bo.release = intel_bo_release;
+    device->base.bo.release = _cairo_drm_bo_release;
     device->base.bo.map     = _cairo_drm_intel_bo_map;
 
     return CAIRO_STATUS_SUCCESS;

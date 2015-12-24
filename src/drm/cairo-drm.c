@@ -388,3 +388,11 @@ cairo_drm_device_throttle (cairo_device_t *abstract_device)
     if (unlikely (status))
 	_cairo_status_set_error (&device->base.status, status);
 }
+
+void
+_cairo_drm_bo_release (cairo_drm_device_t *device, cairo_drm_bo_t *bo)
+{
+    _cairo_drm_bo_unmap (bo);
+    _cairo_drm_bo_close (device, bo);
+    _cairo_freepool_free (&device->bo_pool, bo);
+}
