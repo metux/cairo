@@ -78,7 +78,6 @@ struct _cairo_image_surface {
     unsigned transparency : 2;
     unsigned color : 2;
 };
-#define to_image_surface(S) ((cairo_image_surface_t *)(S))
 
 /* A wrapper for holding pixman images returned by create_for_pattern */
 typedef struct _cairo_image_source {
@@ -87,6 +86,13 @@ typedef struct _cairo_image_source {
     pixman_image_t *pixman_image;
     unsigned is_opaque_solid : 1;
 } cairo_image_source_t;
+
+static cairo_always_inline cairo_image_surface_t *
+_cairo_surface_cast_image ( cairo_surface_t *surface )
+{
+    assert (surface->type == CAIRO_SURFACE_TYPE_IMAGE);
+    return cairo_container_of (surface, cairo_image_surface_t, base);
+}
 
 cairo_private extern const cairo_surface_backend_t _cairo_image_surface_backend;
 cairo_private extern const cairo_surface_backend_t _cairo_image_source_backend;
