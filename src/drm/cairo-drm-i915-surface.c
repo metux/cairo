@@ -2922,7 +2922,7 @@ _cairo_drm_i915_device_create (int fd, dev_t dev_id, int vendor_id, int chip_id)
 
     device->intel.base.surface.flink = _cairo_drm_surface_flink;
     device->intel.base.surface.enable_scan_out = i915_surface_enable_scan_out;
-    device->intel.base.surface.map_to_image = intel_surface_map_to_image;
+    device->intel.base.surface.map_to_image = _cairo_drm_surface_map_to_image;
 
     device->intel.base.device.flush = i915_device_flush;
     device->intel.base.device.throttle = i915_device_throttle;
