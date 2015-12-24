@@ -88,6 +88,13 @@ typedef struct _cairo_image_source {
     unsigned is_opaque_solid : 1;
 } cairo_image_source_t;
 
+static cairo_always_inline cairo_image_surface_t *
+_cairo_surface_cast_image ( cairo_surface_t *surface )
+{
+    assert (surface != NULL);
+    return cairo_container_of (surface, cairo_image_surface_t, base);
+}
+
 cairo_private extern const cairo_surface_backend_t _cairo_image_surface_backend;
 cairo_private extern const cairo_surface_backend_t _cairo_image_source_backend;
 

@@ -402,7 +402,7 @@ cairo_image_surface_create (cairo_format_t	format,
 }
 slim_hidden_def (cairo_image_surface_create);
 
-    cairo_surface_t *
+cairo_surface_t *
 _cairo_image_surface_create_with_content (cairo_content_t	content,
 					  int			width,
 					  int			height)
@@ -561,7 +561,7 @@ slim_hidden_def (cairo_image_surface_create_for_data);
 unsigned char *
 cairo_image_surface_get_data (cairo_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    cairo_image_surface_t *image_surface = _cairo_surface_cast_image (surface);
 
     if (! _cairo_surface_is_image (surface)) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
@@ -585,7 +585,7 @@ slim_hidden_def (cairo_image_surface_get_data);
 cairo_format_t
 cairo_image_surface_get_format (cairo_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    cairo_image_surface_t *image_surface = _cairo_surface_cast_image (surface);
 
     if (! _cairo_surface_is_image (surface)) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
@@ -609,7 +609,7 @@ slim_hidden_def (cairo_image_surface_get_format);
 int
 cairo_image_surface_get_width (cairo_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    cairo_image_surface_t *image_surface = _cairo_surface_cast_image (surface);
 
     if (! _cairo_surface_is_image (surface)) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
@@ -633,7 +633,7 @@ slim_hidden_def (cairo_image_surface_get_width);
 int
 cairo_image_surface_get_height (cairo_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    cairo_image_surface_t *image_surface = _cairo_surface_cast_image (surface);
 
     if (! _cairo_surface_is_image (surface)) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
@@ -660,8 +660,7 @@ slim_hidden_def (cairo_image_surface_get_height);
 int
 cairo_image_surface_get_stride (cairo_surface_t *surface)
 {
-
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    cairo_image_surface_t *image_surface = _cairo_surface_cast_image (surface);
 
     if (! _cairo_surface_is_image (surface)) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
@@ -672,7 +671,7 @@ cairo_image_surface_get_stride (cairo_surface_t *surface)
 }
 slim_hidden_def (cairo_image_surface_get_stride);
 
-    cairo_format_t
+cairo_format_t
 _cairo_format_from_content (cairo_content_t content)
 {
     switch (content) {
@@ -688,7 +687,7 @@ _cairo_format_from_content (cairo_content_t content)
     return CAIRO_FORMAT_INVALID;
 }
 
-    cairo_content_t
+cairo_content_t
 _cairo_content_from_format (cairo_format_t format)
 {
     switch (format) {
@@ -711,7 +710,7 @@ _cairo_content_from_format (cairo_format_t format)
     return CAIRO_CONTENT_COLOR_ALPHA;
 }
 
-    int
+int
 _cairo_format_bits_per_pixel (cairo_format_t format)
 {
     switch (format) {
@@ -738,7 +737,7 @@ _cairo_image_surface_create_similar (void	       *abstract_other,
 				     int		width,
 				     int		height)
 {
-    cairo_image_surface_t *other = abstract_other;
+    cairo_image_surface_t *other = _cairo_surface_cast_image (abstract_other);
 
     TRACE ((stderr, "%s (other=%u)\n", __FUNCTION__, other->base.unique_id));
 
@@ -759,7 +758,7 @@ _cairo_image_surface_create_similar (void	       *abstract_other,
 cairo_surface_t *
 _cairo_image_surface_snapshot (void *abstract_surface)
 {
-    cairo_image_surface_t *image = abstract_surface;
+    cairo_image_surface_t *image = _cairo_surface_cast_image (abstract_surface);
     cairo_image_surface_t *clone;
 
     /* If we own the image, we can simply steal the memory for the snapshot */
@@ -807,7 +806,7 @@ cairo_image_surface_t *
 _cairo_image_surface_map_to_image (void *abstract_other,
 				   const cairo_rectangle_int_t *extents)
 {
-    cairo_image_surface_t *other = abstract_other;
+    cairo_image_surface_t *other = _cairo_surface_cast_image (abstract_other);
     cairo_surface_t *surface;
     uint8_t *data;
 
@@ -839,7 +838,7 @@ _cairo_image_surface_unmap_image (void *abstract_surface,
 cairo_status_t
 _cairo_image_surface_finish (void *abstract_surface)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     if (surface->pixman_image) {
 	pixman_image_unref (surface->pixman_image);
@@ -870,7 +869,7 @@ cairo_surface_t *
 _cairo_image_surface_source (void			*abstract_surface,
 			     cairo_rectangle_int_t	*extents)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     if (extents) {
 	extents->x = extents->y = 0;
@@ -886,7 +885,7 @@ _cairo_image_surface_acquire_source_image (void                    *abstract_sur
 					   cairo_image_surface_t  **image_out,
 					   void                   **image_extra)
 {
-    *image_out = abstract_surface;
+    *image_out = _cairo_surface_cast_image (abstract_surface);
     *image_extra = NULL;
 
     return CAIRO_STATUS_SUCCESS;
@@ -904,7 +903,7 @@ cairo_bool_t
 _cairo_image_surface_get_extents (void			  *abstract_surface,
 				  cairo_rectangle_int_t   *rectangle)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     rectangle->x = 0;
     rectangle->y = 0;
@@ -920,7 +919,7 @@ _cairo_image_surface_paint (void			*abstract_surface,
 			    const cairo_pattern_t	*source,
 			    const cairo_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
@@ -936,7 +935,7 @@ _cairo_image_surface_mask (void				*abstract_surface,
 			   const cairo_pattern_t	*mask,
 			   const cairo_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
@@ -957,7 +956,7 @@ _cairo_image_surface_stroke (void			*abstract_surface,
 			     cairo_antialias_t		 antialias,
 			     const cairo_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
@@ -978,7 +977,7 @@ _cairo_image_surface_fill (void				*abstract_surface,
 			   cairo_antialias_t		 antialias,
 			   const cairo_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
@@ -998,7 +997,7 @@ _cairo_image_surface_glyphs (void			*abstract_surface,
 			     cairo_scaled_font_t	*scaled_font,
 			     const cairo_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    cairo_image_surface_t *surface = _cairo_surface_cast_image (abstract_surface);
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
