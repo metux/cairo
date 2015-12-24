@@ -54,14 +54,6 @@ radeon_surface_create_similar (void			*abstract_surface,
 				       width, height);
 }
 
-static cairo_status_t
-radeon_surface_finish (void *abstract_surface)
-{
-    radeon_surface_t *surface = abstract_surface;
-
-    return _cairo_drm_surface_finish (&surface->base);
-}
-
 static void
 radeon_surface_release_source_image (void *abstract_surface,
 				     cairo_image_surface_t *image,
@@ -99,7 +91,7 @@ static const cairo_surface_backend_t radeon_surface_backend = {
     .type			= CAIRO_SURFACE_TYPE_DRM,
     .create_context		= _cairo_default_context_create,
     .create_similar		= radeon_surface_create_similar,
-    .finish			= radeon_surface_finish,
+    .finish			= _cairo_drm_surface_finish,
     .acquire_source_image	= _cairo_drm_surface_acquire_source_image,
     .release_source_image	= radeon_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
