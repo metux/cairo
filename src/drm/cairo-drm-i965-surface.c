@@ -703,7 +703,7 @@ i965_surface_flush (void *abstract_surface, unsigned flags)
 	return CAIRO_STATUS_SUCCESS;
 
     if (surface->intel.drm.fallback != NULL)
-	return intel_surface_flush (&(surface->intel), flags);
+	return _cairo_drm_surface_flush (&(surface->intel.drm), flags);
 
     /* Forgo flushing on finish as the user cannot access the surface directly. */
     if (! surface->intel.drm.base.finished &&
