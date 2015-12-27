@@ -209,10 +209,6 @@ radeon_bo_create (radeon_device_t *device,
     bo->base.handle = create.handle;
     bo->base.size = size;
 
-    bo->in_batch = FALSE;
-    bo->read_domains = 0;
-    bo->write_domain = 0;
-
     CAIRO_REFERENCE_COUNT_INIT (&bo->base.ref_count, 1);
     return &bo->base;
 }
@@ -233,10 +229,6 @@ radeon_bo_create_for_name (radeon_device_t *device,
 	_cairo_freepool_free (&device->base.bo_pool, bo);
 	return NULL;
     }
-
-    bo->in_batch = FALSE;
-    bo->read_domains = 0;
-    bo->write_domain = 0;
 
     CAIRO_REFERENCE_COUNT_INIT (&bo->base.ref_count, 1);
     return &bo->base;
