@@ -213,27 +213,6 @@ radeon_bo_create (radeon_device_t *device,
     return &bo->base;
 }
 
-cairo_drm_bo_t *
-radeon_bo_create_for_name (radeon_device_t *device,
-			   uint32_t name)
-{
-    radeon_bo_t *bo;
-    cairo_status_t status;
-
-    bo = _cairo_drm_bo_cast_radeon (_cairo_drm_bo_from_pool (&device->base));
-    if (unlikely (bo == NULL))
-	return NULL;
-
-    status = _cairo_drm_bo_open_for_name (&device->base, &bo->base, name);
-    if (unlikely (status)) {
-	_cairo_freepool_free (&device->base.bo_pool, bo);
-	return NULL;
-    }
-
-    CAIRO_REFERENCE_COUNT_INIT (&bo->base.ref_count, 1);
-    return &bo->base;
-}
-
 cairo_surface_t *
 _cairo_drm_radeon_bo_get_image (const cairo_drm_device_t *drm_dev,
 	             cairo_drm_bo_t *drm_bo,

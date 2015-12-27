@@ -172,8 +172,7 @@ radeon_surface_create_for_name (cairo_drm_device_t *device,
     if (width && height) {
 	surface->base.stride = stride;
 
-	surface->base.bo = radeon_bo_create_for_name (_cairo_drm_device_cast_radeon(device),
-						      name);
+	surface->base.bo = _cairo_drm_bo_create_for_name (device, name);
 
 	if (unlikely (surface->base.bo == NULL)) {
 	    status = _cairo_drm_surface_finish (&surface->base);
