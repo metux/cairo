@@ -114,3 +114,23 @@ _cairo_drm_bo_unmap (cairo_drm_bo_t *bo)
     munmap (bo->mapped, bo->size);
     bo->mapped = NULL;
 }
+
+cairo_drm_bo_t *
+_cairo_drm_bo_create_for_name (cairo_drm_device_t *device,
+			       uint32_t name)
+{
+    cairo_status_t status;
+    cairo_drm_bo_t *bo = _cairo_drm_bo_from_pool (device);
+
+    if (unlikely (bo == NULL))
+        return NULL;
+
+    status = _cairo_drm_bo_open_for_name (device, bo, name);
+    if (unlikely (status)) {
+        _cairo_freepool_free (&device->bo_pool, bo);
+        return NULL;
+    }
+
+    CAIRO_REFERENCE_COUNT_INIT (&bo->ref_count, 1);
+    return bo;
+}
