@@ -38,9 +38,6 @@
 typedef struct _radeon_bo {
     cairo_drm_bo_t base;
 
-    cairo_bool_t in_batch;
-    uint32_t read_domains;
-    uint32_t write_domain;
 } radeon_bo_t;
 
 typedef struct _radeon_device {
