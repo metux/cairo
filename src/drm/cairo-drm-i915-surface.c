@@ -741,7 +741,7 @@ i915_surface_flush (void *abstract_surface,
 	return i915_surface_batch_flush (surface);
     }
 
-    return intel_surface_flush (abstract_surface, flags);
+    return _cairo_drm_surface_flush (abstract_surface, flags);
 }
 
 /* rasterisation */

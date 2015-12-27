@@ -62,28 +62,6 @@ intel_surface_finish (void *abstract_surface)
     return _cairo_drm_surface_finish (&surface->drm);
 }
 
-cairo_status_t
-intel_surface_flush (void *abstract_surface, unsigned flags)
-{
-    intel_surface_t *surface = cairo_abstract_surface_cast_intel(abstract_surface);
-    cairo_status_t status;
-
-    if (flags)
-	return CAIRO_STATUS_SUCCESS;
-
-    if (surface->drm.fallback == NULL)
-	return CAIRO_STATUS_SUCCESS;
-
-    /* kill any outstanding maps */
-    cairo_surface_finish (surface->drm.fallback);
-
-    status = cairo_surface_status (surface->drm.fallback);
-    cairo_surface_destroy (surface->drm.fallback);
-    surface->drm.fallback = NULL;
-
-    return status;
-}
-
 static const cairo_surface_backend_t intel_surface_backend = {
     .type			= CAIRO_SURFACE_TYPE_DRM,
     .create_context		= _cairo_default_context_create,
@@ -93,7 +71,7 @@ static const cairo_surface_backend_t intel_surface_backend = {
     .release_source_image	= _cairo_drm_surface_release_source_image,
     .get_extents		= _cairo_drm_surface_get_extents,
     .get_font_options		= _cairo_drm_surface_get_font_options,
-    .flush			= intel_surface_flush,
+    .flush			= _cairo_drm_surface_flush,
     .paint			= _cairo_drm_dumb_surface_paint,
     .mask			= _cairo_drm_dumb_surface_mask,
     .stroke			= _cairo_drm_dumb_surface_stroke,

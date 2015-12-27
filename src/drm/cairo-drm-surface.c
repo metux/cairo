@@ -580,3 +580,28 @@ void _cairo_drm_surface_release_source_image (void *abstract_surface,
 {
     cairo_surface_destroy (&image->base);
 }
+
+cairo_status_t
+_cairo_drm_surface_flush (void *abstract_surface,
+			  unsigned flags)
+{
+    cairo_drm_surface_t *surface = _cairo_surface_cast_drm (abstract_surface);
+    cairo_status_t status;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
+
+    if (surface->fallback == NULL)
+	return CAIRO_STATUS_SUCCESS;
+
+    /* kill any outstanding maps */
+    cairo_surface_finish (surface->fallback);
+
+    status = cairo_surface_status (surface->fallback);
+    cairo_surface_destroy (surface->fallback);
+    surface->fallback = NULL;
+
+    _cairo_drm_bo_unmap (surface->bo);
+
+    return status;
+}
