@@ -36,13 +36,15 @@
 #ifndef CAIRO_DRM_PRIVATE_H
 #define CAIRO_DRM_PRIVATE_H
 
+#include <sys/types.h> /* dev_t */
+#include <libdrm/drm.h>
+#include <libdrm/drm_fourcc.h>
+
 #include "cairo-drm.h"
 
 #include "cairo-device-private.h"
 #include "cairo-reference-count-private.h"
 #include "cairo-surface-private.h"
-
-#include <sys/types.h> /* dev_t */
 
 typedef struct _cairo_drm_device cairo_drm_device_t;
 
@@ -155,6 +157,46 @@ cairo_drm_bo_destroy (cairo_device_t *abstract_device,
 	cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
 	device->bo.release (device, bo);
     }
+}
+
+static inline uint32_t _cairo_drm_format_fourcc(const cairo_format_t format)
+{
+    switch (format)
+    {
+	case CAIRO_FORMAT_ARGB32:	return DRM_FORMAT_ARGB8888;
+	case CAIRO_FORMAT_RGB24:	return DRM_FORMAT_RGB888;
+	case CAIRO_FORMAT_RGB16_565:	return DRM_FORMAT_RGB565;
+	case CAIRO_FORMAT_RGB30:	return DRM_FORMAT_ARGB2101010;
+
+	/* hmm, not actually supported by DRM */
+	case CAIRO_FORMAT_A8:		return fourcc_code ('A', '8', 0, 0);
+	case CAIRO_FORMAT_A1:		return fourcc_code ('A', '1', 0, 0);
+
+	/* invalid format */
+	case CAIRO_FORMAT_INVALID:	return fourcc_code (0, 0, 0, 0);
+    }
+
+    return fourcc_code (0, 0, 0, 0);
+}
+
+static inline uint32_t _cairo_drm_format_bpp(const cairo_format_t format)
+{
+    switch (format)
+    {
+	case CAIRO_FORMAT_ARGB32:	return 32;
+	case CAIRO_FORMAT_RGB24:	return 24;
+	case CAIRO_FORMAT_RGB16_565:	return 16;
+	case CAIRO_FORMAT_RGB30:	return 32;
+
+	/* hmm, not actually supported by DRM */
+	case CAIRO_FORMAT_A8:		return 8;
+	case CAIRO_FORMAT_A1:		return 1;
+
+	/* invalid format */
+	case CAIRO_FORMAT_INVALID:	return 0;
+    }
+
+    return fourcc_code (0, 0, 0, 0);
 }
 
 cairo_private cairo_status_t
