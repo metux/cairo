@@ -271,6 +271,9 @@ cairo_sources += $(_cairo_pdf_operators_sources)
 
 cairo_png_sources = cairo-png.c
 
+cairo_jpeg_sources = imagesource/cairo-jpeg.c
+cairo_jpeg_headers = imagesource/cairo-jpeg.h
+
 cairo_ps_headers = cairo-ps.h
 cairo_ps_private = cairo-ps-surface-private.h
 cairo_ps_sources = cairo-ps-surface.c
