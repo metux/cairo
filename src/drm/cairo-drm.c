@@ -375,16 +375,3 @@ cairo_drm_device_throttle (cairo_device_t *abstract_device)
     if (unlikely (status))
 	_cairo_status_set_error (&device->base.status, status);
 }
-
-cairo_bool_t
-_cairo_drm_size_is_valid (cairo_device_t *abstract_device,
-			  int width, int height)
-{
-    cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
-
-    if (unlikely (device->base.status))
-	return FALSE;
-
-    return width  <= device->max_surface_size &&
-	   height <= device->max_surface_size;
-}

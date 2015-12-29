@@ -231,8 +231,4 @@ slim_hidden_proto (cairo_drm_device_get_for_fd);
 
 slim_hidden_proto (cairo_drm_surface_create_for_name);
 
-cairo_private cairo_bool_t
-_cairo_drm_size_is_valid (cairo_device_t *abstract_device,
-			  int width, int height);
-
 #endif /* CAIRO_DRM_PRIVATE_H */
