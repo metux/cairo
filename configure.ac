@@ -344,6 +344,18 @@ CAIRO_ENABLE_FUNCTIONS(png, PNG, yes, [
 ])
 
 dnl ===========================================================================
+
+CAIRO_ENABLE_FUNCTIONS(jpeg, JPEG, yes, [
+  use_jpeg=no
+  PKG_CHECK_MODULES(jpeg, libjpeg, use_jpeg="yes", use_jpeg="no")
+
+  dnl try to find it the classical way
+  if test "$use_jpeg" = "no" ; then
+    AC_CHECK_LIB(jpeg,jpeg_start_compress,jpeg_LIBS="-ljpeg"; use_jpeg="yes",use_jpeg="no")
+  fi
+])
+
+dnl ===========================================================================
 CAIRO_ENABLE_SURFACE_BACKEND(gl, OpenGL, no, [
   gl_REQUIRES="gl"
   PKG_CHECK_MODULES(gl, $gl_REQUIRES,, [
