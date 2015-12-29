@@ -373,7 +373,10 @@ cairo_drm_surface_unmap (cairo_surface_t *abstract_surface,
 cairo_surface_t *
 _cairo_drm_surface_map_to_image (void *abstract_surface)
 {
+    assert(abstract_surface != NULL);
     cairo_drm_surface_t *surface = _cairo_surface_cast_drm (abstract_surface);
+    assert(surface != NULL);
+
     if (surface->fallback == NULL) {
 	cairo_surface_t *image;
 	cairo_status_t status;
@@ -386,6 +389,8 @@ _cairo_drm_surface_map_to_image (void *abstract_surface)
 	}
 
 	cairo_drm_device_t * drm_dev = _cairo_device_cast_drm (surface->base.device);
+
+	assert (surface->bo != NULL);
 
 	ptr = drm_dev->bo.map (drm_dev, surface->bo);
 
@@ -540,6 +545,8 @@ _cairo_drm_surface_acquire_source_image (void *abstract_surface,
 
     if (drm_dev->bo.get_image == NULL)
     {
+	assert (surface->bo != NULL);
+
 	void *ptr = drm_dev->bo.map (drm_dev, surface->bo);
 
 	if (unlikely (ptr == NULL))
