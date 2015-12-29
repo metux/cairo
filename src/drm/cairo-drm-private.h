@@ -414,6 +414,4 @@ slim_hidden_proto (cairo_drm_device_default);
 slim_hidden_proto (cairo_drm_device_get);
 slim_hidden_proto (cairo_drm_device_get_for_fd);
 
-slim_hidden_proto (cairo_drm_surface_create_for_name);
-
 #endif /* CAIRO_DRM_PRIVATE_H */

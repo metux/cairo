@@ -122,47 +122,6 @@ cairo_drm_surface_create (cairo_device_t *abstract_device,
 }
 
 cairo_surface_t *
-cairo_drm_surface_create_for_name (cairo_device_t *abstract_device,
-				   unsigned int name,
-	                           cairo_format_t format,
-				   int width, int height, int stride)
-{
-    cairo_drm_device_t *device = (cairo_drm_device_t *) abstract_device;
-    cairo_surface_t *surface;
-
-    if (! CAIRO_FORMAT_VALID (format))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
-
-    if (device != NULL && device->base.status)
-    {
-	surface = _cairo_surface_create_in_error (device->base.status);
-    }
-    else if (device == NULL || device->surface.create_for_name == NULL)
-    {
-	/* XXX invalid device! */
-	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
-    }
-    else if (width == 0 || width > device->max_surface_size ||
-	     height == 0 || height > device->max_surface_size)
-    {
-	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
-    }
-    else if (device->base.finished)
-    {
-	surface = _cairo_surface_create_in_error (CAIRO_STATUS_SURFACE_FINISHED);
-    }
-    else
-    {
-	surface = device->surface.create_for_name (device,
-	                                             name, format,
-						     width, height, stride);
-    }
-
-    return surface;
-}
-slim_hidden_def (cairo_drm_surface_create_for_name);
-
-cairo_surface_t *
 cairo_drm_surface_create_from_cacheable_image (cairo_device_t *abstract_device,
 	                                       cairo_surface_t *surface)
 {
