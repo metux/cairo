@@ -97,6 +97,10 @@ Supported, "standard" surface backends
 	-----------  applications expect it to be present)
 	libpng			http://www.libpng.org/pub/png/libpng.html
 
+	jpeg support (can be left out if desired, but many
+	-----------  applications expect it to be present)
+	libpng			http://libjpeg.sourceforge.net/
+
 	pdf backend
 	-----------
 	zlib			http://www.gzip.org/zlib
