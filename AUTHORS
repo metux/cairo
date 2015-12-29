@@ -98,6 +98,7 @@ Owen Taylor <otaylor@redhat.com> Font rewrite, documentation, win32 backend
 Pierre Tardy <tardyp@gmail.com> EGL support and testing, OpenVG backend
 Karl Tomlinson <karlt+@karlt.net> Optimisation and obscure bug fixes (mozilla)
 Alp Toker <alp@atoker.com> Fix several code/comment typos
+Enrico Weigelt, metux IT consult <enrico.weigelt@gr13.net> drm support refactoring, basic drm framebuffer support
 Malcolm Tredinnick <malcolm@commsecure.com.au> Documentation fixes
 David Turner <david@freetype.org> Optimize gradient calculations
 Kalle Vahlman <kalle.vahlman@gmail.com> Allow perf reports to be compared across different platforms
