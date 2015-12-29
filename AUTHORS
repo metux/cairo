@@ -111,5 +111,7 @@ Carl Worth <cworth@isi.edu> Original library, support for paths, images
 Richard D. Worth <richard@theworths.org> Build fixes for cygwin
 Kent Worsnop <kworsnop@accesswave.ca> Fix PDF dashing bug
 Dave Yeo <daveryeo@telus.net> Build fix for win32
+Bernhard R. Fischer, 2048R/5C5FFD47 <bf@abenteuerland.at> jpeg support
+Enrico Weigelt, metux IT consult <enrico.weigelt@gr13.net> incorporated jpeg support
 
 (please let us know if we have missed anyone)
