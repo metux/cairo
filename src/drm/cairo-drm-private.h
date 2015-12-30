@@ -91,6 +91,9 @@ typedef cairo_status_t
 typedef cairo_surface_t *
 (*cairo_drm_surface_map_to_image_func_t) (void *surface);
 
+typedef uint32_t
+(*cairo_drm_surface_get_crtc_id_func_t) (cairo_drm_surface_t *surface);
+
 typedef struct _cairo_drm_bo_backend {
     void (*release) (cairo_drm_device_t *device, cairo_drm_bo_t *bo);
     void *(*map)    (const cairo_drm_device_t *device, cairo_drm_bo_t *bo);
@@ -110,6 +113,7 @@ typedef struct _cairo_drm_surface_backend {
     cairo_drm_surface_flink_func_t flink;
     cairo_drm_surface_enable_scan_out_func_t enable_scan_out;
     cairo_drm_surface_map_to_image_func_t map_to_image;
+    cairo_drm_surface_get_crtc_id_func_t get_crtc_id;
 } cairo_drm_surface_backend_t;
 
 struct _cairo_drm_bo {

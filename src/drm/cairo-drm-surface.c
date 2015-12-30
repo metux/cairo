@@ -605,3 +605,14 @@ _cairo_drm_surface_flush (void *abstract_surface,
 
     return status;
 }
+
+uint32_t
+cairo_drm_surface_get_crtc_id (cairo_surface_t *sf)
+{
+    cairo_drm_device_t *drm_dev = _cairo_device_cast_drm (sf->device);
+
+    if (!drm_dev->surface.get_crtc_id)
+	return 0;
+
+    return drm_dev->surface.get_crtc_id (_cairo_surface_cast_drm (sf));
+}
