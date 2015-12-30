@@ -33,6 +33,8 @@
 #ifndef CAIRO_DRM_H
 #define CAIRO_DRM_H
 
+#include <stdint.h>
+
 #include "cairo.h"
 
 #if CAIRO_HAS_DRM_SURFACE
@@ -91,6 +93,9 @@ cairo_drm_surface_get_height (cairo_surface_t *surface);
 
 cairo_public int
 cairo_drm_surface_get_stride (cairo_surface_t *surface);
+
+cairo_public uint32_t
+cairo_drm_surface_get_crtc_id (cairo_surface_t *surface);
 
 /* XXX map/unmap, general surface layer? */
 
