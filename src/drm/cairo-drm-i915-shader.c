@@ -915,39 +915,7 @@ i915_set_shader_program (i915_device_t *device,
     if (shader->clip.type.fragment == FS_TEXTURE) {
 	assert (mask_reg != ~0U);
 
-	if (! shader->need_combine) {
-	    /* (source IN clip) */
-	    if (source_reg == ~0U) {
-		if (source_pure == 0) {
-		    source_reg = mask_reg;
-		} else {
-		    out_reg = FS_OC;
-		    if ((shader->content & CAIRO_CONTENT_COLOR) == 0) {
-			if (source_pure & (1 << 3))
-			    i915_fs_mov (out_reg, i915_fs_operand (mask_reg, W, W, W, W));
-			else
-			    i915_fs_mov (out_reg, i915_fs_operand_zero ());
-		    } else {
-			i915_fs_mov (out_reg,
-				     i915_fs_operand_impure (mask_reg, W, source_pure));
-		    }
-		    source_reg = out_reg;
-		}
-	    } else if (mask_reg) {
-		out_reg = FS_OC;
-		if ((shader->content & CAIRO_CONTENT_COLOR) == 0) {
-		    i915_fs_mul (out_reg,
-				 i915_fs_operand (source_reg, W, W, W, W),
-				 i915_fs_operand (mask_reg, W, W, W, W));
-		} else {
-		    i915_fs_mul (out_reg,
-				 i915_fs_operand_reg (source_reg),
-				 i915_fs_operand (mask_reg, W, W, W, W));
-		}
-
-		source_reg = out_reg;
-	    }
-	} else {
+	if (shader->need_combine) {
 	    /* (source OP dest) LERP_clip dest */
 	    if (source_reg == ~0U) {
 		if (source_pure == 0) {
@@ -992,6 +960,38 @@ i915_set_shader_program (i915_device_t *device,
 		i915_fs_add (source_reg,
 			     i915_fs_operand_reg (FS_R3),
 			     i915_fs_operand_reg (mask_reg));
+	    }
+	} else {
+	    /* (source IN clip) */
+	    if (source_reg == ~0U) {
+		if (source_pure == 0) {
+		    source_reg = mask_reg;
+		} else {
+		    out_reg = FS_OC;
+		    if ((shader->content & CAIRO_CONTENT_COLOR) == 0) {
+			if (source_pure & (1 << 3))
+			    i915_fs_mov (out_reg, i915_fs_operand (mask_reg, W, W, W, W));
+			else
+			    i915_fs_mov (out_reg, i915_fs_operand_zero ());
+		    } else {
+			i915_fs_mov (out_reg,
+				     i915_fs_operand_impure (mask_reg, W, source_pure));
+		    }
+		    source_reg = out_reg;
+		}
+	    } else if (mask_reg) {
+		out_reg = FS_OC;
+		if ((shader->content & CAIRO_CONTENT_COLOR) == 0) {
+		    i915_fs_mul (out_reg,
+				 i915_fs_operand (source_reg, W, W, W, W),
+				 i915_fs_operand (mask_reg, W, W, W, W));
+		} else {
+		    i915_fs_mul (out_reg,
+				 i915_fs_operand_reg (source_reg),
+				 i915_fs_operand (mask_reg, W, W, W, W));
+		}
+
+		source_reg = out_reg;
 	    }
 	}
     }
