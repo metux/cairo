@@ -911,6 +911,16 @@ i915_set_shader_program (i915_device_t *device,
 	    break;
 	}
     }
+    else
+    {
+	/* make the compiler happy - fix warning on unused variable.
+	   we could simply assign an init value on declaration, but
+	   this way it's more robust against possible future changes
+	   to this code (otherwise potentially newly introduced
+	   unitialized variable issues could easily become unnoticed.
+	*/
+	dest_reg = 0;
+    }
 
     if (shader->clip.type.fragment == FS_TEXTURE) {
 	assert (mask_reg != ~0U);
