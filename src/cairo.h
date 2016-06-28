@@ -3077,6 +3077,9 @@ cairo_region_reference (cairo_region_t *region);
 cairo_public void
 cairo_region_destroy (cairo_region_t *region);
 
+cairo_public unsigned int
+cairo_region_get_reference_count (cairo_region_t *region);
+
 cairo_public cairo_bool_t
 cairo_region_equal (const cairo_region_t *a, const cairo_region_t *b);
 

@@ -940,3 +940,23 @@ cairo_region_equal (const cairo_region_t *a,
     return pixman_region32_equal (CONST_CAST &a->rgn, CONST_CAST &b->rgn);
 }
 slim_hidden_def (cairo_region_equal);
+
+/**
+ * cairo_region_get_reference_count:
+ * @surface: a #cairo_region_t
+ *
+ * Returns the current reference count of @region.
+ *
+ * Return value: the current reference count of @region.  If the
+ * object is a nil object, 0 will be returned.
+ *
+ **/
+unsigned int
+cairo_region_get_reference_count (cairo_region_t *region)
+{
+    if (region == NULL ||
+            CAIRO_REFERENCE_COUNT_IS_INVALID (&region->ref_count))
+        return 0;
+
+    return CAIRO_REFERENCE_COUNT_GET_VALUE (&region->ref_count);
+}
