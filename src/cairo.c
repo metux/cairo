@@ -1693,40 +1693,6 @@ cairo_arc_negative (cairo_t *cr,
 	_cairo_set_error (cr, status);
 }
 
-/* XXX: NYI
-void
-cairo_arc_to (cairo_t *cr,
-	      double x1, double y1,
-	      double x2, double y2,
-	      double radius)
-{
-    cairo_status_t status;
-
-    if (unlikely (cr->status))
-	return;
-
-    status = cr->backend->arc_to (cr, x1, y1, x2, y2, radius);
-    if (unlikely (status))
-	_cairo_set_error (cr, status);
-}
-
-void
-cairo_rel_arc_to (cairo_t *cr,
-	      double dx1, double dy1,
-	      double dx2, double dy2,
-	      double radius)
-{
-    cairo_status_t status;
-
-    if (unlikely (cr->status))
-	return;
-
-    status = cr->backend->rel_arc_to (cr, dx1, dy1, dx2, dy2, radius);
-    if (unlikely (status))
-	_cairo_set_error (cr, status);
-}
-*/
-
 /**
  * cairo_rel_move_to:
  * @cr: a cairo context
@@ -1874,24 +1840,6 @@ cairo_rectangle (cairo_t *cr,
     if (unlikely (status))
 	_cairo_set_error (cr, status);
 }
-
-#if 0
-/* XXX: NYI */
-void
-cairo_stroke_to_path (cairo_t *cr)
-{
-    cairo_status_t status;
-
-    if (unlikely (cr->status))
-	return;
-
-    /* The code in _cairo_recording_surface_get_path has a poorman's stroke_to_path */
-
-    status = _cairo_gstate_stroke_path (cr->gstate);
-    if (unlikely (status))
-	_cairo_set_error (cr, status);
-}
-#endif
 
 /**
  * cairo_close_path:
