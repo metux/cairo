@@ -878,14 +878,6 @@ cairo_arc_negative (cairo_t *cr,
 		    double radius,
 		    double angle1, double angle2);
 
-/* XXX: NYI
-cairo_public void
-cairo_arc_to (cairo_t *cr,
-	      double x1, double y1,
-	      double x2, double y2,
-	      double radius);
-*/
-
 cairo_public void
 cairo_rel_move_to (cairo_t *cr, double dx, double dy);
 
@@ -902,11 +894,6 @@ cairo_public void
 cairo_rectangle (cairo_t *cr,
 		 double x, double y,
 		 double width, double height);
-
-/* XXX: NYI
-cairo_public void
-cairo_stroke_to_path (cairo_t *cr);
-*/
 
 cairo_public void
 cairo_close_path (cairo_t *cr);
