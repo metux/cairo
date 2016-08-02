@@ -10,6 +10,7 @@ PARAM="$PARAM --enable-drm-intel"
 PARAM="$PARAM --enable-drm-i915"
 #PARAM="$PARAM --enable-drm-i965"
 PARAM="$PARAM --enable-png"
+PARAM="$PARAM --enable-gallium"
 
 ./autogen.sh \
     --prefix=/home/nekrad/.usr/cairo \
