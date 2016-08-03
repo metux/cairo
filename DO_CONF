@@ -21,4 +21,5 @@ PARAM="$PARAM --enable-gallium"
     --disable-interpreter \
     --disable-gobject \
     --disable-svg \
+    --with-gallium=$HOME/MESA \
     $PARAM
