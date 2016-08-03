@@ -165,7 +165,7 @@ color_to_pixel (const cairo_color_t	*color,
 	    ((c & 0x000000ff) << 16);
     }
 
-    if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_BGRA) {
+    else if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_BGRA) {
 	c = ((c & 0xff000000) >> 24) |
 	    ((c & 0x00ff0000) >>  8) |
 	    ((c & 0x0000ff00) <<  8) |
