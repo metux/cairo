@@ -337,7 +337,7 @@ CAIRO_ENABLE_SURFACE_BACKEND(gallium, Gallium3D, no, [
   if test "x$use_drm" = "xyes"; then
       AC_ARG_WITH([gallium],
 		  [AS_HELP_STRING([--with-gallium=/path/to/mesa],
-				  [directory to find gallium enabled mesa])],
+				  [absolute path (gallium enabled) mesa source tree])],
 		  [mesa_DIR="$withval"],
 		  [mesa_DIR="`pwd`/../mesa"])
       gallium_DIR="$mesa_DIR/src/gallium"
