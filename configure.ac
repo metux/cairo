@@ -886,6 +886,11 @@ dnl ===========================================================================
 PKG_CHECK_MODULES(gtk, "gtk+-2.0",have_gtk=yes, have_gtk=no)
 AM_CONDITIONAL(HAVE_GTK, test "x$have_gtk" = "xyes")
 
+dnl ===========================================================================
+
+CAIRO_ENABLE(perf_utils, cairo-perf-utils, no, [use_perf_utils=yes])
+
+
 AC_CONFIG_FILES([
 Makefile
 boilerplate/Makefile

@@ -15,11 +15,25 @@ AM_LDFLAGS = $(CAIRO_LDFLAGS)
 
 SUBDIRS = micro
 
+if CAIRO_HAS_PERF_UTILS
+bin_PROGRAMS = cairo-analyse-trace \
+	cairo-perf-micro \
+	cairo-perf-trace \
+	cairo-perf-diff-files \
+	cairo-perf-print \
+	cairo-perf-chart \
+	cairo-perf-compare-backends
+if HAVE_GTK
+bin_PROGRAMS += cairo-perf-graph-files
+endif
+
+else
 noinst_PROGRAMS = \
 	cairo-analyse-trace \
 	cairo-perf-trace \
 	cairo-perf-micro \
 	$(NULL)
+endif
 
 EXTRA_PROGRAMS += \
 	cairo-analyse-trace \
