@@ -35,6 +35,10 @@ udeb_configure_flags += \
 	--disable-xcb
 
 override_dh_autoreconf:
+# make automake happy ...
+	touch boilerplate/Makefile.am.features
+	touch src/Makefile.am.features
+	touch ChangeLog
 	dh_autoreconf --as-needed
 
 override_dh_auto_configure:
