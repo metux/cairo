@@ -26,6 +26,8 @@ deb_configure_flags += \
 	--enable-xlib \
 	--enable-svg \
 	--enable-xcb \
+	--enable-drm \
+	--enable-drm-basic \
 	--enable-perf-utils \
 	--disable-gl
 
