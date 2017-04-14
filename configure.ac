@@ -119,9 +119,9 @@ CAIRO_ENABLE_SURFACE_BACKEND(xlib, Xlib, auto, [
 		  AC_MSG_RESULT(yes),
 		  AC_MSG_RESULT(no),
 		  AC_MSG_RESULT(assuming no))
-      fi
+  fi
 
-      AC_CHECK_HEADERS([X11/extensions/XShm.h X11/extensions/shmproto.h X11/extensions/shmstr.h], [], [],
+  AC_CHECK_HEADERS([X11/extensions/XShm.h X11/extensions/shmproto.h X11/extensions/shmstr.h], [], [],
 		       [#include <X11/Xlibint.h>
 			#include <X11/Xproto.h>])
 ])
