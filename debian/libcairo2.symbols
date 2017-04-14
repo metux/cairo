@@ -35,6 +35,24 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_device_status@Base 1.10.0
  cairo_device_to_user@Base 1.2.4
  cairo_device_to_user_distance@Base 1.2.4
+ cairo_drm_device_default@Base 1.15.4-drm-0
+ cairo_drm_device_get@Base 1.15.4-drm-0
+ cairo_drm_device_get_fd@Base 1.15.4-drm-0
+ cairo_drm_device_get_for_fd@Base 1.15.4-drm-0
+ cairo_drm_device_throttle@Base 1.15.4-drm-0
+ cairo_drm_surface_create@Base 1.15.4-drm-0
+ cairo_drm_surface_create_for_name@Base 1.15.4-drm-0
+ cairo_drm_surface_create_from_cacheable_image@Base 1.15.4-drm-0
+ cairo_drm_surface_enable_scan_out@Base 1.15.4-drm-0
+ cairo_drm_surface_get_crtc_id@Base 1.15.4-drm-0
+ cairo_drm_surface_get_format@Base 1.15.4-drm-0
+ cairo_drm_surface_get_handle@Base 1.15.4-drm-0
+ cairo_drm_surface_get_height@Base 1.15.4-drm-0
+ cairo_drm_surface_get_name@Base 1.15.4-drm-0
+ cairo_drm_surface_get_stride@Base 1.15.4-drm-0
+ cairo_drm_surface_get_width@Base 1.15.4-drm-0
+ cairo_drm_surface_map_to_image@Base 1.15.4-drm-0
+ cairo_drm_surface_unmap@Base 1.15.4-drm-0
  cairo_fill@Base 1.2.4
  cairo_fill_extents@Base 1.2.4
  cairo_fill_preserve@Base 1.2.4
@@ -172,10 +190,14 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_pattern_set_user_data@Base 1.4.10
  cairo_pattern_status@Base 1.2.4
  cairo_pdf_get_versions@Base 1.10.0
+ cairo_pdf_surface_add_outline@Base 1.15.4-drm-0
  cairo_pdf_surface_create@Base 1.2.4
  cairo_pdf_surface_create_for_stream@Base 1.2.4
  cairo_pdf_surface_restrict_to_version@Base 1.10.0
+ cairo_pdf_surface_set_metadata@Base 1.15.4-drm-0
+ cairo_pdf_surface_set_page_label@Base 1.15.4-drm-0
  cairo_pdf_surface_set_size@Base 1.2.4
+ cairo_pdf_surface_set_thumbnail_size@Base 1.15.4-drm-0
  cairo_pdf_version_to_string@Base 1.10.0
  cairo_pop_group@Base 1.2.4
  cairo_pop_group_to_source@Base 1.2.4
@@ -218,6 +240,7 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_region_equal@Base 1.10.0
  cairo_region_get_extents@Base 1.10.0
  cairo_region_get_rectangle@Base 1.10.0
+ cairo_region_get_reference_count@Base 1.15.4-drm-0
  cairo_region_intersect@Base 1.10.0
  cairo_region_intersect_rectangle@Base 1.10.0
  cairo_region_is_empty@Base 1.10.0
@@ -342,6 +365,8 @@ libcairo.so.2 libcairo2 #MINVER#
  cairo_svg_surface_create_for_stream@Base 1.2.4
  cairo_svg_surface_restrict_to_version@Base 1.2.4
  cairo_svg_version_to_string@Base 1.2.4
+ cairo_tag_begin@Base 1.15.4-drm-0
+ cairo_tag_end@Base 1.15.4-drm-0
  cairo_tee_surface_add@Base 1.10.2-2~
  cairo_tee_surface_create@Base 1.10.2-2~
  cairo_tee_surface_index@Base 1.10.2-2~
