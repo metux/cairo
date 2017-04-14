@@ -17,7 +17,9 @@ configure_flags += \
 	--enable-png \
 	--enable-tee \
 	--disable-silent-rules \
-	--disable-maintainer-mode
+	--disable-maintainer-mode \
+	--enable-gtk-doc \
+	--enable-gtk-doc-html
 
 deb_configure_flags += \
 	$(configure_flags) \
