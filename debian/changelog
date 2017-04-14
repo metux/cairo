@@ -1,3 +1,11 @@
+cairo (1.15.4-drm-1) trusty; urgency=medium
+
+  * Non-maintainer upload.
+  * upgrade to 1.15.4
+  * added DRM patches
+
+ -- Enrico Weigelt, metux IT consult <enrico.weigelt@gr13.net>  Fri, 14 Apr 2017 21:26:39 +0200
+
 cairo (1.14.0-2.1+deb8u2) jessie; urgency=medium
 
   * Non-maintainer upload.
