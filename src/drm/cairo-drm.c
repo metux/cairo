@@ -42,6 +42,9 @@
 #include <fcntl.h>
 #include <unistd.h> /* open(), close() */
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 static cairo_drm_device_t *_cairo_drm_known_devices;
 static cairo_drm_device_t *_cairo_drm_default_device;
