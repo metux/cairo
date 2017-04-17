@@ -41,6 +41,7 @@
  * http://www.adobe.com/content/dam/Adobe/en/devnet/font/pdfs/5177.Type2.pdf
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for snprintf(), strdup() */
 #include "cairoint.h"
 

@@ -33,6 +33,7 @@
  *	Kristian Høgsberg <krh@redhat.com>
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for snprintf() */
 #include "cairoint.h"
 

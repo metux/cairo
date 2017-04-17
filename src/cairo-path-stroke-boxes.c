@@ -36,6 +36,7 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for hypot() */
 #include "cairoint.h"
 

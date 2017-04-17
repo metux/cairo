@@ -39,7 +39,7 @@
  * http://partners.adobe.com/public/developer/en/font/T1_SPEC.PDF
  */
 
-
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for snprintf(), strdup() */
 #include "cairoint.h"
 

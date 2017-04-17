@@ -39,6 +39,7 @@
  *	Carl Worth <cworth@cworth.org>
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for snprintf() */
 #include "cairoint.h"
 

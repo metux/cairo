@@ -40,6 +40,7 @@
  * http://www.microsoft.com/typography/specs/default.htm
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for snprintf(), strdup() */
 #include "cairoint.h"
 

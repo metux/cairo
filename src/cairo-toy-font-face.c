@@ -39,6 +39,7 @@
  *      Behdad Esfahbod <behdad@behdad.org>
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for strdup() */
 #include "cairoint.h"
 #include "cairo-error-private.h"

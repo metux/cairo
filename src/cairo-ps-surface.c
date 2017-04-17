@@ -53,6 +53,7 @@
  *   2. Using gs to do PS -> PDF and PDF -> PS will always work well.
  */
 
+#define _DEFAULT_SOURCE
 #define _BSD_SOURCE /* for ctime_r(), snprintf(), strdup() */
 #include "cairoint.h"
 
